@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">AUTHORIZED WEBSITE ASSESSMENT</p><h1>Website Scan</h1><p>Validate your target, run bounded checks, and review evidence in one workspace.</p></div><span class="phase-pill">12 ASSESSMENT MODULES</span></div>
+{% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
+{% if validation %}<div class="flash" role="status">Target validated: {{ validation.host }} · Addresses: {{ validation.addresses|join(', ') }}. Start scan to assess this target; it will be validated again.</div>{% endif %}
+<form method="post" class="card scan-form">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+<label for="target-url">Authorized website URL</label>
+<input id="target-url" name="url" type="url" required maxlength="2048" placeholder="http://localhost:5001/?q=example" value="{{ form.url }}" autocomplete="off" spellcheck="false">
+<p class="help">HTTP or HTTPS only. Query parameters enable conservative reflection and SQL error checks. Do not include credentials or sensitive tokens in URLs.</p>
+<label class="checkbox"><input type="checkbox" name="authorized" value="yes" required {% if form.authorized %}checked{% endif %}><span>I own this target or have explicit permission to assess it, including its listed TCP ports.</span></label>
+<label class="checkbox"><input type="checkbox" name="allow_private" value="yes" {% if form.allow_private %}checked{% endif %}><span>Allow localhost and private lab addresses for this scan.</span></label>
+<details class="scan-options"><summary>Resource discovery paths</summary><label for="paths">One path per line · maximum 15</label><textarea id="paths" name="paths" rows="10" maxlength="2000">{{ form.paths }}</textarea></details>
+<div class="scan-boundaries"><h2>Assessment scope</h2><p>Up to 60 GET requests · 256 KiB per response · 5 requests/second maximum · one active scan · 150-second module budget. Ports: target port, 80, 443, 8000, 8080, 8443. No login, form submission, crawling, or destructive payloads.</p><p>Redirects are limited to the same origin or an HTTPS upgrade on the same hostname. Metadata and link-local addresses are blocked. Avoid endpoints whose GET requests change data.</p></div>
+<div class="form-actions"><button class="button secondary" type="submit" name="action" value="validate">Validate URL</button><button class="button" type="submit" name="action" value="start">Start website scan →</button></div>
+</form>
+{% endblock %}

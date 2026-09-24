@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% from '_components.html' import badge %}{% block content %}
+<a class="text-link" href="{{ url_for('scan_detail', scan_id=finding.scan_id) }}">← Scan summary</a>
+<div class="page-heading"><div><p class="eyebrow">FINDING-{{ '%04d'|format(finding.id) }} / SCAN-{{ '%04d'|format(finding.scan_id) }}</p><h1>{{ finding.title }}</h1><p>{{ finding.category }} · {{ finding.source }}</p></div>{{ badge(finding.severity) }}</div>
+<section class="card detail-card"><div class="detail-meta"><div><small>Confidence</small>{{ badge(finding.confidence) }}</div><div><small>Status</small>{{ badge(finding.status) }}</div><div><small>Created (UTC)</small>{{ finding.created_at }}</div></div>
+{% for field in ['location','description','evidence','impact','recommendation','fingerprint'] %}<h2>{{ field|capitalize }}</h2><pre class="evidence">{{ finding[field] }}</pre>{% endfor %}
+<form method="post" action="{{ url_for('update_finding_status', finding_id=finding.id) }}" class="status-form"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><label>Finding status<select name="status">{% for status in statuses %}<option {% if status == finding.status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></label><button class="button" type="submit">Update status</button></form>
+</section>{% endblock %}

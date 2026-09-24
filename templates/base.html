@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>{{ title }} · SentinelScan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<aside class="sidebar" id="navigation">
+  <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-icon">S</span><span>Sentinel<span class="accent">Scan</span><small>SECURITY WORKSPACE</small></span></a>
+  <p class="nav-label">WORKSPACE</p>
+  <nav aria-label="Main navigation">
+  {% for endpoint, label, icon in [('dashboard','Dashboard','◫'), ('website_scan','Website Scan','◎'), ('repository_scan','Repository Scan','⌘'), ('scans','Scan History','◷'), ('findings','Findings','◇'), ('reports','Reports','▤'), ('comparisons','Compare scans','⇄'), ('risk_trends','Risk trends','↗')] %}
+    <a href="{{ url_for(endpoint) }}" class="nav-item {{ 'active' if request.endpoint == endpoint or (endpoint == 'findings' and request.endpoint == 'finding_detail') else '' }}" {% if request.endpoint == endpoint %}aria-current="page"{% endif %}><span aria-hidden="true">{{ icon }}</span>{{ label }}</a>
+  {% endfor %}
+  </nav>
+  <div class="sidebar-footer"><span class="local-dot"></span> Local workspace<small>DAST · SAST · Remediation</small></div>
+</aside>
+<div class="workspace">
+  <header class="topbar"><div><button class="menu-toggle" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">☰</button><span class="breadcrumb">Workspace <span>/</span> <strong>{{ title }}</strong></span></div><span class="environment"><span class="local-dot"></span> LOCAL INSTANCE</span></header>
+  <main id="main">
+    {% for message in get_flashed_messages() %}<div class="flash" role="status">{{ message }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+    <footer class="page-footer"><span>SentinelScan <span class="muted">/ Security assessment platform</span></span><span>Academic security assessment</span></footer>
+  </main>
+</div>
+</body>
+</html>

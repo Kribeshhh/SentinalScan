@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+data/*
+!data/.gitkeep
+reports_output/*
+!reports_output/.gitkeep
+.env
+.env.*
+!.env.example
+.DS_Store
+.coverage
+htmlcov/
+.pytest_cache/
+*.log

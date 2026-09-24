@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% from '_components.html' import badge, finding_table, empty %}
+{% block content %}
+<a class="text-link" href="{{ url_for('scans') }}">← Scan history</a>
+<div class="page-heading"><div><p class="eyebrow">SCAN-{{ '%04d'|format(scan.id) }} · {{ scan.scan_type|upper }}</p><h1>Scan summary</h1><p class="target-text">{{ scan.target }}</p></div><span id="scan-status">{{ badge(scan.status) }}</span></div>
+{% if scan.error %}<div class="form-error" role="status">{{ scan.error }}</div>{% endif %}
+{% if warnings %}<div class="notice">{{ warnings }} module(s) failed, were partial, or were skipped. Review coverage below before interpreting the results.</div>{% endif %}
+<div class="scan-actions"><a class="button secondary" href="{{ url_for('comparisons') }}">Compare scans</a><a class="button secondary" href="{{ url_for('risk_trends',scan_id=scan.id) }}">Target risk trend</a><a class="button secondary" href="{{ url_for('reports',scan_id=scan.id) }}">Generate report</a><a class="text-link" href="{{ url_for('findings',scan_id=scan.id) }}">Filter this scan’s findings</a></div>
+<section class="card scan-progress" {% if scan.status in ('Queued','Running') %}data-scan-status-url="{{ url_for('scan_status',scan_id=scan.id) }}"{% endif %}>
+<div class="card-heading"><h2 id="progress-label">{{ scan.status }} · {{ scan.progress }}%</h2><span class="muted" id="poll-state">{% if scan.status in ('Queued','Running') %}UPDATING AUTOMATICALLY{% else %}ASSESSMENT FINISHED{% endif %}</span></div>
+<progress id="scan-progress" value="{{ scan.progress }}" max="100">{{ scan.progress }}%</progress>
+<p class="help">{{ findings|length }} recorded findings · SentinelScan Risk Score (open findings): {{ risk }}/100. {% if scan.status in ('Queued','Running') %}The page refreshes as modules finish. Without JavaScript, refresh manually.{% else %}Completion means the configured checks finished, not that the target is secure.{% endif %}</p>
+</section>
+<section class="card data-panel"><div class="card-heading"><h2>Assessment modules & observations</h2><span class="muted">PERSISTED IN SQLITE</span></div>
+{% for module in modules %}<details class="module"><summary><span>{{ module.name }}</span>{{ badge(module.status) }}</summary>{% if module.error %}<p class="module-error">{{ module.error }}</p>{% endif %}<pre class="evidence">{{ module.formatted_data }}</pre></details>{% else %}{{ empty('No module records','This scan predates website scanner integration.') }}{% endfor %}</section>
+<section class="card data-panel"><div class="card-heading"><h2>Scan findings</h2><span class="muted">{{ findings|length }} TOTAL</span></div>{% if findings %}{{ finding_table(findings) }}{% else %}{{ empty('No findings recorded','Results depend on reachable resources and successful module coverage. Review the observations above.') }}{% endif %}</section>
+{% endblock %}

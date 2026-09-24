@@ -1,0 +1,11 @@
+{% macro badge(value) -%}<span class="badge badge-{{ value|lower|replace(' ', '-') }}">{{ value }}</span>{%- endmacro %}
+{% macro empty(title, text, icon='◇') -%}<div class="empty-state"><span class="empty-icon" aria-hidden="true">{{ icon }}</span><h3>{{ title }}</h3><p>{{ text }}</p></div>{%- endmacro %}
+{% macro scan_table(rows) %}
+<div class="table-wrap"><table><thead><tr><th>Scan / target</th><th>Source</th><th>Status</th><th>Created</th></tr></thead><tbody>{% for scan in rows %}<tr><td><a class="row-title" href="{{ url_for('scan_detail', scan_id=scan.id) }}">{{ scan.target }}</a><small>SCAN-{{ '%04d'|format(scan.id) }}</small></td><td>{{ scan.scan_type }}</td><td>{{ badge(scan.status) }}</td><td class="date">{{ scan.created_at[:19]|replace('T',' ') }} UTC</td></tr>{% endfor %}</tbody></table></div>
+{% endmacro %}
+{% macro finding_table(rows) %}
+<div class="table-wrap"><table><thead><tr><th>Finding</th><th>Severity</th><th>Source</th><th>Status</th></tr></thead><tbody>{% for finding in rows %}<tr><td><a class="row-title" href="{{ url_for('finding_detail', finding_id=finding.id) }}">{{ finding.title }}</a><small>{{ finding.category }}</small></td><td>{{ badge(finding.severity) }}</td><td>{{ finding.source }}</td><td>{{ badge(finding.status) }}</td></tr>{% endfor %}</tbody></table></div>
+{% endmacro %}
+{% macro pagination(endpoint, page, has_next, filters={}) %}
+{% if page > 1 or has_next %}<nav class="pagination" aria-label="Pagination">{% if page > 1 %}<a class="button secondary" href="{{ url_for(endpoint, page=page-1, **filters) }}">Previous</a>{% endif %}<span>Page {{ page }}</span>{% if has_next %}<a class="button secondary" href="{{ url_for(endpoint, page=page+1, **filters) }}">Next</a>{% endif %}</nav>{% endif %}
+{% endmacro %}
