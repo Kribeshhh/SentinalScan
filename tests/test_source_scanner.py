@@ -208,6 +208,31 @@ class ArchiveSafetyTests(unittest.TestCase):
 
 
 class GitHubTransportTests(unittest.TestCase):
+    def test_authenticated_owner_listing_includes_private_and_preserves_pagination(self):
+        rows=[dict(REPO, full_name='another/repo'+str(i)) for i in range(30)]
+        with patch('integrations.github.request', return_value=(200,{},json.dumps(rows).encode())) as remote:
+            github=GitHubClient(FAKE_AUTH)
+            self.assertEqual(github.repositories('authorized-lab'), [])
+            self.assertTrue(github.has_more_repositories)
+            self.assertTrue(remote.call_args.args[1].startswith('/user/repos?'))
+            self.assertEqual(remote.call_args.kwargs['headers']['Authorization'], 'Bearer '+FAKE_AUTH)
+        with patch('integrations.github.request', return_value=(200,{},json.dumps([REPO]).encode())) as remote:
+            results=github.repositories('AUTHORIZED-LAB',2)
+            self.assertEqual(results[0]['full_name'],REPO['full_name'])
+            self.assertTrue(results[0]['private'])
+            self.assertFalse(github.has_more_repositories)
+            self.assertIn('page=2',remote.call_args.args[1])
+        with patch('integrations.github.request', return_value=(200,{},b'[]')) as remote:
+            GitHubClient().repositories('authorized-lab')
+            self.assertTrue(remote.call_args.args[1].startswith('/users/authorized-lab/repos?'))
+
+    def test_access_errors_distinguish_sso_and_rate_limits_without_leaking(self):
+        from integrations.github import access_error
+        self.assertIn('SSO authorization',access_error(403,{'X-GitHub-SSO':'required; url='+FAKE_AUTH}))
+        self.assertIn('rate limit',access_error(403,{'X-RateLimit-Remaining':'0'}))
+        self.assertIn('Contents: read',access_error(404,{}))
+        self.assertNotIn(FAKE_AUTH,access_error(403,{'X-GitHub-SSO':'required; url='+FAKE_AUTH}))
+
     def test_token_never_forwarded_to_archive_host(self):
         with tempfile.TemporaryDirectory() as directory:
             responses=[(302,{'Location':'https://codeload.github.com/authorized-lab/source-fixture/legacy.zip/'+SHA},b''),(200,{},b'archive')]

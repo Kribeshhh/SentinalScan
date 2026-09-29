@@ -9,6 +9,25 @@ from analysis.redaction import redact_text
 from integrations.credentials import CredentialStore
 
 
+def repository_access_error(exc, connected, stage):
+    """Explain the failed capability without exposing GitHub response bodies."""
+    if exc.status not in (403,404):
+        return str(exc)
+    # Keep rate-limit and SSO guidance, which is more specific than the endpoint.
+    if 'rate limit' in str(exc) or 'SSO authorization' in str(exc):
+        return str(exc)
+    if not connected:
+        return ('This repository is not available without authentication. Connect GitHub above to access a private repository, '
+                'then retry. If it is public, check the owner/repository name.')
+    if stage=='branches':
+        return ('GitHub allows this token to see the repository, but denied access to its branches '
+                f'(HTTP {exc.status}). Enable Repository permissions → Contents: read-only for this repository, '
+                'save the token settings, then reconnect and retry.')
+    return (f'GitHub rejected repository access for this connected token (HTTP {exc.status}). '
+            'Check the exact owner/repository name, token resource owner and Repository access selection. '
+            'A successful account connection does not establish access to this repository.')
+
+
 def stored_token():
     handle = session.get('github_credential')
     if handle:
@@ -57,7 +76,7 @@ def register_routes(app):
     app.extensions['github_credentials'] = CredentialStore()
     @app.route('/repository-scan',methods=['GET','POST'])
     def repository_scan():
-        error=None;repositories=[];branches=[];selected=None
+        error=None;repositories=[];branches=[];selected=None;has_more_repositories=False
         owner=request.args.get('owner','').strip()
         repo=request.args.get('repo','').strip()
         try:
@@ -75,9 +94,10 @@ def register_routes(app):
             try:
                 action=request.form.get('action')
                 if action=='connect':
+                    destination=repository_name(repo) if repo else None
                     connect()
                     flash('GitHub connection verified. The access token stays on the server.')
-                    return redirect(url_for('repository_scan'),code=303)
+                    return redirect(url_for('repository_scan',repo=destination),code=303)
                 if action=='disconnect':
                     clear_connection()
                     flash('GitHub disconnected for this browser. Already-authorized scans may finish.')
@@ -94,16 +114,19 @@ def register_routes(app):
             except (GitHubError,QueueFull) as exc:
                 error=str(exc)
         if not error:
+            stage='repository'
             try:
                 github=client(connected)
                 if repo:
                     selected=github.repository(repository_name(repo))
+                    stage='branches'
                     branches=github.branches(selected['full_name'],branch_page)
                 elif owner or connected:
                     repositories=github.repositories(owner,page)
+                    has_more_repositories=getattr(github,'has_more_repositories',len(repositories)==30)
             except GitHubError as exc:
-                error=str(exc)
+                error=repository_access_error(exc,connected,stage) if repo else str(exc)
         return render_template('repository_scan.html',title='Repository Scan',connected=connected,
             token_configured=bool(os.environ.get('SENTINELSCAN_GITHUB_TOKEN')),login=session.get('github_login',''),
-            repositories=repositories,branches=branches,selected=selected,owner=redact_text(owner),
-            page=page,branch_page=branch_page,error=error),400 if error else 200
+            repositories=repositories,branches=branches,selected=selected,owner=redact_text(owner),repo=redact_text(repo),
+            page=page,branch_page=branch_page,error=error,has_more_repositories=has_more_repositories),400 if error else 200

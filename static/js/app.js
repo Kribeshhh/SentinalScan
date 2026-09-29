@@ -46,6 +46,7 @@ if (scanProgress) {
 document.querySelectorAll('form[method="post"]').forEach((form) => {
   let submitted = false;
   form.addEventListener('submit', (event) => {
+    if (event.defaultPrevented) return;
     if (submitted) { event.preventDefault(); return; }
     submitted = true;
     form.setAttribute('aria-busy', 'true');
@@ -59,3 +60,36 @@ document.querySelectorAll('form[method="post"]').forEach((form) => {
 window.addEventListener('pageshow', (event) => {
   if (event.persisted && document.querySelector('form[aria-busy="true"]')) window.location.reload();
 });
+
+const sourceEditor = document.querySelector('#source-editor');
+if (sourceEditor) {
+  const position = document.querySelector('#editor-position');
+  const publishForm = document.querySelector('#publish-fix-form');
+  const initial = sourceEditor.value;
+  let leaving = false;
+  function showPosition() {
+    const line = sourceEditor.value.slice(0, sourceEditor.selectionStart).split('\n').length;
+    position.textContent = `Line ${line} · ${sourceEditor.value.split('\n').length} lines`;
+  }
+  ['input', 'click', 'keyup'].forEach(event => sourceEditor.addEventListener(event, showPosition));
+  document.querySelector('#jump-to-finding').addEventListener('click', () => {
+    const lines = sourceEditor.value.split('\n');
+    const index = Math.min(lines.length - 1, Math.max(0, Number(sourceEditor.dataset.line) - 1));
+    const start = lines.slice(0, index).reduce((total, line) => total + line.length + 1, 0);
+    sourceEditor.focus();
+    sourceEditor.setSelectionRange(start, start + lines[index].length);
+    sourceEditor.scrollTop = Math.max(0, index * parseFloat(getComputedStyle(sourceEditor).lineHeight) - 100);
+    showPosition();
+  });
+  document.querySelector('#source-editor-form').addEventListener('submit', () => { leaving = true; });
+  if (publishForm) publishForm.addEventListener('submit', event => {
+    if (sourceEditor.value !== initial || sourceEditor.dataset.unsaved === 'true') {
+      event.preventDefault();
+      window.alert('Save your current edits and review the saved diff before publishing.');
+      publishForm.removeAttribute('aria-busy');
+    } else leaving = true;
+  }, true);
+  window.addEventListener('beforeunload', event => {
+    if (!leaving && sourceEditor.value !== initial) { event.preventDefault(); event.returnValue = ''; }
+  });
+}

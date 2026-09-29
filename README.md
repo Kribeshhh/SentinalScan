@@ -58,6 +58,8 @@ The app uses TCP connect scans, so it does not need to run as root. Windows user
 
 ## GitHub setup and repository scanning
 
+When connected, browsing uses the authenticated repository list, including private repositories allowed by the token. Owner filtering applies to each fetched page; use Next or open owner/repository directly if the current page has no match. A verified connection confirms identity, not access to every repository.
+
 Public repositories do not require a token. Open **Repository Scan**, browse public repositories by owner or enter `owner/repository`, then choose a branch. Public visibility does not replace the requirement to have authorization for your assessment.
 
 For authorized private repositories:
@@ -353,7 +355,7 @@ source .venv/bin/activate
 python3 -m unittest discover -s tests -v
 ```
 
-All 52 automated tests pass. Tests use isolated databases and real loopback HTTP/HTTPS servers. Coverage includes the Phase 1 tests, complete DAST ingestion, actual SQLite error detection, reflection contexts, cookie redaction, SSRF rejection, pinned sockets, blocked redirects, request/size limits, trusted and untrusted TLS, independent module failure, and migration with existing foreign-key records. The complete HTTP workflow test starts a real Flask subprocess, scans a loopback educational target, verifies SQLite/risk/status updates, analyzes actual SAST fixtures through a simulated GitHub boundary, exports all three formats, runs a second scan, compares and restarts Flask. It confirms scans, findings, statuses, repository records, comparisons and report downloads survive. Further hardening tests cover ID overflow, file uploads, safe logs, private keys, extraction symlinks, Nmap fallback, queue admission and temporary cleanup. The browser workflow is additionally exercised against the included local educational lab.
+All 61 automated tests pass. Tests use isolated databases and real loopback HTTP/HTTPS servers. Coverage includes the Phase 1 tests, complete DAST ingestion, actual SQLite error detection, reflection contexts, cookie redaction, SSRF rejection, pinned sockets, blocked redirects, request/size limits, trusted and untrusted TLS, independent module failure, and migration with existing foreign-key records. The complete HTTP workflow test starts a real Flask subprocess, scans a loopback educational target, verifies SQLite/risk/status updates, analyzes actual SAST fixtures through a simulated GitHub boundary, exports all three formats, runs a second scan, compares and restarts Flask. It confirms scans, findings, statuses, repository records, comparisons and report downloads survive. Further hardening tests cover ID overflow, file uploads, safe logs, private keys, extraction symlinks, Nmap fallback, queue admission and temporary cleanup. The browser workflow is additionally exercised against the included local educational lab.
 
 Limitations:
 
@@ -369,3 +371,41 @@ Limitations:
 - SAST uses syntax/context heuristics, not whole-program taint analysis. Aliases/shadowing, framework-specific behavior, runtime overrides, TypeScript, transitive dependencies and complex Gradle/Maven resolution are outside current coverage. JSON/YAML locations are file-level line 1. Normal findings require manual triage.
 - Fine-grained PAT authorization is implemented; OAuth, GitHub Apps, Enterprise hosts, multi-user authentication and credential storage are outside current scope.
 - Native PDF generation is not implemented; HTML reports have print styles and can be saved as PDF using your browser. Possible future extensions: asset ownership, status audit history, scheduled scans, notifications, authentication and broader scanner coverage.
+
+### Edit a finding and create a pull request
+
+Open a repository finding and choose **Edit source & create pull request**. Load the
+file from the scan's immutable commit, edit it, preview the diff, and save the draft.
+Review the saved diff and check the publication checkbox to create a GitHub branch
+and pull request against the scanned branch. The app never merges the PR or marks
+the finding resolved automatically. Review/test on GitHub and re-scan after merging.
+
+Connect a fine-grained token for the repository with **Contents: read and write**
+and **Pull requests: read and write** to publish. Public source can be loaded without
+a token. Private source requires working read access; editing does not bypass GitHub
+permissions. Fork creation is not supported: publication requires write access to the
+scanned repository. Workflow files are excluded from this editor.
+
+Drafts and PR links persist in the new `remediation_drafts` SQLite table. Only the
+file selected from the finding's stored location can be edited; the browser cannot
+choose filesystem paths, repository, branch, or commit parameters. Text files are
+limited to 48 KB. Files with detected secrets/masking are blocked rather than storing
+or publishing secrets or replacing source with masked placeholders. Detection is
+heuristic; review code for sensitive material before saving/publishing. Drafts contain
+source code and should be protected with the local database. They are not reports.
+
+A version check prevents stale browser tabs from overwriting saved drafts. If the
+base branch moved after the scan, run a new scan before publishing. Publication locks
+the draft, uses a unique `sentinelscan/fix-*` branch, and retries against that same
+branch, recognizing already-created PRs. A failed attempt may leave a branch/commit
+on GitHub; the UI reports this and offers retry. On a local server restart, interrupted
+publication becomes retryable. Do not run multiple app processes against this database.
+
+Routes: `GET/POST /findings/<id>/edit`, `POST /findings/<id>/publish`, and
+`GET /findings/<id>/patch`. All mutations require CSRF validation. No source is
+executed, no shell or Git CLI is invoked, and no token is persisted with drafts.
+
+Tests: `.venv/bin/python -m unittest discover -s tests -v`. Remediation tests exercise
+SQLite persistence, preview/save, XSS escaping, secret blocking, CSRF, stale drafts,
+branch conflicts, patch downloads, and recovery after a lost GitHub response.
+GitHub publication tests simulate API responses and never create real remote PRs.

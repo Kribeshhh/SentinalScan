@@ -14,6 +14,7 @@ from scanner.directory_scanner import paths_from_text, DEFAULT_PATHS
 from scanner.website_scanner import ScanManager, QueueFull
 from repository_routes import register_routes
 from management_routes import register_management
+from remediation_routes import register_remediation
 from analysis.management import scan_metrics, risk_trend
 from analysis.validation import record_id
 from analysis.redaction import redact_text
@@ -28,6 +29,7 @@ def create_app(test_config=None):
     app.extensions["scan_manager"] = ScanManager(app)
     register_routes(app)
     register_management(app)
+    register_remediation(app)
 
     @app.before_request
     def csrf_protection():
@@ -239,4 +241,4 @@ class PrivateRequestHandler(WSGIRequestHandler):
 
 
 if __name__ == "__main__":
-    create_app().run(host="127.0.0.1", port=5001, debug=False, request_handler=PrivateRequestHandler)
+    create_app().run(host="127.0.0.1", port=5000, debug=False, request_handler=PrivateRequestHandler)

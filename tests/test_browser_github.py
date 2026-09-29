@@ -111,3 +111,48 @@ class BrowserGitHubTests(unittest.TestCase):
             old = session['github_credential']
         self.connect()
         self.assertIsNone(self.app.extensions['github_credentials'].get(old))
+
+    def test_filtered_empty_page_keeps_next_navigation(self):
+        class Paged(FixtureGitHub):
+            def repositories(self, owner='', page=1):
+                self.has_more_repositories=page==1
+                return [] if page==1 else [REPO]
+        self.connect()
+        with patch.dict(self.app.config, {'GITHUB_CLIENT_FACTORY':Paged}):
+            page=self.client.get('/repository-scan?owner=authorized-lab').get_data(as_text=True)
+            self.assertIn('Next',page)
+            self.assertIn('Filter accessible repositories by owner',page)
+            page=self.client.get('/repository-scan?owner=authorized-lab&page=2').get_data(as_text=True)
+            self.assertIn(REPO['full_name'],page)
+            self.assertIn('Private',page)
+            self.assertNotIn('>Next<',page)
+
+    def test_reconnect_preserves_repository_and_distinguishes_access_stages(self):
+        class Denied(FixtureGitHub):
+            fail_stage='repository'
+            def repository(self,name):
+                if self.fail_stage=='repository':
+                    raise GitHubError('GitHub could not grant access.',404)
+                return REPO
+            def branches(self,name,page=1):
+                raise GitHubError('GitHub could not grant access.',403)
+        url='/repository-scan?repo='+REPO['full_name']
+        with patch.dict(self.app.config,{'GITHUB_CLIENT_FACTORY':Denied}):
+            page=self.client.get(url).get_data(as_text=True)
+            self.assertIn('not available without authentication',page)
+            response=self.client.post(url,data={'csrf_token':self.csrf,'action':'connect','github_token':FAKE_AUTH})
+            self.assertEqual(response.status_code,303)
+            self.assertIn('repo='+REPO['full_name'],response.headers['Location'])
+            page=self.client.get(url).get_data(as_text=True)
+            self.assertIn('connected token (HTTP 404)',page)
+            Denied.fail_stage='branches'
+            page=self.client.get(url).get_data(as_text=True)
+            self.assertIn('see the repository, but denied access to its branches',page)
+            self.assertIn('HTTP 403',page)
+            self.assertNotIn('No branches on this page',page)
+            self.assertNotIn(FAKE_AUTH,page)
+
+    def test_access_diagnostics_preserve_specific_errors(self):
+        from repository_routes import repository_access_error
+        for message,status in [('GitHub rate limit reached.',403),('SSO authorization required.',403),('Token expired.',401)]:
+            self.assertEqual(repository_access_error(GitHubError(message,status),True,'branches'),message)

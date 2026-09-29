@@ -56,6 +56,23 @@ CREATE INDEX IF NOT EXISTS idx_findings_status ON findings(status);
 CREATE INDEX IF NOT EXISTS idx_findings_scan ON findings(scan_id);
 CREATE INDEX IF NOT EXISTS idx_scans_created ON scans(created_at);
 CREATE INDEX IF NOT EXISTS idx_findings_created ON findings(created_at);
+CREATE TABLE IF NOT EXISTS remediation_drafts (
+    id INTEGER PRIMARY KEY,
+    finding_id INTEGER NOT NULL UNIQUE REFERENCES findings(id) ON DELETE CASCADE,
+    repository TEXT NOT NULL,
+    path TEXT NOT NULL,
+    base_branch TEXT NOT NULL,
+    commit_sha TEXT NOT NULL,
+    blob_sha TEXT NOT NULL,
+    original TEXT NOT NULL,
+    edited TEXT NOT NULL,
+    head_branch TEXT NOT NULL UNIQUE,
+    state TEXT NOT NULL DEFAULT 'Draft' CHECK(state IN ('Draft','Publishing','Retry','Published')),
+    version INTEGER NOT NULL DEFAULT 1,
+    pr_url TEXT,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
 
 """
 
@@ -116,6 +133,8 @@ def init_app(app):
             if name not in repository_columns:
                 db.execute(f"ALTER TABLE repositories ADD COLUMN {name} {definition}")
         migrate_reports(db)
+        # The local single-process server can recover interrupted publication on restart.
+        db.execute("UPDATE remediation_drafts SET state='Retry' WHERE state='Publishing'")
         # Older completed scans can be reconstructed from all their detected findings.
         from analysis.risk_engine import calculate_risk
         for scan in db.execute("SELECT id FROM scans WHERE status IN ('Completed','Failed') AND assessment_risk IS NULL").fetchall():
