@@ -19,7 +19,7 @@ One trusted user, one local Flask process bound to 127.0.0.1. Only assess explic
 | Subprocess safety | Nmap uses connect/version-light checks, no scripts or arbitrary flags, with process timeout and bounded target scope. Missing, failed or malformed Nmap results use TCP fallback. |
 | Archive extraction | Compressed/expanded size, count, ratio and path-depth limits. Single root; reject special/encrypted members and duplicate/case-colliding names. No extractall. |
 | Symlinks | Archive symlinks rejected; extraction requires a fresh private directory. Report opens use O_NOFOLLOW and a directory descriptor, and require regular files. Session key reads refuse symlinks/nonregular files. The configured project/storage parent directories must remain trusted. |
-| Oversized repositories | 20 MiB compressed, 40 MiB expanded, 5,000 entries, 2,000 analyzed files. |
+| Oversized repositories | 64 MiB compressed, 128 MiB expanded, 5,000 entries, 2,000 analyzed files. |
 | Oversized files | 512 KiB per source file; bounded HTTP/API responses; capped findings and dependency lookups. |
 | Temporary cleanup | TemporaryDirectory removes repository archive and source on completion and handled failure. Both paths tested. A forced OS kill can leave private temporary storage and needs operator cleanup. |
 | Secret leakage | Shared masking for findings and observations at persistence/export; known source secrets redacted; URL userinfo and Bearer/Basic credentials masked. Bounded redacted source excerpts are retained; editor drafts can contain full selected files after secret checks. Response bodies are not stored. Secret detection remains heuristic. |

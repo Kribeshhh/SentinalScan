@@ -3,7 +3,7 @@ import json
 import base64
 import re
 from urllib.parse import quote, urlsplit
-from integrations.network import request, RemoteError
+from integrations.network import request, RemoteError, ResponseTooLarge
 from analysis.redaction import redact_text
 
 
@@ -213,18 +213,20 @@ class GitHubClient:
         if self._token:
             headers['Authorization']='Bearer '+self._token
         try:
-            status,received,body=request('api.github.com','/repos/'+name+'/zipball/'+sha,headers=headers,limit=20*1024*1024,seconds=30)
+            status,received,body=request('api.github.com','/repos/'+name+'/zipball/'+sha,headers=headers,limit=64*1024*1024,seconds=120)
             if status in (301,302,303,307,308):
                 location=next((v for k,v in received.items() if k.lower()=='location'),'')
                 parsed=urlsplit(location)
                 if parsed.scheme!='https' or parsed.hostname!='codeload.github.com' or parsed.port not in (None,443) or parsed.username is not None or not parsed.path.startswith('/'+name+'/'):
                     raise GitHubError('GitHub archive redirect was outside the permitted download scope.')
                 # No Authorization header, cookies or proxy configuration on the download request.
-                status,_,body=request('codeload.github.com',parsed.path+('?' + parsed.query if parsed.query else ''),limit=20*1024*1024,seconds=30)
+                status,_,body=request('codeload.github.com',parsed.path+('?' + parsed.query if parsed.query else ''),limit=64*1024*1024,seconds=120)
             if status!=200:
                 raise GitHubError(access_error(status, {})+' Repository download requires Contents: read access.')
             destination.write_bytes(body)
+        except ResponseTooLarge:
+            raise GitHubError('Repository archive exceeds the 64 MiB download limit. Scan a smaller source-only repository.') from None
         except (RemoteError,ValueError) as exc:
             if isinstance(exc,GitHubError):
                 raise
-            raise GitHubError('Repository download failed or exceeded the download limit.') from None
+            raise GitHubError('Repository download could not complete. Check the network connection and retry; the download deadline is 120 seconds.') from None

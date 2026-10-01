@@ -9,6 +9,10 @@ class RemoteError(Exception):
     pass
 
 
+class ResponseTooLarge(RemoteError):
+    pass
+
+
 def request(host, path, method='GET', headers=None, body=None, limit=2_000_000, seconds=12):
     if host not in ('api.github.com', 'codeload.github.com', 'api.osv.dev') or not path.startswith('/') or any(ord(c)<32 for c in path):
         raise RemoteError('Remote request scope was rejected.')
@@ -34,7 +38,7 @@ def request(host, path, method='GET', headers=None, body=None, limit=2_000_000, 
                 break
             data.extend(chunk)
         if len(data)>limit:
-            raise RemoteError('Remote response exceeds the configured size limit.')
+            raise ResponseTooLarge('Remote response exceeds the configured size limit.')
         return response.status, dict(response.getheaders()), bytes(data)
     except RemoteError:
         raise

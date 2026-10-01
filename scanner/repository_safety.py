@@ -3,8 +3,8 @@ from pathlib import Path, PurePosixPath
 import stat
 import zipfile
 
-MAX_ARCHIVE=20*1024*1024
-MAX_TOTAL=40*1024*1024
+MAX_ARCHIVE=64*1024*1024
+MAX_TOTAL=128*1024*1024
 MAX_FILE=512*1024
 MAX_FILES=2000
 EXCLUDED={'.git','node_modules','venv','.venv','dist','build','target','__pycache__','.idea','.gradle','vendor'}
@@ -18,7 +18,7 @@ class ArchiveError(ValueError):
 def extract_archive(archive,destination):
     archive=Path(archive);destination=Path(destination)
     if archive.stat().st_size>MAX_ARCHIVE:
-        raise ArchiveError('Compressed repository exceeds 20 MiB.')
+        raise ArchiveError('Compressed repository exceeds 64 MiB.')
     try:
         destination.mkdir(mode=0o700,parents=True,exist_ok=False)
     except OSError:
