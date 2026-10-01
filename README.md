@@ -389,7 +389,7 @@ scanned repository. Workflow files are excluded from this editor.
 Drafts and PR links persist in the new `remediation_drafts` SQLite table. Only the
 file selected from the finding's stored location can be edited; the browser cannot
 choose filesystem paths, repository, branch, or commit parameters. Text files are
-limited to 48 KB. Files with detected secrets/masking are blocked rather than storing
+limited to 512 KiB. Files with detected secrets/masking are blocked rather than storing
 or publishing secrets or replacing source with masked placeholders. Detection is
 heuristic; review code for sensitive material before saving/publishing. Drafts contain
 source code and should be protected with the local database. They are not reports.
@@ -494,3 +494,39 @@ and start analysis. `owner/repository`, a trailing slash, and HTTPS `.git` clone
 URLs are supported. Use the repository root URL, not a file/tree link. Credentials,
 query parameters, fragments, SSH URLs and non-GitHub hosts are rejected. Private
 repositories use the current GitHub connection and still require read access.
+
+
+### Source-first finding guidance
+
+New repository scans prepare redacted source context and source-matched remediation
+candidates while the scanned checkout is available; viewing the finding needs no
+GitHub fetch or draft creation. Snapshots use `finding_solutions` (8 MiB budget per
+scan). Existing scans require regeneration from their pinned source to gain these
+snapshots. The editor is separate and now supports text files up to 512 KiB.
+
+npm dependency locations identify the actual package/version entry. Guidance shows
+recorded advisory severity, actual source, and candidate fixed releases where the
+advisory provides them. A candidate addresses that advisory only and still needs
+compatibility and other-advisory review. No fixed release means no invented patch
+or copyable checklist. Translation JSON is excluded from generic assignment-based
+secret detection; typed tokens/private keys are still checked in every file.
+
+
+### Network reliability and scan interpretation
+
+Website URLs may include browser fragments (`#/`); these are stripped before any
+HTTP request or persistence. The scanner does not execute JavaScript routes.
+Website socket/request allowance is 12 seconds within the existing 150-second
+scan budget. GitHub GET/HEAD requests retry a transient failure once; writes,
+TLS verification failures, scope rejection and size-limit errors are never retried.
+Do not store a running SQLite database in cloud-offloaded storage. Keep the project
+locally downloaded, or configure SENTINELSCAN_DATA_DIR to a local directory before
+starting (copy existing data while the server is stopped to preserve history).
+
+
+DNS fallback: if direct DNS queries return no addresses, the website validator uses
+the operating system resolver with a bounded wait and bounded background workers.
+Every address still passes SSRF checks before the snapshot is pinned. Fixed remote
+services use native DNS, reject non-public addresses, and report DNS/TCP/TLS/HTTP
+connection stages separately. No DNS settings, VPN settings or TLS verification
+are changed. This improves recovery but cannot guarantee an unavailable network.

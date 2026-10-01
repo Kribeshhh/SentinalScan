@@ -49,7 +49,9 @@ def manifests(ctx):
                 for group in ('dependencies','devDependencies','optionalDependencies','peerDependencies'):
                     for package,version in document.get(group,{}).items():
                         if isinstance(version,str):
-                            record(path,1,'npm',package,version)
+                            from analysis.dependency_solution import package_line
+                            found=package_line(text,package,version)
+                            record(path,found[0] if found else 1,'npm',package,version)
             elif name=='pom.xml':
                 root=ElementTree.fromstring(text)
                 for node in root.iter():

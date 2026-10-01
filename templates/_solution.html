@@ -1,20 +1,17 @@
 {% if solution %}
 <section class="card detail-card solution-card" id="code-solution">
-<div class="editor-toolbar"><h2>Code solution</h2><span>{{ 'FIX EXAMPLE' if solution.matched else 'MANUAL REVIEW' }}</span></div>
+<div class="editor-toolbar"><h2>Code solution</h2><span>{{ 'SOURCE-MATCHED CANDIDATE' if solution.exact else 'REVIEW REQUIRED' }}</span></div>
 <p class="solution-summary">{{ solution.summary }}</p>
 <p class="help">{{ solution.source_status }}</p>
-{% if finding is defined and finding.source == 'Repository' and not source_loaded %}
-<form method="post" action="{{ url_for('edit_finding',finding_id=finding.id) }}"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="button secondary" name="action" value="load">Load actual code from scanned commit</button></form>
-{% endif %}
 {% if solution.context %}<h3>Actual source context</h3><pre class="evidence solution-code">{{ solution.context }}</pre>{% endif %}
 <h3>What to change</h3><p class="help">{{ solution.action }}</p>
 {% if solution.before %}<h3>{{ solution.before_label }}</h3><pre class="evidence solution-code"><code>{{ solution.before }}</code></pre>{% endif %}
-<h3>{{ 'Replace with one of these options' if solution.exact else 'Replacement / configuration examples' }}</h3>
+{% if solution.examples %}<h3>{{ 'Replace with one of these options' if solution.exact else 'Proposed change · review before applying' }}</h3>{% endif %}
 {% for item in solution.examples %}
 <div class="solution-example"><div class="editor-toolbar"><h3>{{ item.language }}</h3><button type="button" class="button secondary" data-copy-solution="solution-code-{{ loop.index }}">Copy code</button></div><pre class="evidence solution-code" id="solution-code-{{ loop.index }}"><code>{{ item.code }}</code></pre></div>
 {% endfor %}
-<h3>How to apply</h3><ul class="solution-notes">{% for note in solution.notes %}<li>{{ note }}</li>{% endfor %}</ul>
-<h3>Verify the fix</h3><ul class="solution-notes">{% for step in solution.verification %}<li>{{ step }}</li>{% endfor %}</ul>
+{% if solution.notes %}<h3>How to apply</h3><ul class="solution-notes">{% for note in solution.notes %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}
+{% if solution.verification %}<h3>Verify the fix</h3><ul class="solution-notes">{% for step in solution.verification %}<li>{{ step }}</li>{% endfor %}</ul>{% endif %}
 {% if solution.reference %}<a class="text-link" href="{{ solution.reference }}" target="_blank" rel="noopener noreferrer">Security guidance ↗</a>{% endif %}
 <p class="help" data-copy-status role="status" aria-live="polite"></p>
 </section>

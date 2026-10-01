@@ -67,6 +67,8 @@ class WorkflowTests(unittest.TestCase):
         self.setup_draft()
         page=self.client.get(self.url).get_data(as_text=True)
         self.assertIn('Remediation workflow',page)
+        self.assertIn('eval(raw)',page)
+        self.assertNotIn('Load actual code',page)
         with self.app.app_context():
             db=get_db();context=db.execute('SELECT * FROM finding_context').fetchone()
             self.assertIn('eval(raw)',context['excerpt']);self.assertEqual(context['commit_sha'],'a'*40)

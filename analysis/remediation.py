@@ -4,7 +4,7 @@ import re
 from analysis.redaction import redact_text
 from integrations.github import GitHubError, repository_name, branch_name
 
-MAX_SOURCE_BYTES = 48000
+MAX_SOURCE_BYTES = 524288
 
 
 def validate_path(path):
@@ -19,7 +19,7 @@ def validate_path(path):
 
 def validate_content(content):
     if len(content.encode('utf-8'))>MAX_SOURCE_BYTES or any(ord(c)<32 and c not in '\r\n\t' for c in content):
-        raise GitHubError('The editor supports regular UTF-8 source files up to 48 KB.')
+        raise GitHubError('The editor supports regular UTF-8 source files up to 512 KiB.')
     if redact_text(content)!=content or '[REDACTED]' in content:
         raise GitHubError('This file contains a possible secret or masked content. Edit it securely in your local checkout and rotate exposed credentials. SentinelScan will not store or publish it through this editor.')
     return content

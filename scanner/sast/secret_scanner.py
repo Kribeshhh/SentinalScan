@@ -4,6 +4,17 @@ from analysis.redaction import TOKEN_PATTERNS, ASSIGNMENT, plausible
 from scanner.sast.common import add, check_budget
 
 
+def credential_assignment(path,key,value):
+    # Translated UI/challenge prose is data, not an authentication setting. Typed
+    # tokens and private keys are still detected in these files by TOKEN_PATTERNS.
+    if path.lower().endswith('.json') and any(part.lower() in ('i18n','locales','translations') for part in path.split('/')):
+        return False
+    key=re.sub(r'([a-z])([A-Z])',r'\1_\2',key).lower()
+    if not re.fullmatch(r'(?:[a-z0-9]+[_.-])*(?:password|passwd|secret|token|api[_-]?key|access[_-]?token|auth[_-]?token|credential|database[_-]?url|db[_-]?url|aws[_-]?access[_-]?key[_-]?id)',key):
+        return False
+    return plausible(value)
+
+
 def run(ctx):
     detected=0
     for path in ctx['paths']:
@@ -22,14 +33,14 @@ def run(ctx):
                         targets=node.targets if isinstance(node,ast.Assign) else [node.target]
                         names=' '.join(t.id if isinstance(t,ast.Name) else t.attr if isinstance(t,ast.Attribute) else '' for t in targets)
                         value=node.value.value
-                        if re.search(r'password|passwd|secret|token|api_?key|credential|database_url|db_url',names,re.I) and plausible(value):
+                        if any(credential_assignment(path,name,value) for name in names.split()):
                             matches.append((node.lineno,'Hardcoded credential',value,'Medium'))
             except (SyntaxError,ValueError,RecursionError):
                 pass
         else:
             for match in ASSIGNMENT.finditer(text):
                 value=match.group(2) or match.group(3)
-                if plausible(value):
+                if credential_assignment(path,match.group(1),value):
                     # Skip obvious unquoted code identifiers; .env/properties commonly use unquoted values.
                     config=path.rsplit('/',1)[-1].startswith('.env') or path.endswith(('.properties','.yml','.yaml','.ini','.cfg','.conf'))
                     if not match.group(2) and not config and re.fullmatch(r'[A-Za-z_$][\w.$]*(?:\([^)]*\))?',value):

@@ -14,7 +14,7 @@
 <label class="checkbox"><input type="checkbox" name="authorized" value="yes" required>I authorize a new static scan of {{ workflow.draft.repository }} / {{ workflow.draft.base_branch }}.</label>
 <label class="checkbox"><input type="checkbox" name="osv" value="yes">Check dependencies with OSV (sends package names and versions).</label><button class="button">Scan merged branch</button></form>
 {% endif %}{% endif %}
-{% else %}<p class="help">{% if finding is defined and finding.source == 'Repository' %}Load the scanned file, edit it, and save a draft to begin validation.{% else %}Apply the reviewed fix in your application, then run another scan of the same target.{% endif %}</p>{% endif %}
+{% else %}<p class="help">{% if finding is defined and finding.source == 'Repository' %}Use the source editor to create and save a draft when you are ready to change this file.{% else %}Apply the reviewed fix in your application, then run another scan of the same target.{% endif %}</p>{% endif %}
 <h3>Verify with a later scan</h3>
 {% if workflow.candidates %}
 <form method="post" action="{{ url_for('verify_finding',finding_id=finding_id) }}"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><label>Later scan<select name="scan_id" required>{% for scan in workflow.candidates %}<option value="{{ scan.id }}">#{{ scan.id }} · {{ scan.status }} · {{ scan.created_at }}</option>{% endfor %}</select></label>

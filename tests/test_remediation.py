@@ -94,7 +94,7 @@ class RemediationTests(unittest.TestCase):
         self.assertEqual(self.draft()['edited'],OLD)
         response=self.post(action='preview',version='1',content='</textarea><script>alert(1)</script>')
         self.assertNotIn('<script>alert(1)</script>',response.get_data(as_text=True))
-        self.assertEqual(self.post(action='save',version='1',content='x'*48001).status_code,400)
+        self.assertEqual(self.post(action='save',version='1',content='x'*524289).status_code,400)
         with self.app.app_context():
             db=get_db()
             with db: db.execute("UPDATE findings SET location='test/repo/../outside.py:1'")

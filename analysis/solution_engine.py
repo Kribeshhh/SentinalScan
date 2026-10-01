@@ -176,10 +176,18 @@ def solution_for(finding, source=None):
     elif category in ('TLS','Transport Security','Configuration','Information Disclosure'):
         result['action']='Change the affected configuration or deployment setting; merge the example into your existing configuration.'
     elif category=='Dependency': result['action']='Update the affected manifest entry and lockfile after checking the advisory. There is no universal code replacement.'
-    result['source_status']=('Source not loaded. Load the scanned file to see the actual code at the finding location.'
+    result['source_status']=('Source context was not captured for this older scan. Run a new scan to show code automatically, or use the source editor.'
         if f['source']=='Repository' else 'Website scanning cannot retrieve backend source files; the pattern below is illustrative.')
     result['context']=None
     result['exact']=False
+    if f.get('status')=='False Positive':
+        result.update(examples=[],before=None,matched=False,summary='This finding is marked False Positive.',
+            action='No vulnerability fix is recommended for this dismissed detection. Review the finding description for the reason.',notes=[],verification=[])
+        return result
+    if category=='Dependency':
+        from analysis.dependency_solution import dependency_solution
+        dependency_solution(result,f,source)
+        return result
     if source is not None:
         from analysis.source_solution import enrich_source_solution
         enrich_source_solution(result,f,source)

@@ -7,7 +7,7 @@
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 <label for="target-url">Authorized website URL</label>
 <input id="target-url" name="url" type="url" required maxlength="2048" placeholder="http://localhost:5001/?q=example" value="{{ form.url }}" autocomplete="off" spellcheck="false">
-<p class="help">HTTP or HTTPS only. Query parameters enable conservative reflection and SQL error checks. Do not include credentials or sensitive tokens in URLs.</p>
+<p class="help">HTTP or HTTPS only. Browser fragments such as #/ are removed automatically; JavaScript routes are not executed. Query parameters enable conservative reflection and SQL error checks. Do not include credentials or sensitive tokens in URLs.</p>
 <label class="checkbox"><input type="checkbox" name="authorized" value="yes" required {% if form.authorized %}checked{% endif %}><span>I own this target or have explicit permission to assess it, including its listed TCP ports.</span></label>
 <label class="checkbox"><input type="checkbox" name="allow_private" value="yes" {% if form.allow_private %}checked{% endif %}><span>Allow localhost and private lab addresses for this scan.</span></label>
 <details class="scan-options"><summary>Resource discovery paths</summary><label for="paths">One path per line · maximum 15</label><textarea id="paths" name="paths" rows="10" maxlength="2000">{{ form.paths }}</textarea></details>

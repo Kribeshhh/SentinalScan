@@ -46,7 +46,7 @@ def settings():
         SESSION_COOKIE_SAMESITE="Lax",
         SESSION_COOKIE_SECURE=os.environ.get("SENTINELSCAN_HTTPS") == "1",
         MAX_CONTENT_LENGTH=1024 * 1024,
-        MAX_FORM_MEMORY_SIZE=65536,
+        MAX_FORM_MEMORY_SIZE=600000,
         MAX_FORM_PARTS=32,
         TRUSTED_HOSTS=["localhost", "127.0.0.1", "[::1]"],
     )

@@ -86,7 +86,7 @@ class WebsiteTests(unittest.TestCase):
         self.assertIn('Potential SQL Injection', self.client.get('/findings').get_data(as_text=True))
 
     def test_validation_and_authorization(self):
-        for url in ('file:///etc/passwd','ftp://example.com','http://user:pass@localhost','http://169.254.169.254/','http://100.100.100.200/','http://0.0.0.0/','http://[ff02::1]/','http://[fe80::1]/','http://[fd00:ec2::254]/','http://127.1/','http://localhost:99999/','http://localhost:0/','http://localhost\\@example.com','http://localhost/#fragment','http://localhost/\r\nheader'):
+        for url in ('file:///etc/passwd','ftp://example.com','http://user:pass@localhost','http://169.254.169.254/','http://100.100.100.200/','http://0.0.0.0/','http://[ff02::1]/','http://[fe80::1]/','http://[fd00:ec2::254]/','http://127.1/','http://localhost:99999/','http://localhost:0/','http://localhost\\@example.com','http://localhost/\r\nheader'):
             with self.subTest(url=url), self.assertRaises(TargetError):
                 validate_target(url,True)
         with self.assertRaises(TargetError):

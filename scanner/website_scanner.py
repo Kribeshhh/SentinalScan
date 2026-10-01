@@ -98,7 +98,8 @@ class ScanManager:
                     with db:
                         db.execute('UPDATE scans SET assessment_risk=? WHERE id=?',(calculate_risk(all_rows),scan_id))
                     completed = ctx.get('response') is not None
-                    message = None if completed else 'The baseline HTTP request failed. Partial observations and any TLS findings are retained.'
+                    http_error=db.execute("SELECT error FROM scan_modules WHERE scan_id=? AND name='HTTP'",(scan_id,)).fetchone()
+                    message = None if completed else 'Baseline HTTP failed: '+(http_error['error'] if http_error and http_error['error'] else 'connection unavailable')+'. Partial observations are retained.'
                     with db:
                         db.execute("UPDATE scans SET status=?, completed_at=?,error=? WHERE id=?", ('Completed' if completed else 'Failed', now(),message,scan_id))
                 except Exception:

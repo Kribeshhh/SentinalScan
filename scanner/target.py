@@ -4,6 +4,7 @@ import ipaddress
 import re
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, quote
 import dns.resolver
+from integrations.resolver import system_addresses
 from analysis.redaction import redact_text
 
 
@@ -61,8 +62,7 @@ def validate_target(raw, allow_private=False):
         p = urlsplit(raw)
         if p.scheme not in ('http', 'https') or not p.hostname or p.username is not None or p.password is not None:
             raise TargetError('Use an HTTP or HTTPS URL without embedded credentials.')
-        if p.fragment:
-            raise TargetError('Remove the URL fragment before scanning.')
+        # Fragments are browser-only; URL reconstruction below omits them.
         host = p.hostname.encode('idna').decode('ascii').lower().rstrip('.')
         port = p.port if p.port is not None else (443 if p.scheme == 'https' else 80)
         if not 1 <= port <= 65535 or p.netloc.endswith(':'):
@@ -101,7 +101,13 @@ def validate_target(raw, allow_private=False):
                     info['errors'].append(record + ' lookup unavailable')
             addresses = info['A'] + info['AAAA']
             if not addresses:
-                raise TargetError('DNS returned no usable addresses. Check the hostname or use the authorized lab IP.')
+                try:
+                    addresses=system_addresses(host,port)
+                except OSError:
+                    raise TargetError('Both direct DNS and the system resolver failed. Check this Mac’s network/VPN/DNS connection and retry.') from None
+                info['A']=[address for address in addresses if ':' not in address]
+                info['AAAA']=[address for address in addresses if ':' in address]
+                info['note']='Using the system resolver because direct DNS returned no addresses; all returned addresses are validated and pinned.'
         for address in addresses:
             check_ip(address, allow_private)
         authority = '[' + host + ']' if ':' in host else host

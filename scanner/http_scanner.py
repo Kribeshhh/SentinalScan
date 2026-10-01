@@ -51,7 +51,7 @@ def connect_ip(address, port, timeout):
 
 
 class Client:
-    def __init__(self, target, timeout=4, max_bytes=262144, interval=.2, max_requests=60, deadline=150, cafile=None):
+    def __init__(self, target, timeout=12, max_bytes=262144, interval=.2, max_requests=60, deadline=150, cafile=None):
         self.target = target
         self.timeout = timeout
         self.max_bytes = max_bytes
@@ -125,6 +125,8 @@ class Client:
                 result = Response(url, response.status, response.getheaders(), bytes(body[:self.max_bytes]), len(body) > self.max_bytes, chain.copy())
             except ssl.SSLCertVerificationError:
                 raise RequestFailure('TLS certificate verification failed') from None
+            except (TimeoutError, socket.timeout):
+                raise RequestFailure('HTTP connection or response timed out within the scan budget') from None
             except (OSError, http.client.HTTPException, ValueError):
                 raise RequestFailure('HTTP request failed or timed out') from None
             finally:

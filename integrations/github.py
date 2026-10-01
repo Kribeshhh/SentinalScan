@@ -105,14 +105,14 @@ class GitHubClient:
         validate_path(path)
         data=self.api('/repos/'+repository_name(name)+'/contents/'+quote(path,safe='/')+'?ref='+quote(ref,safe=''))
         try:
-            if not isinstance(data,dict) or data.get('type')!='file' or data.get('encoding')!='base64' or data.get('path')!=path or data.get('size',999999)>48000:
+            if not isinstance(data,dict) or data.get('type')!='file' or data.get('encoding')!='base64' or data.get('path')!=path or data.get('size',999999)>524288:
                 raise ValueError()
             content=base64.b64decode(''.join(data['content'].split()),validate=True).decode('utf-8')
             sha=data['sha']
             if not re.fullmatch('[a-f0-9]{40,64}',sha):
                 raise ValueError()
         except (ValueError,KeyError,UnicodeError,TypeError):
-            raise GitHubError('The editor supports regular UTF-8 source files up to 48 KB.') from None
+            raise GitHubError('The editor supports regular UTF-8 source files up to 512 KiB.') from None
         validate_content(content)
         return content,sha
 

@@ -8,8 +8,8 @@
 <dl class="editor-metadata"><dt>Repository</dt><dd>{{ context.repository }}</dd><dt>File / detected line</dt><dd>{{ context.path }} : {{ context.line }}</dd><dt>Base branch</dt><dd>{{ context.base_branch }}</dd><dt>Scanned commit</dt><dd><code>{{ context.commit_sha }}</code></dd></dl>
 <p class="help">Edits start from the scanned commit. A pull request creates a separate branch; review and test it before merging, then re-scan. Finding status stays unchanged.</p>
 {% if not draft %}
-<form method="post"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="button" name="action" value="load">Load scanned file</button></form>
-<p class="help">Source files up to 48 KB are supported. Loading saves a local draft in SQLite. Files containing detected secrets or masked text must be edited in your local checkout. Private files require a working GitHub connection.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><button class="button" name="action" value="load">Start editing scanned file</button></form>
+<p class="help">Source files up to 512 KiB are supported. Starting an edit saves a local draft in SQLite. Files containing detected secrets or masked text must be edited in your local checkout. Private files require a working GitHub connection.</p>
 {% endif %}</section>
 {% endif %}
 {% include '_solution.html' %}
@@ -20,7 +20,7 @@
 <form method="post" id="source-editor-form">
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><input type="hidden" name="version" value="{{ draft.version }}">
 <label for="source-editor">{{ draft.path }} · edit the full file</label>
-<textarea class="source-editor" id="source-editor" name="content" rows="24" spellcheck="false" autocapitalize="off" autocomplete="off" maxlength="48000" data-line="{{ context.line }}" data-unsaved="{{ 'true' if content != draft.edited else 'false' }}">
+<textarea class="source-editor" id="source-editor" name="content" rows="24" spellcheck="false" autocapitalize="off" autocomplete="off" maxlength="524288" data-line="{{ context.line }}" data-unsaved="{{ 'true' if content != draft.edited else 'false' }}">
 {{ content }}</textarea>
 <p class="help">Changes are manual; SentinelScan does not execute your code or guarantee a fix. Save the draft before publishing.</p>
 <div class="form-actions"><button class="button secondary" name="action" value="preview">Preview unsaved diff</button><button class="button" name="action" value="save">Save draft</button><button class="button secondary" id="jump-to-finding" type="button">Jump to detected line</button></div>

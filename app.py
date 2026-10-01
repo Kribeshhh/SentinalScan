@@ -98,6 +98,8 @@ def create_app(test_config=None):
                     raise TargetError("Confirm that you own this target or have permission to assess it.")
                 paths = paths_from_text(form["paths"])
                 target = validate_target(form["url"], form["allow_private"])
+                if "#" in form["url"]:
+                    flash("Browser fragment removed. This scan checks HTTP responses; client-side JavaScript routes are not executed.")
                 action = request.form.get("action")
                 if action == "start":
                     scan_id = app.extensions["scan_manager"].submit(target, paths)
@@ -249,4 +251,4 @@ class PrivateRequestHandler(WSGIRequestHandler):
 
 
 if __name__ == "__main__":
-    create_app().run(host="127.0.0.1", port=5002, debug=False, request_handler=PrivateRequestHandler)
+    create_app().run(host="127.0.0.1", port=5000, debug=False, request_handler=PrivateRequestHandler)
