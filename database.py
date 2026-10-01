@@ -56,6 +56,34 @@ CREATE INDEX IF NOT EXISTS idx_findings_status ON findings(status);
 CREATE INDEX IF NOT EXISTS idx_findings_scan ON findings(scan_id);
 CREATE INDEX IF NOT EXISTS idx_scans_created ON scans(created_at);
 CREATE INDEX IF NOT EXISTS idx_findings_created ON findings(created_at);
+CREATE TABLE IF NOT EXISTS finding_context (
+    finding_id INTEGER PRIMARY KEY REFERENCES findings(id) ON DELETE CASCADE,
+    path TEXT NOT NULL, commit_sha TEXT NOT NULL, start_line INTEGER NOT NULL,
+    detected_line INTEGER NOT NULL, excerpt TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS scan_files (
+    scan_id INTEGER NOT NULL REFERENCES scans(id) ON DELETE CASCADE,
+    path TEXT NOT NULL, content_hash TEXT NOT NULL,
+    PRIMARY KEY(scan_id,path)
+);
+CREATE TABLE IF NOT EXISTS draft_checks (
+    draft_id INTEGER NOT NULL REFERENCES remediation_drafts(id) ON DELETE CASCADE,
+    version INTEGER NOT NULL, data_json TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    PRIMARY KEY(draft_id,version)
+);
+CREATE TABLE IF NOT EXISTS pull_request_tracking (
+    draft_id INTEGER PRIMARY KEY REFERENCES remediation_drafts(id) ON DELETE CASCADE,
+    state TEXT NOT NULL, merge_commit TEXT,
+    checked_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
+CREATE TABLE IF NOT EXISTS remediation_verifications (
+    finding_id INTEGER NOT NULL REFERENCES findings(id) ON DELETE CASCADE,
+    scan_id INTEGER NOT NULL REFERENCES scans(id) ON DELETE CASCADE,
+    result TEXT NOT NULL, message TEXT NOT NULL, merge_commit TEXT,
+    checked_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    PRIMARY KEY(finding_id,scan_id)
+);
 CREATE TABLE IF NOT EXISTS remediation_drafts (
     id INTEGER PRIMARY KEY,
     finding_id INTEGER NOT NULL UNIQUE REFERENCES findings(id) ON DELETE CASCADE,

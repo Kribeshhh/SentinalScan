@@ -18,6 +18,9 @@ from remediation_routes import register_remediation
 from analysis.management import scan_metrics, risk_trend
 from analysis.validation import record_id
 from analysis.redaction import redact_text
+from analysis.solution_engine import solution_for
+from analysis.remediation_workflow import workflow_data, finding_solution
+from workflow_routes import register_workflow
 
 
 def create_app(test_config=None):
@@ -30,6 +33,7 @@ def create_app(test_config=None):
     register_routes(app)
     register_management(app)
     register_remediation(app)
+    register_workflow(app)
 
     @app.before_request
     def csrf_protection():
@@ -122,6 +126,7 @@ def create_app(test_config=None):
             module["formatted_data"] = json.dumps(json.loads(module["data_json"]), indent=2, ensure_ascii=False)
         rows = db.execute("SELECT * FROM findings WHERE scan_id=? ORDER BY CASE severity WHEN 'Critical' THEN 0 WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END, id", (scan_id,)).fetchall()
         return render_template("scan_detail.html", title="Scan summary", scan=scan, modules=modules, findings=rows,
+                               verification_findings=db.execute("SELECT f.id,f.title,v.result FROM remediation_verifications v JOIN findings f ON f.id=v.finding_id WHERE v.scan_id=?", (scan_id,)).fetchall(),
                                risk=calculate_risk(rows), warnings=sum(m["status"] in ("Failed", "Skipped", "Partial") for m in modules))
 
     @app.get("/scans/<int:scan_id>/status")
@@ -185,7 +190,10 @@ def create_app(test_config=None):
         finding = get_db().execute("SELECT * FROM findings WHERE id = ?", (finding_id,)).fetchone()
         if finding is None:
             abort(404)
-        return render_template("finding_detail.html", title="Finding details", finding=finding)
+        workflow = workflow_data(get_db(),finding)
+        draft = workflow['draft']
+        return render_template("finding_detail.html", title="Finding details", finding=finding,
+            solution=finding_solution(get_db(),finding,draft), source_loaded=bool(draft), workflow=workflow, finding_id=finding_id)
 
     @app.post("/findings/<int:finding_id>/status")
     def update_finding_status(finding_id):

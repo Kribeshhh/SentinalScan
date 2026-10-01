@@ -22,7 +22,7 @@ One trusted user, one local Flask process bound to 127.0.0.1. Only assess explic
 | Oversized repositories | 20 MiB compressed, 40 MiB expanded, 5,000 entries, 2,000 analyzed files. |
 | Oversized files | 512 KiB per source file; bounded HTTP/API responses; capped findings and dependency lookups. |
 | Temporary cleanup | TemporaryDirectory removes repository archive and source on completion and handled failure. Both paths tested. A forced OS kill can leave private temporary storage and needs operator cleanup. |
-| Secret leakage | Shared masking for findings and observations at persistence/export; known source secrets redacted; URL userinfo and Bearer/Basic credentials masked. Raw source/response bodies not stored. Secret detection remains heuristic. |
+| Secret leakage | Shared masking for findings and observations at persistence/export; known source secrets redacted; URL userinfo and Bearer/Basic credentials masked. Bounded redacted source excerpts are retained; editor drafts can contain full selected files after secret checks. Response bodies are not stored. Secret detection remains heuristic. |
 | Report filenames | UUID-generated exclusive files with 0600 permissions; strict extension validation, no caller-supplied path, no arbitrary filesystem serving. CSV formulas neutralized. Failed exclusive creation never deletes a preexisting file. |
 | Debug mode | python3 app.py sets debug=False; no reloader or interactive debugger. |
 | Error disclosure | Fixed user-facing errors; request error logs contain exception class, not exception message/traceback. Access logs omit paths, targets, query strings and credentials. |
@@ -55,3 +55,18 @@ Test fixtures are isolated under tests/ and temporary databases. No fake finding
 SentinelScan Risk Score is a custom normalized weighted count, not CVSS. Dashboard risk counts open findings across scans, including repeated detections; historical assessment risk counts all detections at scan completion. Individual dependency advisories may include their source CVSS score, separately labeled.
 
 Comparison RESOLVED means absent from the new scan, not verified remediation. Repository matching ignores line/column movement and groups same-rule occurrences in a file; no semantic code tracking. A completed scan can have partial/failed/skipped modules. Neither zero findings nor zero risk establishes security.
+
+
+## Remediation workflow controls
+
+Draft validation rechecks the saved version before publication, without running
+source code. Supported syntax failures, remaining target-rule detections and new
+High/Critical findings from the relevant module block publication. Unavailable
+checks remain explicit and require human review; other modules and runtime behavior
+are not verified. PR merge state and commit ancestry come from GitHub. Rescan
+verification requires matching target/branch, complete module coverage and presence
+of the affected analyzed file. Resolution is an explicit user choice after a
+Not detected result. Retained source excerpts are bounded and redacted before
+persistence; source masking remains heuristic. Local database access is sensitive.
+`test_remediation_workflow.py` covers the workflow with isolated databases and
+simulated GitHub responses; it creates no live PRs.

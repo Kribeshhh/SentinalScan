@@ -136,6 +136,27 @@ class GitHubClient:
         results=[self.metadata(row) for row in rows]
         return [row for row in results if not self._token or not owner or row['owner'].lower()==owner.lower()]
 
+    def pull_status(self,draft):
+        name=repository_name(draft['repository'])
+        match=re.fullmatch('https://github.com/'+re.escape(name)+r'/pull/([1-9][0-9]*)',draft['pr_url'] or '')
+        if not match: raise GitHubError('No valid pull request is linked to this draft.')
+        data=self.api('/repos/'+name+'/pulls/'+match[1])
+        if (data.get('base',{}).get('ref')!=draft['base_branch'] or
+            data.get('head',{}).get('ref')!=draft['head_branch'] or
+            data.get('base',{}).get('repo',{}).get('full_name','').lower()!=name.lower()):
+            raise GitHubError('The pull request no longer matches this draft repository and branches.')
+        merged=bool(data.get('merged'))
+        sha=data.get('merge_commit_sha') if merged else None
+        if merged and not re.fullmatch('[a-fA-F0-9]{40,64}',sha or ''):
+            raise GitHubError('GitHub did not return a valid merge commit.')
+        return {'state':'Merged' if merged else 'Open' if data.get('state')=='open' else 'Closed', 'merge_commit':sha}
+
+    def includes_commit(self,name,ancestor,descendant):
+        if not all(re.fullmatch('[a-fA-F0-9]{40,64}',value or '') for value in (ancestor,descendant)):
+            raise GitHubError('Invalid verification commit.')
+        data=self.api('/repos/'+repository_name(name)+'/compare/'+ancestor+'...'+descendant)
+        return data.get('status') in ('ahead','identical')
+
     @staticmethod
     def metadata(row):
         full=repository_name(row['full_name'])

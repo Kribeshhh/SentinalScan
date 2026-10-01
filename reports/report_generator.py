@@ -11,6 +11,7 @@ import uuid
 from flask import current_app,render_template
 from analysis.management import scan_metrics
 from analysis.redaction import scrub
+from analysis.solution_engine import solution_for
 from database import get_db
 
 FORMATS=('HTML','JSON','CSV')
@@ -30,6 +31,8 @@ def report_data(db,scan_id):
     if scan['status'] not in ('Completed','Failed'):
         raise ValueError('Wait for the scan to finish before generating a report.')
     findings=[dict(row) for row in db.execute('SELECT * FROM findings WHERE scan_id=? ORDER BY id',(scan_id,))]
+    for finding in findings:
+        finding['solution']=solution_for(finding)
     modules=[]
     for row in db.execute('SELECT * FROM scan_modules WHERE scan_id=? ORDER BY id',(scan_id,)):
         module=dict(row);module['observations']=json.loads(module.pop('data_json'));modules.append(module)
@@ -69,7 +72,7 @@ def csv_document(data):
     for module in data['modules']:
         emit('module',{'title':module['name'],'status':module['status'],'details_json':json.dumps(module,ensure_ascii=False)})
     for finding in data['findings']:
-        emit('finding',finding)
+        emit('finding',dict(finding,details_json=json.dumps({'solution':finding.get('solution')},ensure_ascii=False)))
     return output.getvalue()
 
 

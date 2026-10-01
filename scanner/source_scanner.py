@@ -74,6 +74,8 @@ def run_repository(app,scan_id,github,metadata,branch,sha,osv_enabled):
                         rows=db.execute('SELECT severity,status FROM findings WHERE scan_id=?',(scan_id,)).fetchall()
                         db.execute('UPDATE scans SET progress=?,risk_score=? WHERE id=?',(round(index/len(MODULE_NAMES)*100),calculate_risk(rows),scan_id))
                 all_rows = [dict(row, status='Open') for row in db.execute('SELECT severity FROM findings WHERE scan_id=?',(scan_id,))]
+                from analysis.source_context import retain_context
+                retain_context(db,scan_id,root,paths,metadata['full_name'],sha,ctx['secrets'])
                 with db:
                     db.execute('UPDATE scans SET assessment_risk=? WHERE id=?',(calculate_risk(all_rows),scan_id))
                 with db:

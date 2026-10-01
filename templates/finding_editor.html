@@ -12,6 +12,7 @@
 <p class="help">Source files up to 48 KB are supported. Loading saves a local draft in SQLite. Files containing detected secrets or masked text must be edited in your local checkout. Private files require a working GitHub connection.</p>
 {% endif %}</section>
 {% endif %}
+{% include '_solution.html' %}
 {% if draft %}
 <section class="card detail-card editor-section">
 <div class="editor-toolbar"><h2>{{ 'Source editor' if draft.state == 'Draft' else 'Saved source change' }}</h2><span id="editor-position" aria-live="polite">Detected line {{ context.line }}</span></div>
@@ -39,4 +40,4 @@
 <button class="button" type="submit">{{ 'Retry publication' if draft.state == 'Retry' else 'Create pull request' }}</button></form>{% else %}<p class="help">Publishing… Reload this page shortly to check the result.</p>{% endif %}
 {% endif %}</section>
 {% endif %}
-{% endblock %}
+{% include '_workflow.html' %}{% endblock %}

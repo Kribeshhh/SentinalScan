@@ -5,6 +5,8 @@ from database import get_db
 from integrations.github import GitHubError
 from repository_routes import client
 from analysis.remediation import coordinates, source_diff, validate_content
+from analysis.solution_engine import solution_for
+from analysis.remediation_workflow import check_draft,workflow_data,finding_solution
 
 
 def register_remediation(app):
@@ -48,6 +50,8 @@ def register_remediation(app):
                     if not changed:
                         raise GitHubError('This draft changed in another tab. Reload before editing again.')
                     flash('Draft saved. Review the saved diff below, then create a pull request.')
+                    saved=db.execute('SELECT * FROM remediation_drafts WHERE id=?',(draft['id'],)).fetchone()
+                    check_draft(db,saved)
                     return redirect(url_for('edit_finding',finding_id=finding_id),code=303)
             elif draft:
                 content=draft['edited']
@@ -57,7 +61,9 @@ def register_remediation(app):
             content=draft['edited'] if draft else ''
         diff=source_diff(draft['original'],draft['edited'],draft['path']) if draft else ''
         return render_template('finding_editor.html',title='Edit finding source',context=context,draft=draft,
-            content=content,error=error,diff=diff,preview=preview,finding_id=finding_id),400 if error else 200
+            content=content,error=error,diff=diff,preview=preview,finding_id=finding_id,
+            solution=finding_solution(db,context['finding'],draft) if context else None,
+            workflow=workflow_data(db,context['finding']) if context else None),400 if error else 200
 
     @app.post('/findings/<int:finding_id>/publish')
     def publish_finding(finding_id):
@@ -77,6 +83,9 @@ def register_remediation(app):
                 raise GitHubError('Connect GitHub before publishing. Your token needs Contents and Pull requests: read and write for this repository.')
             github=client(True)
             validate_content(draft['original']);validate_content(draft['edited'])
+            validation=check_draft(db,draft)
+            if not validation['can_publish']:
+                raise GitHubError('Publication blocked by validation. Fix syntax errors, remaining detections or new high-severity findings and save again.')
             with db:
                 claimed=db.execute("UPDATE remediation_drafts SET state='Publishing' WHERE id=? AND version=? AND state IN ('Draft','Retry')",(draft['id'],draft['version'])).rowcount
             if not claimed:

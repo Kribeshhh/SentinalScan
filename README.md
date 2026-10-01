@@ -409,3 +409,78 @@ Tests: `.venv/bin/python -m unittest discover -s tests -v`. Remediation tests ex
 SQLite persistence, preview/save, XSS escaping, secret blocking, CSRF, stale drafts,
 branch conflicts, patch downloads, and recovery after a lost GitHub response.
 GitHub publication tests simulate API responses and never create real remote PRs.
+
+### Code solutions after scanning
+
+Open any finding and scroll to **Code solution**, or use **View solution** in the
+scan findings table. Supported scanner rules show a code/configuration example,
+application notes and verification steps. Copy code uses plain text; if clipboard
+access is unavailable it selects the snippet for manual copying. The same guidance
+appears beside the repository source editor and in newly generated HTML, JSON and
+CSV reports (CSV stores the structured solution in `details_json`). Existing saved
+reports remain unchanged snapshots.
+
+`analysis/solution_engine.py` maps finding types to curated examples and selects
+language variants where supported. Existing SQLite findings receive guidance on
+read, without a migration or rescan. It uses no external AI API, sends no source
+code elsewhere, and never interpolates scanned evidence into executable examples.
+Website examples explicitly identify their illustrative stack; DAST does not know
+the original application source. Unknown rules display a manual-review fallback.
+Dependency guidance requires checking the actual advisory for a fixed version;
+certificate findings require certificate renewal/configuration, not just code.
+
+These examples are adaptation guides, not automatically verified patches. They do
+not alter source, publish a PR, execute commands or change finding status. Adapt
+repository fixes using the existing draft/diff/PR workflow, test, then re-scan.
+
+Solutions now show **What to change** and labeled vulnerable/replacement examples.
+Repository findings offer **Load actual code from scanned commit**, using the
+existing bounded source loader and persistent draft. The loaded detection line is
+shown with surrounding context. Exact JavaScript DOM assignment candidates are
+provided only for one unambiguous parsed assignment at the recorded line; variable
+names and expression text are preserved. Plain-text and sanitized-HTML alternatives
+are distinguished, including DOMPurify setup requirements. Full candidate files are
+syntax-checked, but this does not verify runtime semantics or prove exploitability.
+Other rule types retain explicitly labeled examples alongside source context. DAST
+cannot supply exact backend source lines. Inaccessible source produces an access
+error, never fabricated original code. New reports include vulnerable examples and
+replacement boundaries; actual private source context is not added to reports.
+
+
+### Remediation validation and verification
+
+New repository scans retain a redacted excerpt around each finding (up to seven
+lines, 1,000 characters per line, 1 MiB total per scan), the scan commit, and hashes
+of analyzed files. Existing scans need a rescan to gain retained excerpts; their
+full source can still be loaded through GitHub. Full temporary checkouts are deleted.
+Secret masking is heuristic. Excerpts and editor drafts are local sensitive data.
+
+Saving a draft runs supported syntax checks and the relevant scanner module against
+original and edited source. Syntax errors, a remaining original detection, or new
+High/Critical detections in that module block publication. Unsupported checks are
+labeled unavailable and require manual review. No application code is executed;
+passing static checks does not establish correct runtime behavior.
+
+On a finding's **Remediation workflow** panel:
+
+1. Load source, edit, save, review the diff and validation, then explicitly publish a PR.
+2. Refresh its status from GitHub. Review and merge on GitHub.
+3. Authorize **Scan merged branch**, then return using the scan's finding link.
+4. Verify against the completed scan. Optionally mark the original finding Resolved.
+
+Verification checks matching target/branch, module coverage, analyzed file presence,
+and—when a PR is linked—that the scan commit contains the actual merge commit.
+Results are **Still detected**, **Not detected**, or **Inconclusive**. Failed/partial
+coverage and missing files do not count as verified absence. Matching uses the
+existing stable fingerprint, ignoring line movement; this is scanner verification,
+not a guarantee that the application is secure. Website findings can be checked
+against a later scan of the same target with equivalent path coverage.
+
+Additive SQLite tables: `finding_context`, `scan_files`, `draft_checks`,
+`pull_request_tracking`, `remediation_verifications`. New POST routes beneath
+`/findings/<id>`: `/validate`, `/pull-request/refresh`, `/rescan`, `/verify`.
+All require CSRF protection; explicit authorization is required for a rescan.
+`analysis/source_context.py`, `analysis/fix_validation.py`,
+`analysis/remediation_workflow.py`, `workflow_routes.py` and `_workflow.html`
+implement the workflow. Tests cover real fixture scans and mocked GitHub PR APIs,
+merge ancestry, redaction, blocked edits, coverage failures and restart persistence.

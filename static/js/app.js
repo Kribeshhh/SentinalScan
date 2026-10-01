@@ -93,3 +93,21 @@ if (sourceEditor) {
     if (!leaving && sourceEditor.value !== initial) { event.preventDefault(); event.returnValue = ''; }
   });
 }
+
+// Copy trusted solution text as plain text, never interpreted markup.
+document.querySelectorAll('[data-copy-solution]').forEach(button => {
+  button.addEventListener('click', async () => {
+    const code = document.getElementById(button.dataset.copySolution);
+    const status = button.closest('.solution-card').querySelector('[data-copy-status]');
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+      status.textContent = 'Code copied. Adapt the example and test it before applying.';
+    } catch (_) {
+      const range = document.createRange();
+      range.selectNodeContents(code);
+      const selection = window.getSelection();
+      selection.removeAllRanges(); selection.addRange(range);
+      status.textContent = 'Code selected. Press Ctrl+C or Command+C to copy.';
+    }
+  });
+});
