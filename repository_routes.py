@@ -3,7 +3,7 @@ import os
 import ipaddress
 import re
 from flask import request,session,render_template,redirect,url_for,current_app,flash
-from integrations.github import GitHubClient,GitHubError,repository_name,branch_name
+from integrations.github import GitHubClient,GitHubError,repository_name,repository_input,branch_name
 from scanner.website_scanner import QueueFull
 from analysis.redaction import redact_text
 from integrations.credentials import CredentialStore
@@ -93,6 +93,9 @@ def register_routes(app):
         if request.method=='POST':
             try:
                 action=request.form.get('action')
+                if action=='open':
+                    destination=repository_input(request.form.get('repository_url',''))
+                    return redirect(url_for('repository_scan',repo=destination),code=303)
                 if action=='connect':
                     destination=repository_name(repo) if repo else None
                     connect()
@@ -104,7 +107,7 @@ def register_routes(app):
                     return redirect(url_for('repository_scan'),code=303)
                 if action!='start' or request.form.get('authorized')!='yes':
                     raise GitHubError('Confirm authorization before starting repository analysis.')
-                repo=repository_name(request.form.get('repository',''))
+                repo=repository_input(request.form.get('repository',''))
                 branch=branch_name(request.form.get('branch',''))
                 github=client(connected)
                 metadata=github.repository(repo)  # Recheck access at submission, including private repositories.
@@ -118,7 +121,10 @@ def register_routes(app):
             try:
                 github=client(connected)
                 if repo:
-                    selected=github.repository(repository_name(repo))
+                    normalized=repository_input(repo)
+                    if normalized!=repo:
+                        return redirect(url_for('repository_scan',repo=normalized),code=303)
+                    selected=github.repository(normalized)
                     stage='branches'
                     branches=github.branches(selected['full_name'],branch_page)
                 elif owner or connected:

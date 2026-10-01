@@ -484,3 +484,13 @@ All require CSRF protection; explicit authorization is required for a rescan.
 `analysis/remediation_workflow.py`, `workflow_routes.py` and `_workflow.html`
 implement the workflow. Tests cover real fixture scans and mocked GitHub PR APIs,
 merge ancestry, redaction, blocked edits, coverage failures and restart persistence.
+
+
+### Scan from a GitHub URL
+
+On Repository Scan, paste `https://github.com/owner/repository` in **Scan using a
+GitHub URL**, click **Open repository**, choose a branch, confirm authorization,
+and start analysis. `owner/repository`, a trailing slash, and HTTPS `.git` clone
+URLs are supported. Use the repository root URL, not a file/tree link. Credentials,
+query parameters, fragments, SSH URLs and non-GitHub hosts are rejected. Private
+repositories use the current GitHub connection and still require read access.

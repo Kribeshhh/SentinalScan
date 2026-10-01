@@ -37,6 +37,30 @@ def repository_name(value):
     return value
 
 
+def repository_input(value):
+    """Accept repository identifiers or HTTPS GitHub root URLs, never arbitrary hosts."""
+    message='Enter owner/repository or an HTTPS GitHub repository URL, such as https://github.com/owner/repository. Use the repository root URL; select its branch below.'
+    if not isinstance(value,str) or len(value)>512:
+        raise GitHubError(message)
+    value=value.strip()
+    if any(ord(c)<33 for c in value):
+        raise GitHubError(message)
+    if '://' not in value:
+        return repository_name(value)
+    try:
+        url=urlsplit(value)
+        if (url.scheme!='https' or url.netloc.lower()!='github.com' or
+            url.query or url.fragment or '?' in value or '#' in value):
+            raise ValueError()
+        path=url.path
+        if path.endswith('/'): path=path[:-1]
+        if path.endswith('.git'): path=path[:-4]
+        if not path.startswith('/'): raise ValueError()
+        return repository_name(path[1:])
+    except ValueError:
+        raise GitHubError(message) from None
+
+
 def branch_name(value):
     if not isinstance(value,str) or not 1<=len(value)<=240 or any(ord(c)<33 for c in value) or any(c in value for c in ('..','@{','\\','~','^',':','?','*','[')):
         raise GitHubError('Invalid branch name.')
