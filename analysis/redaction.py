@@ -15,7 +15,8 @@ PLACEHOLDERS={'example','changeme','change_me','your_api_key','your_secret','you
 
 def plausible(value):
     lowered=value.lower().strip()
-    return (len(value)>=6 and lowered not in PLACEHOLDERS and not any(t in lowered for t in ('your_','your-','example','changeme','placeholder','${','{{','process.env','os.environ','os.getenv','getenv(', 'system.getenv'))
+    placeholder=re.fullmatch(r'(?:replace[-_ ]?me|(?:your|example|dummy|test)[-_ ](?:api[-_ ]?key|token|password|secret)(?:[-_ ]here)?)',lowered)
+    return (not placeholder and len(value)>=6 and lowered not in PLACEHOLDERS and not any(t in lowered for t in ('your_','your-','example','changeme','placeholder','${','{{','process.env','os.environ','os.getenv','getenv(', 'system.getenv'))
             and not value.startswith(('<','[redacted','*','env(','getenv(','config(')) and len(set(value))>2)
 
 

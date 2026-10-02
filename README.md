@@ -530,3 +530,31 @@ Every address still passes SSRF checks before the snapshot is pinned. Fixed remo
 services use native DNS, reject non-public addresses, and report DNS/TCP/TLS/HTTP
 connection stages separately. No DNS settings, VPN settings or TLS verification
 are changed. This improves recovery but cannot guarantee an unavailable network.
+
+### Optional AI finding review (Phase 4)
+
+SAST performs candidate detection. AI is disabled by default and never replaces
+SAST or runs during a repository scan. To enable explicit review of individual
+findings, configure the server environment:
+
+```ini
+SENTINELSCAN_LLM_ENABLED=true
+SENTINELSCAN_LLM_MODEL=<your structured-output-capable model>
+SENTINELSCAN_LLM_API_KEY=<your provider API key>
+```
+
+Use a secret manager/environment for the real key; do not commit it or use your
+GitHub PAT. Restart Flask, open a repository finding and choose **Request AI review**
+inside Recommendation after reviewing the context-sharing notice. This sends a
+bounded, redacted excerpt to OpenAI. Repository secrets are redacted before AI
+processing; secret findings send a synthetic redacted assignment only. Unrecognized
+sensitive content can still require manual review, so keep AI disabled for source
+you cannot share externally.
+
+AI output may be wrong. Its assessment never changes scanner evidence or triage
+status. Generated fixes need static validation and human review. Load pinned source
+in the existing editor before requesting review if you want full-file local checks;
+otherwise validation is **Not Available**. Nothing is automatically applied or merged.
+Missing keys, outages and invalid responses leave deterministic guidance available.
+
+See [Phase 4 configuration, security, validation and tests](docs/phase_4_llm_and_validation.md).

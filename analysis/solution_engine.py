@@ -2,7 +2,7 @@
 from pathlib import PurePosixPath
 import re
 
-VERSION = 2
+VERSION = 4
 
 
 def example(language, code):
@@ -140,7 +140,7 @@ def catalogue_solution(finding):
     return result
 
 
-def solution_for(finding, source=None):
+def _solution_for(finding, source=None):
     """Pair examples with replacement boundaries; exact edits require matching source."""
     f=dict(finding);result=catalogue_solution(f)
     title=f['title'].lower();category=f['category']
@@ -192,3 +192,15 @@ def solution_for(finding, source=None):
         from analysis.source_solution import enrich_source_solution
         enrich_source_solution(result,f,source)
     return result
+
+
+def solution_for(finding, source=None):
+    from analysis.recommendation import recommendation_for, source_metadata
+    if finding['category']=='Secret Exposure' and finding['source']=='Repository' and source is not None:
+        result=_solution_for(finding)
+        from analysis.secret_solution import secret_context
+        secret_context(finding,source,result)
+    else:
+        result=_solution_for(finding,source)
+    result['metadata']=source_metadata(finding,source)
+    return recommendation_for(finding,result)

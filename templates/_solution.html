@@ -1,18 +1,26 @@
 {% if solution %}
-<section class="card detail-card solution-card" id="code-solution">
-<div class="editor-toolbar"><h2>Code solution</h2><span>{{ 'SOURCE-MATCHED CANDIDATE' if solution.exact else 'REVIEW REQUIRED' }}</span></div>
-<p class="solution-summary">{{ solution.summary }}</p>
-<p class="help">{{ solution.source_status }}</p>
-{% if solution.context %}<h3>Actual source context</h3><pre class="evidence solution-code">{{ solution.context }}</pre>{% endif %}
-<h3>What to change</h3><p class="help">{{ solution.action }}</p>
-{% if solution.before %}<h3>{{ solution.before_label }}</h3><pre class="evidence solution-code"><code>{{ solution.before }}</code></pre>{% endif %}
-{% if solution.examples %}<h3>{{ 'Replace with one of these options' if solution.exact else 'Proposed change · review before applying' }}</h3>{% endif %}
+<section class="solution-card{% if presentation is not defined %} card detail-card{% endif %}" id="recommendation" aria-labelledby="recommendation-heading">
+<span id="code-solution"></span>
+<h2 id="recommendation-heading">Recommendation</h2>
+<h3>Scanner Guidance</h3>
+<h4>What to do</h4><p>{{ solution.action }}</p>
+{% if presentation is defined and presentation.context %}
+<h3>Actual source context</h3><p class="help">{{ solution.source_status }}</p>
+<pre class="evidence solution-code source-context">{% for row in presentation.context %}<span class="source-line{% if row.highlight %} detected-line{% endif %}"><span class="line-number">{{ row.number }} {{ '▶' if row.highlight else ' ' }} | </span>{{ row.code }}</span>{{ '\n' if not loop.last else '' }}{% endfor %}</pre>
+{% elif solution.context %}<h3>Actual source context</h3><pre class="evidence solution-code">{{ solution.context }}</pre>
+{% else %}<p class="help">{{ solution.source_status }}</p>{% endif %}
+<h3>Suggested Code Solution</h3>
+{% if solution.unavailable %}<p class="help">{{ solution.unavailable }}</p>{% endif %}
+{% if not solution.examples and not solution.dismissed %}<p>SentinelScan can provide remediation guidance for this finding, but it does not have enough context to safely generate replacement code.</p>{% endif %}
+{% if solution.before %}<h4>{{ 'Current Code · retrieved source' if solution.source_matched else solution.before_label }}</h4><pre class="evidence solution-code"><code>{{ solution.before }}</code></pre>{% endif %}
 {% for item in solution.examples %}
-<div class="solution-example"><div class="editor-toolbar"><h3>{{ item.language }}</h3><button type="button" class="button secondary" data-copy-solution="solution-code-{{ loop.index }}">Copy code</button></div><pre class="evidence solution-code" id="solution-code-{{ loop.index }}"><code>{{ item.code }}</code></pre></div>
+<div class="solution-example"><div class="editor-toolbar"><h4>{{ item.kind or solution.kind }} · {{ item.language }}</h4><button type="button" class="button secondary" data-copy-solution="solution-code-{{ loop.index }}">Copy code</button></div><pre class="evidence solution-code" id="solution-code-{{ loop.index }}"><code>{{ item.code }}</code></pre>{% if item.validation %}<p class="help">{{ 'Static validation passed' if item.validation.status == 'Passed' else 'Static validation unavailable' }} · Application behavior not tested.</p><p class="help">Checks: syntax, target rule, and new findings in the relevant language module and secret detector. Other modules were not checked.</p>{% endif %}</div>
 {% endfor %}
-{% if solution.notes %}<h3>How to apply</h3><ul class="solution-notes">{% for note in solution.notes %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}
-{% if solution.verification %}<h3>Verify the fix</h3><ul class="solution-notes">{% for step in solution.verification %}<li>{{ step }}</li>{% endfor %}</ul>{% endif %}
+<h3>Why this change helps</h3><p>{{ solution.why }}</p>
+{% if solution.notes or solution.verification %}<h3>Additional actions</h3><ul class="solution-notes">{% for note in solution.notes %}<li>{{ note }}</li>{% endfor %}{% for step in solution.verification %}<li>{{ step }}</li>{% endfor %}</ul>{% endif %}
+<h3>Fix Confidence: {{ solution.fix_confidence }}</h3><p class="help">{{ solution.fix_reason }}</p>
 {% if solution.reference %}<a class="text-link" href="{{ solution.reference }}" target="_blank" rel="noopener noreferrer">Security guidance ↗</a>{% endif %}
+{% include "_ai_review.html" %}
 <p class="help" data-copy-status role="status" aria-live="polite"></p>
 </section>
 {% endif %}

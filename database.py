@@ -56,6 +56,11 @@ CREATE INDEX IF NOT EXISTS idx_findings_status ON findings(status);
 CREATE INDEX IF NOT EXISTS idx_findings_scan ON findings(scan_id);
 CREATE INDEX IF NOT EXISTS idx_scans_created ON scans(created_at);
 CREATE INDEX IF NOT EXISTS idx_findings_created ON findings(created_at);
+CREATE TABLE IF NOT EXISTS ai_reviews (
+    finding_id INTEGER PRIMARY KEY REFERENCES findings(id) ON DELETE CASCADE,
+    data_json TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+);
 CREATE TABLE IF NOT EXISTS finding_solutions (
     finding_id INTEGER PRIMARY KEY REFERENCES findings(id) ON DELETE CASCADE,
     data_json TEXT NOT NULL

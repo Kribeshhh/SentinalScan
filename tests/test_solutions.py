@@ -31,16 +31,19 @@ class SolutionEngineTests(unittest.TestCase):
                 evidence='Parsed security setting session_cookie_secure is disabled.' if title.value=='Security control disabled in configuration' else ''
                 result=solution_for(finding(title.value,category.value,source,evidence=evidence))
                 with self.subTest(title=title.value):
-                    self.assertTrue(result['matched']);self.assertTrue(result['examples'])
+                    self.assertTrue(result['matched']);self.assertTrue(result['action'])
+                    self.assertTrue(result['examples'] or result['unavailable'])
                     self.assertTrue(result['notes']);self.assertTrue(result['verification'])
                     for item in result['examples']:
                         if item['language'].startswith('Python'): ast.parse(item['code'])
 
     def test_language_context_dynamic_rules_and_unknown_fallback(self):
         java=solution_for(finding('Potential SQL injection in Java query',location='o/r/Test.java:20'))
-        self.assertIn('PreparedStatement',java['examples'][0]['code'])
+        self.assertEqual(java['examples'],[])
+        self.assertIn('database library',java['action'])
         python=solution_for(finding('Potential SQL injection in constructed query'))
-        self.assertIn('(username,)',python['examples'][0]['code'])
+        self.assertEqual(python['examples'],[])
+        self.assertIn('manual review',python['unavailable'])
         for title,category in [('Missing Content-Security-Policy','Security Headers'),('Cookie missing Secure: session','Cookie Security'),('Hardcoded credential','Secret Exposure'),('Vulnerable dependency: fake (FAKE-1)','Dependency')]:
             self.assertTrue(solution_for(finding(title,category))['matched'])
         fallback=solution_for(finding('Future rule','Future category'))
@@ -70,7 +73,7 @@ class SolutionIntegrationTests(unittest.TestCase):
 
     def test_historical_finding_page_and_scan_link(self):
         page=self.client.get(f'/findings/{self.id}').get_data(as_text=True)
-        self.assertIn('Code solution',page);self.assertIn('Copy code',page)
+        self.assertIn('Suggested Code Solution',page);self.assertIn('Copy code',page)
         self.assertIn('SELECT id FROM users',page)
         self.assertNotIn('<script>alert(1)</script>',page)
         page=self.client.get(f'/scans/{self.scan}').get_data(as_text=True)

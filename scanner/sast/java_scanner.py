@@ -1,44 +1,44 @@
+"""Java syntax and local variable flow; no compilation or execution."""
 import tree_sitter_java
-from scanner.sast.javascript_scanner import walk,text,parse_source
+from scanner.sast.javascript_scanner import text,parse_source
 from scanner.sast.common import add,files
+from scanner.sast.tree_flow import TreeFlow
+from scanner.sast.flow import UNKNOWN,combine,confidence,evidence,sensitive_name
 
 
 def run(ctx):
     parsed=0;errors=[]
     for path,source in files(ctx,('.java',)):
-        root=parse_source(tree_sitter_java, source)
-        if root is None or root.has_error:
-            errors.append(path);continue
-        parsed+=1;values={};types={}
-        for node in walk(root):
-            if node.type=='variable_declarator':
-                identifier=text(node.child_by_field_name('name'));values[identifier]=node.child_by_field_name('value')
-                types[identifier]=text(node.parent.child_by_field_name('type'))
-            if node.type=='formal_parameter':
-                types[text(node.child_by_field_name('name'))]=text(node.child_by_field_name('type'))
-        def resolve(node):
-            return values.get(text(node)) or node if node and node.type=='identifier' else node
-        def dynamic(node):
-            node=resolve(node)
-            return bool(node and node.type not in ('string_literal','decimal_integer_literal','true','false','null_literal'))
-        def constructed(node):
-            node=resolve(node)
-            return bool(node and (node.type=='binary_expression' or (node.type=='method_invocation' and text(node.child_by_field_name('name')) in ('format','formatted','toString'))))
-        for node in walk(root):
-            if node.type not in ('method_invocation','object_creation_expression'):
-                continue
+        root=parse_source(tree_sitter_java,source)
+        if root is None or root.has_error:errors.append(path);continue
+        parsed+=1
+        def inspect(node,args,flow):
+            if node.type not in ('method_invocation','object_creation_expression'):return
             method=text(node.child_by_field_name('name'));receiver=node.child_by_field_name('object')
-            obj=text(receiver);kind=text(node.child_by_field_name('type'))
-            args=node.child_by_field_name('arguments');args=args.named_children if args else []
-            line=node.start_point.row+1
-            if (method=='exec' and (obj.startswith('Runtime.getRuntime()') or types.get(obj)=='Runtime') or kind=='ProcessBuilder') and args and any(dynamic(arg) for arg in args):
-                add(ctx,path,line,'Dynamic Java process execution','Code Security','Parsed Runtime.exec or ProcessBuilder uses a nonliteral argument.','Use a fixed executable and validated argument list; avoid invoking a shell with untrusted input.')
-            if method in ('execute','executeQuery','executeUpdate','prepareStatement') and args and constructed(args[0]):
-                add(ctx,path,line,'Potential SQL injection in Java query','Injection','A SQL-like API receives concatenated or formatted query text.','Use PreparedStatement placeholders and bound parameters.','High')
-            if method=='readObject' and ('ObjectInputStream' in types.get(obj,'') or 'ObjectInputStream' in obj):
-                add(ctx,path,line,'Potential unsafe Java deserialization','Deserialization','ObjectInputStream.readObject is used; input trust and filtering require review.','Avoid deserializing untrusted object graphs; use data-only formats and explicit allowlists.')
+            obj=text(receiver);kind=text(node.child_by_field_name('type')).split('.')[-1]
+            line=node.start_point.row+1;first=args[0] if args else UNKNOWN
+            def report(title,category,value,recommendation,severity='Medium',level=None):
+                detail=evidence(value,method or kind)
+                if category=='Cryptography':
+                    detail='Weak algorithm selected; '+('security-sensitive naming/context detected.' if severity=='High' else 'purpose and deployment require review; checksum-only hashing may be acceptable.')
+                add(ctx,path,line,title,category,detail,recommendation,severity,level or confidence(value))
+            runtime=method=='exec' and (obj.startswith(('Runtime.getRuntime()','java.lang.Runtime.getRuntime()')) or flow.types.get(obj,'').split('.')[-1]=='Runtime')
+            if (runtime or kind=='ProcessBuilder') and args:
+                value=combine(args)
+                if not value.static:report('Dynamic Java process execution','Code Security',value,'Use a fixed executable and validated argument list; avoid invoking a shell with untrusted input.','High' if value.sources else 'Medium')
+            if method in ('execute','executeQuery','executeUpdate','prepareStatement') and args and not first.static and (first.constructed or first.sources):
+                report('Potential SQL injection in Java query','Injection',first,'Use PreparedStatement placeholders and bound parameters.','High')
+            if method=='readObject' and ('ObjectInputStream' in flow.types.get(obj,'') or 'ObjectInputStream' in obj):
+                value=flow.env.get(obj,UNKNOWN)
+                report('Potential unsafe Java deserialization','Deserialization',value,'Avoid deserializing untrusted object graphs; use data-only formats and explicit allowlists.','High' if value.sources else 'Medium','High' if value.sources else 'Low')
             if method=='getInstance' and obj.split('.')[-1] in ('MessageDigest','Cipher') and args:
-                algorithm=text(resolve(args[0])).strip('"').upper()
-                if algorithm in ('MD5','SHA1','SHA-1','DES','RC4') or '/ECB/' in algorithm:
-                    add(ctx,path,line,'Weak Java cryptographic algorithm','Cryptography','A cryptographic factory selects a weak hash/cipher or ECB mode.','Use modern hashes or authenticated encryption, and purpose-built password hashing where appropriate.','Low','High')
-    return {'parsed_files':parsed,'unparsed_files':errors[:100],'note':'Syntax-aware heuristics with basic declared-type/assignment context; no Java build, dependency resolution or bytecode execution.'}
+                algorithm=str(first.literal or '').upper()
+                weak_hash=algorithm in ('MD5','SHA1','SHA-1')
+                weak_cipher=algorithm in ('DES','RC4') or '/ECB/' in algorithm
+                if weak_hash or weak_cipher:
+                    sensitive=sensitive_name(flow.target)
+                    report('Weak Java cryptographic algorithm','Cryptography',first,
+                        'Use dedicated password hashing for passwords or authenticated encryption for sensitive data. Checksum-only hash use needs contextual review.',
+                        'High' if sensitive else 'Medium' if weak_cipher else 'Low', 'Medium' if sensitive or weak_cipher else 'Low')
+        TreeFlow(ctx,inspect,'java').value(root)
+    return {'parsed_files':parsed,'unparsed_files':errors[:100],'note':'Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review.'}

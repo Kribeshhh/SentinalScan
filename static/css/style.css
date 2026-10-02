@@ -19,3 +19,15 @@
 .editor-section{margin-top:22px}.editor-metadata{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;font-size:13px}.editor-metadata dt{color:var(--muted)}.editor-metadata dd{margin:0;overflow-wrap:anywhere}.editor-toolbar{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:18px}.editor-toolbar span{color:var(--muted);font-size:12px}.source-editor{font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;overflow:auto;tab-size:4;min-height:400px;resize:vertical}.code-diff{white-space:pre;overflow:auto;max-height:580px;font-size:12px}.editor-section .help{max-width:900px}@media(max-width:600px){.editor-metadata{grid-template-columns:1fr}.editor-metadata dd{margin-bottom:8px}}
 
 .solution-card{margin-top:24px}.solution-summary{line-height:1.8;margin-bottom:20px}.solution-example{background:#0b131d;border:1px solid var(--line);border-radius:8px;padding:18px;margin:20px 0}.solution-example .editor-toolbar{align-items:center;margin-bottom:8px}.solution-code{white-space:pre;overflow:auto;max-height:480px;tab-size:4;font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace}.solution-notes{padding-left:20px;color:var(--muted);line-height:1.8;margin:12px 0 22px}.solution-card h3{margin-top:12px}#code-solution{scroll-margin-top:25px}@media(max-width:600px){.solution-example{padding:12px}.solution-code{font-size:12px}}
+
+/* Finding recommendation and bounded source excerpts. */
+#recommendation { margin-block: 2rem; border-top: 1px solid var(--border, #293647); padding-top: 1rem; }
+.source-context .source-line { display: inline-block; min-width: 100%; }
+.source-context .detected-line { background: rgba(79, 218, 177, .14); border-left: 3px solid #50dcb5; }
+.source-context .line-number { color: #a0b5c7; user-select: none; }
+.technical-details { margin-block: 1.5rem; }
+.metadata dd { overflow-wrap: anywhere; }
+.metadata { display: grid; grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr); gap: .65rem 1rem; }
+.metadata dt { color: #a0b5c7; }
+.metadata dd { margin: 0; }
+@media (max-width: 600px) { .metadata { grid-template-columns: 1fr; gap: .3rem; } .metadata dd { margin-bottom: .7rem; } }

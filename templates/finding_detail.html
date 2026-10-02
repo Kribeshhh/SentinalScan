@@ -2,7 +2,14 @@
 <a class="text-link" href="{{ url_for('scan_detail', scan_id=finding.scan_id) }}">← Scan summary</a>
 <div class="page-heading"><div><p class="eyebrow">FINDING-{{ '%04d'|format(finding.id) }} / SCAN-{{ '%04d'|format(finding.scan_id) }}</p><h1>{{ finding.title }}</h1><p>{{ finding.category }} · {{ finding.source }}</p></div>{{ badge(finding.severity) }}</div>
 {% if finding.source == "Repository" %}<div class="scan-actions"><a class="button" href="{{ url_for('edit_finding', finding_id=finding.id) }}">Edit source &amp; create pull request →</a></div>{% endif %}
-<section class="card detail-card"><div class="detail-meta"><div><small>Confidence</small>{{ badge(finding.confidence) }}</div><div><small>Status</small>{{ badge(finding.status) }}</div><div><small>Created (UTC)</small>{{ finding.created_at }}</div></div>
-{% for field in ['location','description','evidence','impact','recommendation','fingerprint'] %}<h2>{{ field|capitalize }}</h2><pre class="evidence">{{ finding[field] }}</pre>{% endfor %}
+<section class="card detail-card"><div class="detail-meta"><div><small>Detection Confidence</small>{{ badge(finding.confidence) }}</div><div><small>Status</small>{{ badge(finding.status) }}</div><div><small>Created (UTC)</small>{{ finding.created_at }}</div></div>
+{% if finding.source == 'Repository' %}<dl class="metadata"><dt>File</dt><dd>{{ presentation.metadata.file }}</dd><dt>Line</dt><dd>{{ presentation.metadata.line or 'Not recorded' }}</dd><dt>Function</dt><dd>{{ presentation.metadata.function }}</dd></dl>{% else %}<h2>Location</h2><pre class="evidence">{{ finding.location }}</pre>{% endif %}
+<h2>Description</h2><p>{{ presentation.description }}</p>
+<h2>Evidence</h2>
+{% if presentation.evidence %}<dl class="metadata"><dt>Input Source</dt><dd>{{ presentation.evidence.source }}</dd><dt>Input source line</dt><dd>{{ presentation.evidence.source_line }}</dd><dt>Data Flow</dt><dd>{{ presentation.evidence.flow }}</dd><dt>Dangerous Operation</dt><dd>{{ presentation.evidence.operation }} · Line {{ presentation.metadata.line or 'not recorded' }}</dd><dt>Protection</dt><dd>{{ presentation.evidence.protection }}</dd></dl><p class="help">Static analysis does not prove runtime reachability or exploitability.</p>
+{% else %}<pre class="evidence">{{ finding.evidence }}</pre>{% endif %}
+<h2>Impact</h2><pre class="evidence">{{ finding.impact }}</pre>
+{% include '_solution.html' %}
+<details class="technical-details"><summary>Technical details</summary><h3>Fingerprint</h3><pre class="evidence">{{ finding.fingerprint }}</pre></details>
 <form method="post" action="{{ url_for('update_finding_status', finding_id=finding.id) }}" class="status-form"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><label>Finding status<select name="status">{% for status in statuses %}<option {% if status == finding.status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></label><button class="button" type="submit">Update status</button></form>
-</section>{% include '_solution.html' %}{% include '_workflow.html' %}{% endblock %}
+</section>{% include '_workflow.html' %}{% endblock %}

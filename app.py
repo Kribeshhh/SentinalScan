@@ -34,6 +34,8 @@ def create_app(test_config=None):
     register_management(app)
     register_remediation(app)
     register_workflow(app)
+    from llm_routes import register_llm
+    register_llm(app)
 
     @app.before_request
     def csrf_protection():
@@ -194,8 +196,10 @@ def create_app(test_config=None):
             abort(404)
         workflow = workflow_data(get_db(),finding)
         draft = workflow['draft']
-        return render_template("finding_detail.html", title="Finding details", finding=finding,
-            solution=finding_solution(get_db(),finding,draft), source_loaded=bool(draft), workflow=workflow, finding_id=finding_id)
+        from analysis.recommendation import finding_presentation
+        solution=finding_solution(get_db(),finding,draft)
+        return render_template("finding_detail.html", title="Finding details", finding=finding, presentation=finding_presentation(finding,solution),
+            solution=solution, source_loaded=bool(draft), workflow=workflow, finding_id=finding_id)
 
     @app.post("/findings/<int:finding_id>/status")
     def update_finding_status(finding_id):

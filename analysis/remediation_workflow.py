@@ -80,7 +80,8 @@ def finding_solution(db,finding,draft=None):
             current=solution_for(finding)
             current.update(context=snapshot.get('context'),source_status=snapshot.get('source_status'))
             return current
-        return snapshot
+        from analysis.recommendation import recommendation_for
+        return recommendation_for(finding,snapshot)
     solution=solution_for(finding,draft['original'] if draft else None)
     if not draft:
         row=db.execute('SELECT * FROM finding_context WHERE finding_id=?',(finding['id'],)).fetchone()

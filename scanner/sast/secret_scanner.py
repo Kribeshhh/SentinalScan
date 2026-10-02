@@ -10,7 +10,7 @@ def credential_assignment(path,key,value):
     if path.lower().endswith('.json') and any(part.lower() in ('i18n','locales','translations') for part in path.split('/')):
         return False
     key=re.sub(r'([a-z])([A-Z])',r'\1_\2',key).lower()
-    if not re.fullmatch(r'(?:[a-z0-9]+[_.-])*(?:password|passwd|secret|token|api[_-]?key|access[_-]?token|auth[_-]?token|credential|database[_-]?url|db[_-]?url|aws[_-]?access[_-]?key[_-]?id)',key):
+    if not re.fullmatch(r'(?:[a-z0-9]+[_.-])*(?:password|passwd|secret(?:[_-]?key)?|token|api[_-]?key|access[_-]?token|auth[_-]?token|credential|database[_-]?url|db[_-]?url|aws[_-]?access[_-]?key[_-]?id)',key):
         return False
     return plausible(value)
 

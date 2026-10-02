@@ -18,7 +18,7 @@ class ResponseTooLarge(RemoteError):
 
 
 def _request_once(host, path, method='GET', headers=None, body=None, limit=2_000_000, seconds=12):
-    if host not in ('api.github.com', 'codeload.github.com', 'api.osv.dev') or not path.startswith('/') or any(ord(c)<32 for c in path):
+    if host not in ('api.github.com', 'codeload.github.com', 'api.osv.dev', 'api.openai.com') or not path.startswith('/') or any(ord(c)<32 for c in path):
         raise RemoteError('Remote request scope was rejected.')
     connection = http.client.HTTPSConnection(host, timeout=min(15,seconds))
     timer, guard = None, None

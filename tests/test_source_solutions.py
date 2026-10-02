@@ -35,7 +35,8 @@ class SourceSolutionTests(unittest.TestCase):
             solution_for(self.finding(),'const password = "liveSensitive123";\na.innerHTML=x;')
         r=solution_for(self.finding())
         self.assertFalse(r['exact']);self.assertIn('not retrieved source',r['before_label'])
-        self.assertEqual(len(r['examples']),2)
+        self.assertEqual(r['examples'],[])
+        self.assertIn('manual review',r['unavailable'])
 
     def test_candidates_remove_target_detection_without_touching_other_statement(self):
         from scanner.sast.javascript_scanner import analyze

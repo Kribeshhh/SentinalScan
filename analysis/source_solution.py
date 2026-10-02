@@ -18,6 +18,11 @@ def enrich_source_solution(result,finding,source):
     result['context']='\n'.join(f'{n:>4} {">" if n==line else " "} {lines[n-1]}' for n in range(lo,hi+1))
     result['source_status']='Scanned source loaded. The marked line is the detection location; surrounding lines are context, not a replacement range.'
     suffix=PurePosixPath(finding['location'][:match.start()]).suffix.lower()
+    if suffix=='.py':
+        from analysis.python_source_fix import sql_candidate
+        candidate=sql_candidate(finding,source)
+        if candidate:result.update(candidate)
+        return
     if finding['title']!='Potential unsafe DOM HTML assignment' or suffix not in ('.js','.jsx','.mjs','.cjs'):
         return
     from scanner.sast.javascript_scanner import parse_source,walk,text
@@ -51,11 +56,18 @@ def enrich_source_solution(result,finding,source):
         candidates.append({'language':'JavaScript · option A: plain text only','code':replacement+'\n'})
     replacement=(raw[node.start_byte:right.start_byte]+b'DOMPurify.sanitize('+raw[right.start_byte:right.end_byte]+b', {USE_PROFILES: {html: true}})'+raw[right.end_byte:node.end_byte]).decode()
     candidates.append({'language':'JavaScript · option B: intentional HTML','code':replacement+'\n'})
+    from analysis.source_validation import validate_candidate
+    purifier_imported=any(n.type=='import_statement' and re.match(r'''^import\s+DOMPurify\s+from\s+['"]dompurify['"]''',text(n)) for n in root.named_children)
     for candidate in candidates:
+        candidate['kind']='Illustrative Secure Example' if 'DOMPurify.sanitize(' in candidate['code'] and not purifier_imported else 'Suggested Source Fix'
         updated=(raw[:node.start_byte]+candidate['code'].rstrip('\n').encode()+raw[node.end_byte:]).decode()
         checked=parse_source(tree_sitter_javascript,updated)
         if checked is None or checked.has_error:
             result['source_status']='Candidate failed full-file JavaScript syntax validation. No exact replacement is proposed.'
+            return
+        candidate['validation']=validate_candidate(finding,source,updated)
+        if candidate['validation']['status']!='Passed':
+            result['source_status']='The candidate could not pass the relevant static rule and regression checks. Manual review is required.'
             return
     result.update(before=before,before_label=f'Actual assignment to replace · lines {line}–{node.end_point.row+1}',
         examples=candidates,exact=True,action='Replace only the assignment shown below with ONE option. Keep surrounding statements and the existing semicolon.',

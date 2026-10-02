@@ -2,6 +2,7 @@
 import hashlib
 import json
 import re
+import time
 from pathlib import Path
 from analysis.redaction import TOKEN_PATTERNS, redact_text
 
@@ -17,6 +18,7 @@ def mask_source(source,known=()):
 
 
 def retain_context(db,scan_id,root,paths,repository,commit,known=()):
+    solution_deadline=time.monotonic()+20;solution_attempts=0
     grouped={};budget=1024*1024;solution_budget=8*1024*1024
     for finding in db.execute('SELECT * FROM findings WHERE scan_id=?',(scan_id,)):
         location=finding['location'];prefix=repository+'/'
@@ -35,8 +37,12 @@ def retain_context(db,scan_id,root,paths,repository,commit,known=()):
                 from analysis.solution_engine import solution_for
                 from integrations.github import GitHubError
                 source=raw.decode('utf-8-sig')
-                try:solution=solution_for(finding,source)
+                eligible=time.monotonic()<solution_deadline and solution_attempts<40
+                solution_attempts+=1
+                try:solution=solution_for(finding,source if eligible else None)
                 except GitHubError:solution=solution_for(finding)
+                if not eligible:
+                    solution['notes'].append('Source-candidate generation budget reached for this scan. Retained context is available; review in the editor for a focused candidate check.')
                 # Snapshots contain redacted display context/candidates, not a checkout.
                 solution['context']=solution.get('context') or '\n'.join(f'{n:>4} {">" if n==line else " "} {lines[n-1][:1000]}' for n in range(max(1,line-3),min(len(lines),line+3)+1))
                 if not solution.get('exact') and finding['category']!='Dependency':
