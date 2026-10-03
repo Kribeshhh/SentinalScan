@@ -58,7 +58,7 @@ def extract_archive(archive,destination):
                 if member.file_size>MAX_FILE:
                     inventory['oversized_files']+=1;continue
                 relative=Path(*parts)
-                if relative.suffix.lower() not in TEXT_EXTENSIONS and not relative.name.startswith('.env') and relative.name not in ('Dockerfile','requirements.txt'):
+                if relative.suffix.lower() not in TEXT_EXTENSIONS and not relative.name.startswith('.env') and relative.name not in ('Dockerfile','requirements.txt','yarn.lock','Gemfile','Gemfile.lock','go.mod','go.sum','poetry.lock','uv.lock'):
                     inventory['unsupported_files']+=1;continue
                 if inventory['files']>=MAX_FILES:
                     raise ArchiveError('Repository exceeds the 2,000 analyzable-file limit.')

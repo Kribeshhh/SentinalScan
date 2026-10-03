@@ -1,0 +1,546 @@
+{
+  "version": 1,
+  "description": "Controlled authored challenge set. Ground truth fixed before evaluation. Fixtures are inert data; never execute them.",
+  "fixtures": [
+    {
+      "id": "sql_concat",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "sql_concat.py",
+      "source": "from flask import request\nterm=request.args.get(\"city\")\nquery=\"SELECT name FROM places WHERE city='\"+term+\"'\"\ncursor.execute(query)",
+      "ground_truth": "Request text changes SQL syntax.",
+      "future_improvement": "Resolve concrete database APIs."
+    },
+    {
+      "id": "sql_format",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "sql_format.py",
+      "source": "from flask import request\ncity=request.form.get(\"city\")\ncursor.execute(f\"SELECT name FROM places WHERE city='{city}'\")",
+      "ground_truth": "Unbound form data is interpolated.",
+      "future_improvement": "Preserve data-flow across query builders."
+    },
+    {
+      "id": "sql_dispatch",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "sql_dispatch.py",
+      "source": "from flask import request\nquery=\"SELECT name FROM places WHERE city='\"+request.args.get(\"city\")+\"'\"\ngetattr(cursor,\"execute\")(query)",
+      "ground_truth": "Constant getattr dispatch invokes the SQL sink with tainted SQL.",
+      "future_improvement": "Resolve constant getattr targets without execution."
+    },
+    {
+      "id": "sql_bound",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "protected",
+      "path": "sql_bound.py",
+      "source": "from flask import request\ncursor.execute(\"SELECT name FROM places WHERE city=?\",(request.args.get(\"city\"),))",
+      "ground_truth": "Assume SQLite cursor: value bound separately from SQL.",
+      "future_improvement": "Retain sink-argument distinction."
+    },
+    {
+      "id": "sql_constant",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "safe",
+      "path": "sql_constant.py",
+      "source": "cursor.execute(\"SELECT name FROM places WHERE active=1\")",
+      "ground_truth": "Constant query contains no attacker input.",
+      "future_improvement": "Retain constant propagation."
+    },
+    {
+      "id": "sql_allowlist",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "protected",
+      "path": "sql_allowlist.py",
+      "source": "from flask import request\norder=request.args.get(\"order\")\nif order not in (\"name\", \"city\"):\n raise ValueError(\"unsupported order\")\ncursor.execute(\"SELECT name FROM places ORDER BY \"+order)",
+      "ground_truth": "Only two constant identifiers survive the guard; raising exits invalid requests.",
+      "future_improvement": "Track dominating allowlist guards and exit paths."
+    },
+    {
+      "id": "cmd_shell",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "cmd_shell.py",
+      "source": "import subprocess\nfrom flask import request\nsubprocess.run(\"echo \"+request.args.get(\"msg\"),shell=True)",
+      "ground_truth": "Unescaped input reaches a shell string.",
+      "future_improvement": "Track argument and shell semantics."
+    },
+    {
+      "id": "cmd_system",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "cmd_system.py",
+      "source": "import os\nfrom flask import request\nos.system(\"echo \"+request.args.get(\"msg\"))",
+      "ground_truth": "Shell metacharacters can be interpreted.",
+      "future_improvement": "Resolve OS command aliases."
+    },
+    {
+      "id": "cmd_dispatch",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "cmd_dispatch.py",
+      "source": "import os\nfrom flask import request\ngetattr(os,\"system\")(\"echo \"+request.args.get(\"msg\"))",
+      "ground_truth": "Constant dynamic lookup still executes a shell string.",
+      "future_improvement": "Resolve constant getattr calls."
+    },
+    {
+      "id": "cmd_argv",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "protected",
+      "path": "cmd_argv.py",
+      "source": "import subprocess\nfrom flask import request\nsubprocess.run([\"/bin/echo\",\"--\",request.args.get(\"msg\")],shell=False)",
+      "ground_truth": "Fixed echo executable and argument list do not interpret shell syntax.",
+      "future_improvement": "Avoid conflating argument injection with shell injection."
+    },
+    {
+      "id": "cmd_constant",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "safe",
+      "path": "cmd_constant.py",
+      "source": "import os\nos.system(\"echo fixed\")",
+      "ground_truth": "No attacker-controlled command.",
+      "future_improvement": "Retain literal evaluation."
+    },
+    {
+      "id": "cmd_quoted",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "protected",
+      "path": "cmd_quoted.py",
+      "source": "import os, shlex\nfrom flask import request\nos.system(\"echo \"+shlex.quote(request.args.get(\"msg\")))",
+      "ground_truth": "Assume POSIX shell: shlex.quote produces one quoted argument.",
+      "future_improvement": "Recognize platform-specific shell quoting only at appropriate sinks."
+    },
+    {
+      "id": "exec_eval",
+      "category": "Dynamic Code Execution",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "exec_eval.py",
+      "source": "from flask import request\neval(request.args.get(\"expression\"))",
+      "ground_truth": "Request controls Python expression.",
+      "future_improvement": "Track built-in resolution."
+    },
+    {
+      "id": "exec_js",
+      "category": "Dynamic Code Execution",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "exec_js.js",
+      "source": "const expression = location.hash.slice(1);\neval(expression);",
+      "ground_truth": "Browser fragment controls dynamic JavaScript.",
+      "future_improvement": "Trace JS property and function aliases."
+    },
+    {
+      "id": "exec_dispatch",
+      "category": "Dynamic Code Execution",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "exec_dispatch.py",
+      "source": "import builtins\nfrom flask import request\ngetattr(builtins,\"eval\")(request.args.get(\"expression\"))",
+      "ground_truth": "Dynamic lookup resolves to eval; expression is untrusted.",
+      "future_improvement": "Resolve constant built-in attribute targets."
+    },
+    {
+      "id": "exec_constant",
+      "category": "Dynamic Code Execution",
+      "expected": false,
+      "variant": "safe",
+      "path": "exec_constant.py",
+      "source": "eval(\"1 + 2\")",
+      "ground_truth": "Static expression is not attacker-controlled.",
+      "future_improvement": "Retain constant handling."
+    },
+    {
+      "id": "exec_json",
+      "category": "Dynamic Code Execution",
+      "expected": false,
+      "variant": "protected",
+      "path": "exec_json.py",
+      "source": "import json\nfrom flask import request\nvalue=json.loads(request.args.get(\"document\"))",
+      "ground_truth": "JSON parsing does not evaluate Python code.",
+      "future_improvement": "Preserve safe data-only API distinction."
+    },
+    {
+      "id": "exec_literal",
+      "category": "Dynamic Code Execution",
+      "expected": false,
+      "variant": "protected",
+      "path": "exec_literal.py",
+      "source": "import ast\nfrom flask import request\nvalue=ast.literal_eval(request.args.get(\"literal\"))",
+      "ground_truth": "Literal parsing does not allow code execution; resource exhaustion is out of scope.",
+      "future_improvement": "Distinguish code execution from resource exhaustion."
+    },
+    {
+      "id": "dom_html",
+      "category": "DOM XSS",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "dom_html.js",
+      "source": "const value=location.hash;\ndocument.body.innerHTML=value;",
+      "ground_truth": "Untrusted HTML reaches a DOM HTML parser.",
+      "future_improvement": "Model DOM parsing contexts."
+    },
+    {
+      "id": "dom_write",
+      "category": "DOM XSS",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "dom_write.js",
+      "source": "const value=location.search;\ndocument.write(value);",
+      "ground_truth": "Untrusted URL text is parsed as markup.",
+      "future_improvement": "Expand source normalization."
+    },
+    {
+      "id": "dom_dynamic",
+      "category": "DOM XSS",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "dom_dynamic.js",
+      "source": "const property=\"inner\"+\"HTML\";\ndocument.body[property]=location.hash;",
+      "ground_truth": "Computed property resolves to an HTML sink.",
+      "future_improvement": "Resolve constant computed-property names."
+    },
+    {
+      "id": "dom_text",
+      "category": "DOM XSS",
+      "expected": false,
+      "variant": "protected",
+      "path": "dom_text.js",
+      "source": "document.body.textContent=location.hash;",
+      "ground_truth": "TextContent does not parse HTML.",
+      "future_improvement": "Preserve sink-specific safe API recognition."
+    },
+    {
+      "id": "dom_sanitized",
+      "category": "DOM XSS",
+      "expected": false,
+      "variant": "protected",
+      "path": "dom_sanitized.js",
+      "source": "const safe=DOMPurify.sanitize(location.hash);\ndocument.body.innerHTML=safe;",
+      "ground_truth": "Assume trusted standard DOMPurify default HTML sanitization.",
+      "future_improvement": "Resolve sanitizer identity/configuration."
+    },
+    {
+      "id": "dom_constant",
+      "category": "DOM XSS",
+      "expected": false,
+      "variant": "safe",
+      "path": "dom_constant.js",
+      "source": "document.body.innerHTML=\"<strong>Welcome</strong>\";",
+      "ground_truth": "Static trusted markup contains no user-controlled input.",
+      "future_improvement": "Retain literal propagation."
+    },
+    {
+      "id": "secret_assignment",
+      "category": "Secrets",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "secret_assignment.py",
+      "source": "password=\"QuasarRiver-93284-Credential\"",
+      "ground_truth": "Synthetic value represents a hardcoded authentication password, not a live credential.",
+      "future_improvement": "Keep credentials masked; never authenticate them."
+    },
+    {
+      "id": "secret_token",
+      "category": "Secrets",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "secret_token.js",
+      "source": "const access = \"ghp_A7b8C9d0E1f2G3h4I5j6K7l8M9n0P1q2R3s4\";",
+      "ground_truth": "Synthetic typed GitHub token represents an embedded access token.",
+      "future_improvement": "Recognize typed formats without checking validity."
+    },
+    {
+      "id": "secret_custom_name",
+      "category": "Secrets",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "secret_custom_name.py",
+      "source": "connection_material=\"OrionService-884932-Auth\"",
+      "ground_truth": "Fixture contract: this custom-named constant is an authentication credential; no usage context supplied.",
+      "future_improvement": "Track credential use sites; names alone cannot establish arbitrary secrets."
+    },
+    {
+      "id": "secret_env",
+      "category": "Secrets",
+      "expected": false,
+      "variant": "protected",
+      "path": "secret_env.py",
+      "source": "import os\npassword=os.environ[\"SERVICE_PASSWORD\"]",
+      "ground_truth": "Runtime secret retrieval, not a literal credential.",
+      "future_improvement": "Keep environment references excluded."
+    },
+    {
+      "id": "secret_placeholder",
+      "category": "Secrets",
+      "expected": false,
+      "variant": "safe",
+      "path": "secret_placeholder.py",
+      "source": "password=\"replace-me\"",
+      "ground_truth": "Explicit placeholder, not a credential.",
+      "future_improvement": "Keep documented placeholder filtering."
+    },
+    {
+      "id": "secret_doc",
+      "category": "Secrets",
+      "expected": false,
+      "variant": "safe",
+      "path": "secret_doc.md",
+      "source": "The UI renders this phrase:\npassword=\"Choose a memorable passphrase for your account\"",
+      "ground_truth": "Quoted documentation prose is not authentication material.",
+      "future_improvement": "Distinguish prose/labels from credential assignments."
+    },
+    {
+      "id": "deserialize_pickle",
+      "category": "Deserialization",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "deserialize_pickle.py",
+      "source": "import pickle\nfrom flask import request\npickle.loads(request.get_data())",
+      "ground_truth": "Untrusted bytes reach pickle object construction.",
+      "future_improvement": "Track request-body accessors."
+    },
+    {
+      "id": "deserialize_yaml",
+      "category": "Deserialization",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "deserialize_yaml.py",
+      "source": "import yaml\nfrom flask import request\nyaml.load(request.args.get(\"document\"),Loader=yaml.Loader)",
+      "ground_truth": "Unsafe YAML loader can construct arbitrary objects.",
+      "future_improvement": "Track loader identity."
+    },
+    {
+      "id": "deserialize_dispatch",
+      "category": "Deserialization",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "deserialize_dispatch.py",
+      "source": "import pickle\nfrom flask import request\ngetattr(pickle,\"loads\")(request.get_data())",
+      "ground_truth": "Constant lookup selects unsafe pickle decoder.",
+      "future_improvement": "Resolve constant attribute dispatch."
+    },
+    {
+      "id": "deserialize_safe_yaml",
+      "category": "Deserialization",
+      "expected": false,
+      "variant": "protected",
+      "path": "deserialize_safe_yaml.py",
+      "source": "import yaml\nfrom flask import request\nyaml.safe_load(request.args.get(\"document\"))",
+      "ground_truth": "Safe YAML loader disallows arbitrary object construction.",
+      "future_improvement": "Preserve safe-loader handling."
+    },
+    {
+      "id": "deserialize_explicit_safe",
+      "category": "Deserialization",
+      "expected": false,
+      "variant": "protected",
+      "path": "deserialize_explicit_safe.py",
+      "source": "import yaml\nfrom flask import request\nyaml.load(request.args.get(\"document\"),Loader=yaml.SafeLoader)",
+      "ground_truth": "Explicit safe loader limits YAML to safe types.",
+      "future_improvement": "Recognize trusted loader aliases."
+    },
+    {
+      "id": "deserialize_json",
+      "category": "Deserialization",
+      "expected": false,
+      "variant": "safe",
+      "path": "deserialize_json.py",
+      "source": "import json\nfrom flask import request\njson.loads(request.get_data())",
+      "ground_truth": "Data-only JSON parsing does not construct arbitrary Python objects.",
+      "future_improvement": "Preserve format distinction."
+    },
+    {
+      "id": "crypto_password_md5",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "crypto_password_md5.py",
+      "source": "import hashlib\npassword_hash=hashlib.md5(user_password.encode()).hexdigest()",
+      "ground_truth": "Fast weak digest used as a password hash.",
+      "future_improvement": "Track downstream security use."
+    },
+    {
+      "id": "crypto_password_sha1",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "crypto_password_sha1.py",
+      "source": "import hashlib\npassword_hash=hashlib.sha1(user_password.encode()).hexdigest()",
+      "ground_truth": "SHA-1 is unsuitable for password storage.",
+      "future_improvement": "Evaluate password-hashing policy separately from checksums."
+    },
+    {
+      "id": "crypto_dispatch",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "crypto_dispatch.py",
+      "source": "import hashlib\npassword_hash=getattr(hashlib,\"md5\")(user_password.encode()).hexdigest()",
+      "ground_truth": "Dynamic lookup selects MD5 for password hashing.",
+      "future_improvement": "Resolve constant cryptographic factory names."
+    },
+    {
+      "id": "crypto_checksum",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "variant": "safe",
+      "path": "crypto_checksum.py",
+      "source": "import hashlib\nchecksum=hashlib.md5(public_file_bytes).hexdigest()",
+      "ground_truth": "Fixture contract: non-adversarial accidental-corruption checksum only, no security decision.",
+      "future_improvement": "Separate low-confidence observations from actionable vulnerability metrics."
+    },
+    {
+      "id": "crypto_sha256",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "variant": "safe",
+      "path": "crypto_sha256.py",
+      "source": "import hashlib\ndigest=hashlib.sha256(public_file_bytes).hexdigest()",
+      "ground_truth": "SHA-256 digest; no password-storage claim.",
+      "future_improvement": "Retain algorithm distinction."
+    },
+    {
+      "id": "crypto_pbkdf2",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "variant": "protected",
+      "path": "crypto_pbkdf2.py",
+      "source": "import hashlib\npassword_hash=hashlib.pbkdf2_hmac(\"sha256\",user_password.encode(),random_salt,600000)",
+      "ground_truth": "Assume unique random salt; iterated password derivation rather than a fast hash.",
+      "future_improvement": "Assess parameters only with sufficient context."
+    },
+    {
+      "id": "java_sql",
+      "category": "Java Security",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "java_sql.java",
+      "source": "class Query { void run(HttpServletRequest request, Statement statement) throws Exception { String value=request.getParameter(\"id\"); statement.executeQuery(\"SELECT name FROM users WHERE id=\"+value); } }",
+      "ground_truth": "Servlet input is concatenated into SQL.",
+      "future_improvement": "Resolve JDBC receiver types."
+    },
+    {
+      "id": "java_shell",
+      "category": "Java Security",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "java_shell.java",
+      "source": "class Launch { void run(HttpServletRequest request) throws Exception { String cmd=request.getParameter(\"cmd\"); new ProcessBuilder(\"sh\",\"-c\",cmd).start(); } }",
+      "ground_truth": "Servlet input controls shell command.",
+      "future_improvement": "Track shell wrappers and argument positions."
+    },
+    {
+      "id": "java_deserialize",
+      "category": "Java Security",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "java_deserialize.java",
+      "source": "class Decode { void run(HttpServletRequest request) throws Exception { ObjectInputStream stream=new ObjectInputStream(request.getInputStream()); Object item=stream.readObject(); } }",
+      "ground_truth": "Untrusted stream is decoded without an object filter.",
+      "future_improvement": "Model safe deserialization filters where verifiable."
+    },
+    {
+      "id": "java_bound",
+      "category": "Java Security",
+      "expected": false,
+      "variant": "protected",
+      "path": "java_bound.java",
+      "source": "class Query { void run(HttpServletRequest request, Connection connection) throws Exception { PreparedStatement statement=connection.prepareStatement(\"SELECT name FROM users WHERE id=?\"); statement.setString(1,request.getParameter(\"id\")); statement.executeQuery(); } }",
+      "ground_truth": "JDBC query uses a placeholder and bound value.",
+      "future_improvement": "Preserve prepared-statement semantics."
+    },
+    {
+      "id": "java_aes",
+      "category": "Java Security",
+      "expected": false,
+      "variant": "safe",
+      "path": "java_aes.java",
+      "source": "class Encryption { void run() throws Exception { Cipher cipher=Cipher.getInstance(\"AES/GCM/NoPadding\"); } }",
+      "ground_truth": "Algorithm selection is not a weak-cipher finding; nonce/key handling not supplied.",
+      "future_improvement": "Keep incomplete surrounding encryption properties unknown."
+    },
+    {
+      "id": "java_checksum",
+      "category": "Java Security",
+      "expected": false,
+      "variant": "safe",
+      "path": "java_checksum.java",
+      "source": "class Checksum { void run() throws Exception { MessageDigest checksum=MessageDigest.getInstance(\"MD5\"); } }",
+      "ground_truth": "Fixture contract: accidental-corruption checksum, not authentication or security integrity.",
+      "future_improvement": "Separate cryptographic observations from security use."
+    },
+    {
+      "id": "config_debug",
+      "category": "Configuration",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "config_debug.py",
+      "source": "DEBUG = True",
+      "ground_truth": "Fixture contract: production configuration exposing debug mode.",
+      "future_improvement": "Distinguish effective deployment environment."
+    },
+    {
+      "id": "config_tls",
+      "category": "Configuration",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "config_tls.py",
+      "source": "import requests\nrequests.get(\"https://service.invalid\",verify=False)",
+      "ground_truth": "TLS peer certificate validation explicitly disabled.",
+      "future_improvement": "Track connection-specific verification configuration."
+    },
+    {
+      "id": "config_yaml",
+      "category": "Configuration",
+      "expected": true,
+      "variant": "vulnerable",
+      "path": "config_yaml.yaml",
+      "source": "debug: true\n",
+      "ground_truth": "Fixture contract: production application debug setting.",
+      "future_improvement": "Validate configuration schema and deployment overrides."
+    },
+    {
+      "id": "config_nodebug",
+      "category": "Configuration",
+      "expected": false,
+      "variant": "protected",
+      "path": "config_nodebug.py",
+      "source": "DEBUG = False",
+      "ground_truth": "Debugging disabled in literal configuration.",
+      "future_improvement": "Preserve literal boolean parsing."
+    },
+    {
+      "id": "config_tls_verified",
+      "category": "Configuration",
+      "expected": false,
+      "variant": "protected",
+      "path": "config_tls_verified.py",
+      "source": "import requests\nrequests.get(\"https://service.invalid\",verify=True)",
+      "ground_truth": "TLS verification explicitly enabled.",
+      "future_improvement": "Preserve API defaults and explicit true handling."
+    },
+    {
+      "id": "config_yaml_safe",
+      "category": "Configuration",
+      "expected": false,
+      "variant": "safe",
+      "path": "config_yaml_safe.yaml",
+      "source": "debug: false\n",
+      "ground_truth": "Literal production debug setting is disabled.",
+      "future_improvement": "Preserve parsed configuration semantics."
+    }
+  ]
+}

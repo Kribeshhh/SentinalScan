@@ -1,24 +1,9 @@
-{% if (finding is defined and finding.source == 'Repository') or (context is defined and context and context.finding.source == 'Repository') %}
-<div id="ai-review">
-<h3>AI Review <small>Optional</small></h3>
-{% if ai_enabled %}
-<p class="help">Request an external AI review of this finding’s redacted excerpt and scanner evidence. AI may be wrong; scanner evidence and status remain unchanged.</p>
+{% if ai_enabled and (finding is defined or (context is defined and context and context.finding)) %}
+<details id="ai-review"><summary>Improve with AI</summary>
+<p class="help">Share this finding’s redacted context and base recommendation with {{ ai_provider_name }}. Repository evidence packages receive an analyst pass and a skeptical review. AI may be wrong; your finding status and scanner evidence remain unchanged.</p>
 <form method="post" action="{{ url_for('ai_review',finding_id=finding_id) }}">
 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-<label><input type="checkbox" name="share_context" value="yes" required> Send this finding’s redacted context to OpenAI for review.</label>
-<button class="button secondary" type="submit">Request AI review</button>
-</form>
-{% else %}<p class="help">AI is disabled. Deterministic scanning and recommendations remain available.</p>{% endif %}
-{% if ai_review_data %}
-<p><strong>{{ {'likely_valid':'Likely Valid','needs_review':'Needs Review','likely_false_positive':'Likely False Positive'}[ai_review_data.assessment] }}</strong> · Saved {{ ai_review_date }} UTC</p>
-<h4>AI Explanation</h4><p>{{ ai_review_data.reason }}</p>
-<h4>AI-Assisted Suggested Fix</h4><p>{{ ai_review_data.remediation }}</p>
-{% if ai_review_data.suggested_code %}<pre class="evidence solution-code"><code>{{ ai_review_data.suggested_code }}</code></pre>{% endif %}
-<p>AI Fix Confidence: {{ ai_review_data.fix_confidence|capitalize }} · Static Validation: {{ ai_review_data.validation.status }}</p>
-{% if ai_review_data.validation.status == 'Passed' %}<p class="help">Static validation passed. Runtime behavior and other scanner modules were not tested; this is not a guaranteed fix.</p>{% endif %}
-{% if ai_review_data.diff %}<details><summary>Review suggested diff</summary><pre class="evidence">{{ ai_review_data.diff }}</pre></details>{% endif %}
-<p class="help">{{ ai_review_data.note }}</p>
-<p class="help">Use the existing source editor to prepare a draft, inspect its diff and explicitly approve a pull request. AI does not apply or merge changes.</p>
-{% endif %}
-</div>
+<label><input type="checkbox" name="share_context" value="yes" required> Send this finding’s redacted context to {{ ai_provider_name }} for review.</label>
+<button class="button secondary" type="submit">Improve with AI</button>
+</form></details>
 {% endif %}

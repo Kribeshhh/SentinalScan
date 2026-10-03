@@ -6,6 +6,7 @@ from integrations.github import GitHubError
 from repository_routes import client
 from analysis.remediation import coordinates, source_diff, validate_content
 from analysis.solution_engine import solution_for
+from analysis.recommendation_composer import final_solution
 from analysis.remediation_workflow import check_draft,workflow_data,finding_solution
 
 
@@ -62,7 +63,7 @@ def register_remediation(app):
         diff=source_diff(draft['original'],draft['edited'],draft['path']) if draft else ''
         return render_template('finding_editor.html',title='Edit finding source',context=context,draft=draft,
             content=content,error=error,diff=diff,preview=preview,finding_id=finding_id,
-            solution=finding_solution(db,context['finding'],draft) if context else None,
+            solution=final_solution(db,context['finding'],draft) if context else None,
             workflow=workflow_data(db,context['finding']) if context else None),400 if error else 200
 
     @app.post('/findings/<int:finding_id>/publish')

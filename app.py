@@ -197,7 +197,8 @@ def create_app(test_config=None):
         workflow = workflow_data(get_db(),finding)
         draft = workflow['draft']
         from analysis.recommendation import finding_presentation
-        solution=finding_solution(get_db(),finding,draft)
+        from analysis.recommendation_composer import final_solution
+        solution=final_solution(get_db(),finding,draft)
         return render_template("finding_detail.html", title="Finding details", finding=finding, presentation=finding_presentation(finding,solution),
             solution=solution, source_loaded=bool(draft), workflow=workflow, finding_id=finding_id)
 

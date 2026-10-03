@@ -531,10 +531,10 @@ services use native DNS, reject non-public addresses, and report DNS/TCP/TLS/HTT
 connection stages separately. No DNS settings, VPN settings or TLS verification
 are changed. This improves recovery but cannot guarantee an unavailable network.
 
-### Optional AI finding review (Phase 4)
+### Optional AI finding review (SAST and DAST)
 
-SAST performs candidate detection. AI is disabled by default and never replaces
-SAST or runs during a repository scan. To enable explicit review of individual
+SAST and DAST perform finding detection. AI is disabled by default and never
+replaces either scanner or runs automatically during scans. To enable explicit review of individual
 findings, configure the server environment:
 
 ```ini
@@ -544,9 +544,9 @@ SENTINELSCAN_LLM_API_KEY=<your provider API key>
 ```
 
 Use a secret manager/environment for the real key; do not commit it or use your
-GitHub PAT. Restart Flask, open a repository finding and choose **Request AI review**
+GitHub PAT. Restart Flask, open a repository or website finding and choose **Improve with AI**
 inside Recommendation after reviewing the context-sharing notice. This sends a
-bounded, redacted excerpt to OpenAI. Repository secrets are redacted before AI
+bounded, redacted context and base recommendation to OpenAI. Repository secrets are redacted before AI
 processing; secret findings send a synthetic redacted assignment only. Unrecognized
 sensitive content can still require manual review, so keep AI disabled for source
 you cannot share externally.
@@ -557,4 +557,122 @@ in the existing editor before requesting review if you want full-file local chec
 otherwise validation is **Not Available**. Nothing is automatically applied or merged.
 Missing keys, outages and invalid responses leave deterministic guidance available.
 
-See [Phase 4 configuration, security, validation and tests](docs/phase_4_llm_and_validation.md).
+Website reviews use recorded HTTP/TLS/CORS/cookie observations and never invent
+source-specific backend fixes. Header/configuration examples are advisory and are
+not claimed to be statically validated deployments. Structured AI responses are
+checked locally; unsupported website code or malformed output falls back to the
+base recommendation. Phase 1 context and existing saved reviews remain available.
+
+See [Phase 2 SAST/DAST integration, privacy and tests](docs/phase_2_llm_integration.md).
+The [earlier AI layer documentation](docs/phase_4_llm_and_validation.md) describes
+its original repository-only implementation; the Phase 2 document supersedes its
+payload/schema and website-support details.
+
+### Unified Recommendation (Phase 3)
+
+Scanner guidance and optional AI review remain separate internally, but finding
+pages, the source editor and newly generated HTML/JSON/CSV reports display **one
+final Recommendation**. Eligible AI content improves that recommendation and adds
+only a small **AI-assisted recommendation** indicator. It does not append a second
+AI recommendation or duplicate the same code.
+
+AI disabled, malformed/failed output, failed validation or a failed refresh uses
+deterministic guidance. A prior review is retained internally after a failed refresh;
+it is not used again until a successful new review. Source-specific AI candidates
+need existing static validation to pass before selection. Website examples remain
+configuration guidance requiring implementation and re-scan. Detection Confidence
+and Fix Confidence remain separate; all fixes require human review.
+
+The earlier AI-layer descriptions above describe its implementation history; this
+phase supersedes the separate-review display and deterministic-only report behavior.
+See [unified composition, report behavior and tests](docs/phase_3_unified_recommendation.md)
+and [five rendered fixture examples](docs/phase_3_recommendation_examples.html).
+
+### Final validation and demonstration readiness (Phase 4)
+
+The final flow is:
+
+- Repository: SAST → finding → base recommendation → optional AI enhancement →
+  one final recommendation → static validation → human review/edit/diff → saved
+  draft → explicit approval → GitHub fix branch and PR. No automatic merge.
+- Website: DAST → finding → base recommendation → optional AI enhancement →
+  one final recommendation → developer implementation/deployment → re-scan/compare.
+
+Failed AI-generated code is withheld with an explicit static-validation warning;
+useful deterministic guidance remains. Static validation checks parsing, the original
+rule and new findings in checked modules. It does not guarantee a secure fix or
+correct runtime behavior. Website advice remains **Requires implementation and
+re-scan**. Humans make the final decision.
+
+Final verification: **172 tests passed, 0 failed**, including controlled source and
+website cases, negative/protected fixtures, optional-AI failure/privacy checks,
+reporting, reviewed remediation, Flask restart and SQLite persistence. No live paid
+AI request or external-target scan was used. SentinelScan has false positives and
+false negatives, limited local SAST flow analysis and bounded unauthenticated DAST.
+AI and generated fixes may be wrong; neither findings nor static checks prove
+exploitability or complete security.
+
+See [final validation report, tested rules, known misses and exact commands](docs/phase_4_validation.md).
+
+## Repository upgrade: bounded flow and optional engines
+
+The custom Python analyzer now follows bounded same-file helper calls, arguments
+and returns. Existing JavaScript/Java semantic checks remain available. Findings
+carry structured source/sink/flow evidence; static paths are not runtime proof.
+
+Semgrep and CodeQL are optional local engines, **disabled by default**. The app
+continues working when either is missing or fails. Semgrep uses bundled taint rules.
+CodeQL supports Python/JavaScript no-build extraction and requires locally installed
+query packs. No repository build scripts, automatic fixes or new AI analysis run.
+
+To enable an installed engine, set `SENTINELSCAN_SEMGREP_ENABLED=true` or
+`SENTINELSCAN_CODEQL_ENABLED=true` before starting Flask. Use
+`SENTINELSCAN_SEMGREP_BINARY` / `SENTINELSCAN_CODEQL_BINARY` for absolute executable
+paths and `SENTINELSCAN_CODEQL_SEARCH_PATH` for a trusted local pack directory.
+
+See [Phase 2 setup, security boundaries, confidence and test results](docs/repository_upgrade_phase_2.md).
+
+Repository Phase 2 verification: **197 tests passed, 0 failed**, including a real
+Semgrep scan of vulnerable/safe fixtures. CodeQL integration was mock-tested;
+live CodeQL execution remains unverified. The earlier phase counts above describe
+historical verification runs.
+
+## Repository upgrade: specialized scanners and correlated evidence
+
+Phase 3 adds static `pyproject.toml` and npm lockfile support, improves secret
+candidate filtering, and correlates matching custom/Semgrep/CodeQL evidence into one
+finding when the same parsed operation can be established. Engine provenance and
+qualified evidence review states remain visible. Unsupported manifests and unknown
+reachability are explicit; dependency matches do not prove exploitable usage.
+
+Bounded, redacted source excerpts and related-function context are retained locally.
+No new LLM requests or credential-validation requests are made. New supported scan
+comparisons tolerate line movement using semantic identities, with legacy fallback.
+See [Phase 3 decisions, limits and verification](docs/repository_upgrade_phase_3.md).
+
+### Repository upgrade Phase 4: optional evidence review
+
+Phase 3 repository evidence can now receive an optional security-analyst pass and
+an independent skeptical review through the existing **Improve with AI** action.
+Static analyzers still detect findings. Disagreement requires manual review; AI
+cannot change severity, risk or triage. Eligible improvements appear in one final
+Recommendation, with existing static code validation and human approval preserved.
+AI remains disabled by default; the shipped provider is selected with
+`SENTINELSCAN_LLM_PROVIDER=openai` alongside the existing LLM key/model settings.
+Historical findings and DAST retain their bounded single-pass compatibility path.
+See [Phase 4 configuration, decisions and limitations](docs/repository_upgrade_phase_4.md).
+
+### Repository upgrade Phase 5: measured accuracy
+
+The final controlled benchmark has **54 labeled fixtures**. Both custom analysis and
+custom + Semgrep measured **18 TP, 5 FP, 22 TN, 9 FN**: precision **78.26%**, recall
+**66.67%**, F1 **72.00%**. This small authored challenge set does not establish
+real-world accuracy; no rules were tuned to hide the misses. **219 regression tests
+passed**, which is separate from detection accuracy.
+
+Run `python3 -m evaluation.run --output evaluation/results-custom.json` with project
+requirements installed. An optional `--semgrep /absolute/path/to/semgrep` measures
+that real engine too; it is never installed automatically. AI is disabled during
+evaluation, source fixtures are never executed, and user scan history is untouched.
+See [accuracy results and every known FP/FN](docs/scanner_accuracy.md) and
+[final architecture/security review](docs/repository_upgrade_phase_5.md).

@@ -90,6 +90,23 @@ def recommendation_for(finding, solution):
     if not s['examples']:
         s['exact']=False
         if not source_matched:s['before']=None
+    if not repo:
+        # HTTP observations cannot establish a backend implementation.
+        s.update(examples=[],before=None,exact=False,source_aware=False)
+        source_matched=False
+        header_examples={
+            'Missing Content-Security-Policy':"Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'self'",
+            'Missing X-Content-Type-Options':'X-Content-Type-Options: nosniff',
+            'Missing Referrer-Policy':'Referrer-Policy: strict-origin-when-cross-origin',
+            'Missing Permissions-Policy':'Permissions-Policy: camera=(), microphone=(), geolocation=()'}
+        config=header_examples.get(f['title'])
+        if category=='Cookie Security':config='Set-Cookie: <cookie-name>=[REDACTED]; Secure; HttpOnly; SameSite=Lax'
+        if config:
+            s['examples']=[dict(language='HTTP configuration example',code=config,kind='Configuration example')]
+        s['notes']=[note for note in s['notes'] if not note.startswith('Illustrative solution:')]
+        note='DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan.'
+        if note not in s['notes']:s['notes'].append(note)
+        s['fix_reason']='The backend implementation is unknown. Configuration examples require adaptation and application testing.'
     if f.get('status')=='False Positive':
         s.update(examples=[],before=None,exact=False,action='No fix is recommended for a finding marked False Positive.',notes=[],verification=[],why='Review the detection before making an unrelated code change.')
     s['source_matched']=source_matched
@@ -105,6 +122,22 @@ def recommendation_for(finding, solution):
     if s['dismissed']:
         s['unavailable']=None
         s['fix_reason']='No replacement is proposed while this detection is marked False Positive.'
+    s['what_to_change']=s['action']
+    s['suggested_code_or_config']=s['examples']
+    s['example_type']='configuration' if not repo and s['examples'] else 'source_specific' if source_matched and s['examples'] else 'illustrative' if s['examples'] else 'none'
+    checks=[e.get('validation',{}).get('status') for e in s['examples']]
+    s['validation_status']='Passed' if checks and all(v=='Passed' for v in checks) else 'Failed' if 'Failed' in checks else 'Not Available'
+    s['additional_actions']=s['notes']+list(s.get('verification',[]))
+    if not repo and s['examples']:s['kind']='Configuration example'
+    if 'finding_context' not in s:
+        if repo:
+            from analysis.finding_context import repository_context
+            s['finding_context']=repository_context(f)
+        else:
+            from scanner.target import safe_url
+            try: affected=safe_url(f['location'])
+            except ValueError: affected='URL unavailable after redaction'
+            s['finding_context']={'kind':'dast','affected_url':affected, 'http_method':None,'http_status':None,'response_headers':{},'observations':{},'scanner_evidence':f.get('evidence',''),'note':'Historical response context was not recorded.'}
     return scrub(s)
 
 

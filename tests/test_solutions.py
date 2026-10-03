@@ -73,8 +73,8 @@ class SolutionIntegrationTests(unittest.TestCase):
 
     def test_historical_finding_page_and_scan_link(self):
         page=self.client.get(f'/findings/{self.id}').get_data(as_text=True)
-        self.assertIn('Suggested Code Solution',page);self.assertIn('Copy code',page)
-        self.assertIn('SELECT id FROM users',page)
+        self.assertIn('Suggested Solution',page);self.assertNotIn('SELECT id FROM users',page)
+        self.assertIn('backend source',page)
         self.assertNotIn('<script>alert(1)</script>',page)
         page=self.client.get(f'/scans/{self.scan}').get_data(as_text=True)
         self.assertIn('#code-solution',page)
@@ -82,10 +82,11 @@ class SolutionIntegrationTests(unittest.TestCase):
     def test_reports_include_machine_readable_and_rendered_solution(self):
         with self.app.app_context():
             data=report_data(get_db(),self.scan)
-            code=data['findings'][0]['solution']['examples'][0]['code']
-            self.assertIn('(username,)',code)
+            solution=data['findings'][0]['solution']
+            self.assertEqual(solution['examples'],[])
+            self.assertEqual(solution['example_type'],'none')
             row=next(row for row in csv.DictReader(io.StringIO(csv_document(data))) if row['record_type']=='finding')
-            self.assertEqual(json.loads(row['details_json'])['solution']['examples'][0]['code'],code)
+            self.assertEqual(json.loads(row['details_json'])['solution'],solution)
         self.client.get('/')
         with self.client.session_transaction() as session: csrf=session['csrf_token']
         for fmt in ('HTML','JSON','CSV'):
@@ -95,5 +96,5 @@ class SolutionIntegrationTests(unittest.TestCase):
                 report=get_db().execute('SELECT id FROM reports ORDER BY id DESC').fetchone()[0]
             response=self.client.get(f'/reports/{report}/download')
             self.assertEqual(response.status_code,200)
-            self.assertIn('SELECT id FROM users',response.get_data(as_text=True))
+            self.assertNotIn('SELECT id FROM users',response.get_data(as_text=True))
             response.close()

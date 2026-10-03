@@ -203,4 +203,11 @@ def solution_for(finding, source=None):
     else:
         result=_solution_for(finding,source)
     result['metadata']=source_metadata(finding,source)
+    if finding['source']=='Repository' and source is not None:
+        from analysis.finding_context import repository_context
+        result['finding_context']=repository_context(finding,source)
+        if result.get('source_aware'):
+            for example in result.get('examples',[]):
+                if example.get('language') in ('Python / sqlite3','Python / psycopg','Python / psycopg2'):
+                    result['finding_context']['database']=example['language'].split(' / ')[1]
     return recommendation_for(finding,result)

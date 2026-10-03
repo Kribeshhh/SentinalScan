@@ -1,4 +1,5 @@
 import ipaddress
+import json
 from contextlib import closing
 from pathlib import Path
 import sqlite3
@@ -74,6 +75,13 @@ class WebsiteTests(unittest.TestCase):
             titles = [r[0] for r in db.execute('SELECT title FROM findings')]
             for expected in ('Potential Reflected XSS','Potential SQL Injection','Potential unsafe credentialed CORS','Exposed Git metadata','Potential exposed environment configuration'):
                 self.assertIn(expected,titles)
+            for row in db.execute('SELECT f.category,s.data_json FROM findings f JOIN finding_solutions s ON s.finding_id=f.id'):
+                solution=json.loads(row['data_json']);context=solution['finding_context']
+                self.assertEqual(context['kind'],'dast')
+                self.assertTrue(context['affected_url'])
+                self.assertIn(context['http_method'],('GET',None))
+                self.assertEqual(solution['example_type'] in ('configuration','none'),True)
+                self.assertNotIn('Python',json.dumps(solution['examples']))
             self.assertGreater(scan['risk_score'],0)
             dump = '\n'.join(db.iterdump())
             self.assertNotIn('LAB_COOKIE_VALUE_MUST_NOT_BE_STORED',dump)
@@ -161,6 +169,8 @@ class WebsiteTests(unittest.TestCase):
             data=tls_scanner.run(ctx)
             self.assertFalse(data['verified'])
             self.assertIn('TLS certificate validation failed',[f.title for f in ctx['findings']])
+            finding=next(f for f in ctx['findings'] if f.title=='TLS certificate validation failed')
+            self.assertFalse(json.loads(finding.context_json)['observations']['tls']['verified'])
         finally:
             server.shutdown();server.server_close();thread.join()
 

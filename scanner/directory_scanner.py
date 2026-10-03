@@ -40,9 +40,9 @@ def run(ctx):
         if result.status != 200 or soft:
             continue
         if path == '/.git/HEAD' and re.fullmatch(r'ref: refs/heads/[\w./-]+\s*', result.text):
-            issue(ctx,'Exposed Git metadata','Medium','Information Disclosure','The Git HEAD resource contains a branch reference; no repository contents were downloaded.','Block access to .git paths and remove repository metadata from the served directory.','High', location=safe_url(result.url))
+            issue(ctx,'Exposed Git metadata','Medium','Information Disclosure','The Git HEAD resource contains a branch reference; no repository contents were downloaded.','Block access to .git paths and remove repository metadata from the served directory.','High', location=safe_url(result.url),response=result)
         if path == '/.env' and not result.html and len(re.findall(r'(?m)^[A-Z_][A-Z0-9_]{2,}\s*=', result.text)) >= 2:
-            issue(ctx,'Potential exposed environment configuration','High','Information Disclosure','The /.env resource contains multiple environment-style assignments. Keys and values are not retained.','Remove configuration files from the web root, block access, and investigate whether secrets require rotation.','Medium',location=safe_url(result.url))
+            issue(ctx,'Potential exposed environment configuration','High','Information Disclosure','The /.env resource contains multiple environment-style assignments. Keys and values are not retained.','Remove configuration files from the web root, block access, and investigate whether secrets require rotation.','Medium',location=safe_url(result.url),response=result)
         if result.html and re.search(r'<title>\s*Index of\s*/', result.text, re.I):
-            issue(ctx,'Directory listing enabled','Low','Information Disclosure','An HTML directory-index title was observed. Entry names are not retained.','Disable directory indexing and restrict access to intended public resources.','High',location=safe_url(result.url))
+            issue(ctx,'Directory listing enabled','Low','Information Disclosure','An HTML directory-index title was observed. Entry names are not retained.','Disable directory indexing and restrict access to intended public resources.','High',location=safe_url(result.url),response=result)
     return {'resources':rows, 'soft_404_baseline_status':missing.status, 'note':'HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic.'}

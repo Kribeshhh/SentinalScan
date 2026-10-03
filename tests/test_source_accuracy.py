@@ -25,6 +25,8 @@ keep_this()
             source=self.sql(driver,'customer_email');f=self.finding(source)
             result=solution_for(f,source)
             self.assertTrue(result['exact']);self.assertEqual(result['kind'],'Suggested Source Fix')
+            self.assertEqual(result['finding_context']['database'],driver)
+            self.assertEqual(result['validation_status'],'Passed')
             candidate=result['examples'][0]
             self.assertIn('customer_email',candidate['code']);self.assertNotIn('username',candidate['code'])
             self.assertIn('SELECT id FROM accounts WHERE email=',candidate['code'])

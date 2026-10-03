@@ -14,7 +14,7 @@ def run(ctx):
     port = (effective.port or 443) if https else 443
     result = {'port':port, 'https_target':https}
     if not https and response is not None and response.status not in (301,302,303,307,308):
-        issue(ctx,'Website served over unencrypted HTTP','Low','Transport Security','The requested page was served over HTTP without an HTTPS upgrade.','Serve this resource over HTTPS and redirect HTTP requests to HTTPS.','High')
+        issue(ctx,'Website served over unencrypted HTTP','Low','Transport Security','The requested page was served over HTTP without an HTTPS upgrade.','Serve this resource over HTTPS and redirect HTTP requests to HTTPS.','High',observations={'tls':dict(result)})
     def handshake(verify):
         context = ssl.create_default_context(cafile=ctx['client'].cafile)
         if not verify:
@@ -33,7 +33,7 @@ def run(ctx):
         reasons = {10:'expired',9:'not yet valid',62:'hostname mismatch',64:'IP address mismatch',18:'self-signed certificate',19:'self-signed certificate chain',20:'issuer unavailable',21:'chain verification failed'}
         reason = reasons.get(error.verify_code, 'certificate trust or identity verification failed')
         result.update(verified=False, verification_error=reason)
-        issue(ctx,'TLS certificate validation failed','Medium','TLS', 'Certificate verification result: ' + reason + '.','Install a trusted, current certificate whose subject alternative names cover the hostname.','High')
+        issue(ctx,'TLS certificate validation failed','Medium','TLS', 'Certificate verification result: ' + reason + '.','Install a trusted, current certificate whose subject alternative names cover the hostname.','High',observations={'tls':dict(result)})
         try:
             # Certificate inspection only; no HTTP/application data on this unverified connection.
             der, version, cipher = handshake(False)
@@ -53,8 +53,8 @@ def run(ctx):
     days = (expiry - datetime.now(timezone.utc)).days
     result['days_remaining'] = days
     if 0 <= days <= 30:
-        issue(ctx,'TLS certificate expires soon','Low','TLS',f'Certificate expires in {days} days.','Renew the certificate and verify automatic renewal.','High')
+        issue(ctx,'TLS certificate expires soon','Low','TLS',f'Certificate expires in {days} days.','Renew the certificate and verify automatic renewal.','High',observations={'tls':dict(result)})
     if version in ('TLSv1', 'TLSv1.1') or cipher[2] < 128:
-        issue(ctx,'Weak negotiated TLS configuration','Medium','TLS','Negotiated protocol: ' + version + '; cipher: ' + cipher[0], 'Require TLS 1.2 or newer and modern cipher suites.','High')
+        issue(ctx,'Weak negotiated TLS configuration','Medium','TLS','Negotiated protocol: ' + version + '; cipher: ' + cipher[0], 'Require TLS 1.2 or newer and modern cipher suites.','High',observations={'tls':dict(result)})
     result['coverage'] = 'One modern handshake; does not enumerate all supported protocols/ciphers.'
     return result

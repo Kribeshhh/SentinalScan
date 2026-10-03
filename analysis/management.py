@@ -67,10 +67,21 @@ def compare_scans(db,baseline_id,current_id):
         raise ValueError('Scans must assess the same target. Repository comparisons also require the same branch.')
     if (previous['created_at'],previous['id']) >= (current['created_at'],current['id']):
         raise ValueError('The baseline must be older than the current scan.')
+    loaded={}
+    for scan_id in (baseline_id,current_id):
+        loaded[scan_id]=[]
+        for row in db.execute('SELECT * FROM findings WHERE scan_id=? ORDER BY id',(scan_id,)):
+            finding=dict(row)
+            saved=db.execute('SELECT data_json FROM finding_solutions WHERE finding_id=?',(finding['id'],)).fetchone()
+            logical=json.loads(saved[0]).get('finding_context',{}).get('analysis',{}).get('logical_fingerprint') if saved else None
+            loaded[scan_id].append((finding,logical))
+    # Preserve legacy matching for any rule/file family with missing new evidence.
+    legacy_families={comparison_fingerprint(f) for rows in loaded.values() for f,logical in rows if not logical}
     def groups(scan_id):
         result={}
-        for row in db.execute('SELECT * FROM findings WHERE scan_id=? ORDER BY id',(scan_id,)):
-            finding=dict(row);key=comparison_fingerprint(finding)
+        for finding,logical in loaded[scan_id]:
+            legacy=comparison_fingerprint(finding)
+            key=logical if logical and legacy not in legacy_families else legacy
             result.setdefault(key,[]).append(finding)
         return result
     old,new=groups(baseline_id),groups(current_id)
@@ -78,7 +89,7 @@ def compare_scans(db,baseline_id,current_id):
         return {'fingerprint':key,'finding':rows[0],'occurrences':len(rows),'finding_ids':[r['id'] for r in rows]}
     a,b=scan_metrics(db,previous),scan_metrics(db,current)
     warnings=['RESOLVED means absent from the later scan, not proof of remediation. All triage statuses participate in detection matching.',
-              'Comparisons group findings by source, category, title and location. Repository line numbers are ignored; repeated matches in one file are one group.',
+              'New supported repository findings use semantic operation/scope identities without line numbers. Families missing that evidence use legacy title/file grouping; repeated identical operations may remain one comparison group.',
               'Website query values are redacted; target identity compares scheme, host, port, path and query parameter names.']
     for scan in (previous,current):
         modules=db.execute('SELECT name,status FROM scan_modules WHERE scan_id=?',(scan['id'],)).fetchall()

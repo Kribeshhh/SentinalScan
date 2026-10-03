@@ -69,6 +69,20 @@ class SourceScannerTests(unittest.TestCase):
     def tearDown(self):
         self.app.extensions['scan_manager'].shutdown();self.temp.cleanup()
 
+    def test_optional_tool_failure_preserves_custom_scan(self):
+        from scanner.engines.process import ToolFailure
+        self.app.config.update(SEMGREP_ENABLED=True,CODEQL_ENABLED=True)
+        with patch('scanner.engines.external.executable',return_value='/trusted/tool'),patch('scanner.engines.external.run_tool',side_effect=ToolFailure('Analysis timed out.')):
+            response=self.client.post('/repository-scan',data={'csrf_token':self.csrf,'action':'start','repository':REPO['full_name'],'branch':'main','authorized':'yes'})
+            self.assertEqual(response.status_code,303)
+            self.app.extensions['scan_manager'].shutdown()
+        with self.app.app_context():
+            db=get_db()
+            self.assertEqual(db.execute('SELECT status FROM scans').fetchone()[0],'Completed')
+            self.assertGreater(db.execute('SELECT count(*) FROM findings').fetchone()[0],0)
+            for engine in ('Semgrep','CodeQL'):
+                self.assertEqual(db.execute('SELECT status FROM scan_modules WHERE name=?',(engine,)).fetchone()[0],'Failed')
+
     def test_repository_pipeline_and_secret_redaction(self):
         response=self.client.post('/repository-scan',data={'csrf_token':self.csrf,'action':'start','repository':REPO['full_name'],'branch':'feature/lab','authorized':'yes'})
         self.assertEqual(response.status_code,303)
@@ -79,7 +93,7 @@ class SourceScannerTests(unittest.TestCase):
             db=get_db();scan=db.execute('SELECT * FROM scans').fetchone()
             self.assertEqual(scan['scan_type'],'Repository');self.assertEqual(scan['status'],'Completed');self.assertEqual(scan['progress'],100)
             rows=db.execute('SELECT * FROM scan_modules').fetchall()
-            self.assertTrue(all(row['status']=='Completed' for row in rows),[(row['name'],row['error']) for row in rows])
+            self.assertTrue(all(row['status']==('Skipped' if row['name'] in ('Semgrep','CodeQL') else 'Completed') for row in rows),[(row['name'],row['error']) for row in rows])
             titles=[row[0] for row in db.execute('SELECT title FROM findings')]
             for title in ('Dynamic Python code execution','Potential shell command injection','Potential SQL injection in constructed query','Potential unsafe deserialization','Weak hash algorithm usage','Dynamic JavaScript code execution','Potential unsafe DOM HTML assignment','Dynamic Java process execution','Potential SQL injection in Java query','Potential unsafe Java deserialization','Weak Java cryptographic algorithm','Password form uses GET','Debug or development mode configured','GitHub token'):
                 self.assertIn(title,titles)

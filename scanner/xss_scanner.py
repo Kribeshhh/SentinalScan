@@ -40,5 +40,5 @@ def run(ctx):
             contexts.add('non-HTML response')
         observations.append({'parameter':name, 'reflected':True,'contexts':sorted(contexts)})
         if contexts & {'script text','event-handler attribute'}:
-            issue(ctx,'Potential Reflected XSS','Low','Reflected XSS',f'A harmless alphanumeric marker for parameter {name} appeared in: {", ".join(sorted(contexts))}. No script execution or escaping bypass was demonstrated.','Review contextual output encoding and avoid interpolation into JavaScript or event handlers.','Low',location=safe_url(response.url) + ' [parameter: ' + name + ']')
+            issue(ctx,'Potential Reflected XSS','Low','Reflected XSS',f'A harmless alphanumeric marker for parameter {name} appeared in: {", ".join(sorted(contexts))}. No script execution or escaping bypass was demonstrated.','Review contextual output encoding and avoid interpolation into JavaScript or event handlers.','Low',location=safe_url(response.url) + ' [parameter: ' + name + ']',response=probe,observations={'parameter':name,'reflection_contexts':sorted(contexts)})
     return {'parameters':observations,'note':'Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed.'}

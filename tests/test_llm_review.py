@@ -13,7 +13,12 @@ from integrations.llm import review
 
 
 def response(**changes):
-    result=dict(assessment='likely_valid',reason='Dynamic input reaches HTML.',remediation='Review text-only rendering.',original_code='',suggested_code='',fix_confidence='medium')
+    original=changes.pop('original_code','');code=changes.pop('suggested_code','')
+    remediation=changes.pop('remediation','Review text-only rendering.')
+    result=dict(assessment='likely_valid',reason='Dynamic input reaches HTML.',
+        recommendation=dict(what_to_change=remediation,suggested_code_or_config=code,
+                            example_type='source_specific' if code else 'none',why='Avoid interpreting input as markup.',additional_actions=['Test intended rendering.']),
+        original_code=original,fix_confidence='medium')
     result.update(changes);return result
 
 
@@ -99,7 +104,7 @@ class LLMRouteTests(unittest.TestCase):
         self.assertEqual(len(self.calls),1)
         soup=BeautifulSoup(page.data,'html.parser')
         self.assertIsNotNone(soup.select_one('#recommendation #ai-review'))
-        self.assertIn('Likely Valid',page.get_data(as_text=True));self.assertNotIn('<script>bad()</script>',page.get_data(as_text=True))
+        self.assertIn('AI-assisted recommendation',page.get_data(as_text=True));self.assertNotIn('<script>bad()</script>',page.get_data(as_text=True))
         with self.app.app_context():
             db=get_db();self.assertEqual(db.execute('SELECT status FROM findings').fetchone()[0],'Open')
             self.assertEqual(db.execute('SELECT COUNT(*) FROM ai_reviews').fetchone()[0],1)

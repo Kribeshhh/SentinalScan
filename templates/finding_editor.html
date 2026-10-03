@@ -4,7 +4,7 @@
 {% if error %}<div class="form-error" role="alert">{{ error }}</div>{% endif %}
 {% if context %}
 <section class="card detail-card">
-<h2>{{ context.finding.title }}</h2><p class="help">{{ context.finding.recommendation }}</p>
+<h2>{{ context.finding.title }}</h2>
 <dl class="editor-metadata"><dt>Repository</dt><dd>{{ context.repository }}</dd><dt>File / detected line</dt><dd>{{ context.path }} : {{ context.line }}</dd><dt>Base branch</dt><dd>{{ context.base_branch }}</dd><dt>Scanned commit</dt><dd><code>{{ context.commit_sha }}</code></dd></dl>
 <p class="help">Edits start from the scanned commit. A pull request creates a separate branch; review and test it before merging, then re-scan. Finding status stays unchanged.</p>
 {% if not draft %}

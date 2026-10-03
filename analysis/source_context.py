@@ -47,6 +47,15 @@ def retain_context(db,scan_id,root,paths,repository,commit,known=()):
                 solution['context']=solution.get('context') or '\n'.join(f'{n:>4} {">" if n==line else " "} {lines[n-1][:1000]}' for n in range(max(1,line-3),min(len(lines),line+3)+1))
                 if not solution.get('exact') and finding['category']!='Dependency':
                     solution['source_status']='Source captured automatically at scanned commit '+commit+'. Potential secrets are masked.'
+                from analysis.finding_context import repository_context
+                solution.setdefault('finding_context',repository_context(finding,mask_source(source,known)))
+                if not solution['finding_context'].get('snippet'):
+                    solution['finding_context']=repository_context(finding,mask_source(source,known))
+                previous=db.execute('SELECT data_json FROM finding_solutions WHERE finding_id=?',(finding_id,)).fetchone()
+                if previous:
+                    analysis=json.loads(previous['data_json']).get('finding_context',{}).get('analysis')
+                    if analysis:
+                        solution['finding_context']['analysis']=analysis
                 # Redact field values independently to preserve valid JSON.
                 from analysis.redaction import scrub
                 payload=json.dumps(scrub(solution,known),ensure_ascii=False)

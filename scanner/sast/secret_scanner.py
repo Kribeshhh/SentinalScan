@@ -1,5 +1,6 @@
 import ast
 import re
+from pathlib import PurePosixPath
 from analysis.redaction import TOKEN_PATTERNS, ASSIGNMENT, plausible
 from scanner.sast.common import add, check_budget
 
@@ -10,8 +11,10 @@ def credential_assignment(path,key,value):
     if path.lower().endswith('.json') and any(part.lower() in ('i18n','locales','translations') for part in path.split('/')):
         return False
     key=re.sub(r'([a-z])([A-Z])',r'\1_\2',key).lower()
-    if not re.fullmatch(r'(?:[a-z0-9]+[_.-])*(?:password|passwd|secret(?:[_-]?key)?|token|api[_-]?key|access[_-]?token|auth[_-]?token|credential|database[_-]?url|db[_-]?url|aws[_-]?access[_-]?key[_-]?id)',key):
+    if not re.fullmatch(r'(?:[a-z0-9]+[_.-])*(?:password|passwd|secret(?:[_-]?key)?|token|api[_-]?key|access[_-]?token|auth[_-]?token|credential|database[_-]?url|db[_-]?url|aws[_-]?access[_-]?key[_-]?id|aws[_-]?secret[_-]?access[_-]?key)',key):
         return False
+    if re.fullmatch(r'\$[A-Za-z_][A-Za-z0-9_]*',value.strip()):return False
+    if re.fullmatch(r'(?i)(?:dummy|test|sample|fake)[_-](?:password|token|secret|key)(?:[_-]\d+)?',value.strip()):return False
     return plausible(value)
 
 
@@ -20,6 +23,7 @@ def run(ctx):
     for path in ctx['paths']:
         check_budget(ctx)
         text=(ctx['root']/path).read_text(encoding='utf-8-sig')
+        docs=PurePosixPath(path).suffix.lower() in ('.md','.rst') or any(part.lower() in ('docs','examples','fixtures') for part in PurePosixPath(path).parts)
         matches=[]
         for label,pattern in TOKEN_PATTERNS:
             for match in re.finditer(pattern,text):
@@ -34,7 +38,7 @@ def run(ctx):
                         names=' '.join(t.id if isinstance(t,ast.Name) else t.attr if isinstance(t,ast.Attribute) else '' for t in targets)
                         value=node.value.value
                         if any(credential_assignment(path,name,value) for name in names.split()):
-                            matches.append((node.lineno,'Hardcoded credential',value,'Medium'))
+                            matches.append((node.lineno,'Hardcoded credential',value,'Low' if docs else 'Medium'))
             except (SyntaxError,ValueError,RecursionError):
                 pass
         else:
@@ -45,7 +49,7 @@ def run(ctx):
                     config=path.rsplit('/',1)[-1].startswith('.env') or path.endswith(('.properties','.yml','.yaml','.ini','.cfg','.conf'))
                     if not match.group(2) and not config and re.fullmatch(r'[A-Za-z_$][\w.$]*(?:\([^)]*\))?',value):
                         continue
-                    matches.append((text.count('\n',0,match.start())+1,'Potential embedded credential',value,'Medium'))
+                    matches.append((text.count('\n',0,match.start())+1,'Potential embedded credential',value,'Low' if docs else 'Medium'))
         seen=set()
         for line,label,value,confidence in matches:
             ctx['secrets'].add(value)

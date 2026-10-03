@@ -32,7 +32,9 @@ def report_data(db,scan_id):
         raise ValueError('Wait for the scan to finish before generating a report.')
     findings=[dict(row) for row in db.execute('SELECT * FROM findings WHERE scan_id=? ORDER BY id',(scan_id,))]
     for finding in findings:
-        finding['solution']=solution_for(finding)
+        from analysis.recommendation_composer import final_solution
+        finding['solution']=final_solution(db,finding)
+        finding['recommendation']=finding['solution']['what_to_change']
     modules=[]
     for row in db.execute('SELECT * FROM scan_modules WHERE scan_id=? ORDER BY id',(scan_id,)):
         module=dict(row);module['observations']=json.loads(module.pop('data_json'));modules.append(module)

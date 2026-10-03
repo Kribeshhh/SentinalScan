@@ -1,0 +1,52 @@
+rules:
+  - id: sentinelscan.python.flask-sql-flow
+    languages: [python]
+    mode: taint
+    message: Flask input reaches a SQL query argument; review query construction and bindings.
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-89"]
+      category: security
+    pattern-sources:
+      - pattern: request.args.get(...)
+      - pattern: request.form.get(...)
+      - pattern: request.args[...]
+    pattern-sanitizers:
+      - pattern: int(...)
+      - pattern: float(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $DB.execute($QUERY, ...)
+          - focus-metavariable: $QUERY
+  - id: sentinelscan.python.flask-shell-flow
+    languages: [python]
+    mode: taint
+    message: Flask input reaches a shell command; review command construction.
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      category: security
+    pattern-sources:
+      - pattern: request.args.get(...)
+      - pattern: request.form.get(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: subprocess.run($COMMAND, ..., shell=True, ...)
+          - focus-metavariable: $COMMAND
+  - id: sentinelscan.javascript.dom-flow
+    languages: [javascript]
+    mode: taint
+    message: Browser input reaches HTML insertion; review HTML sanitization.
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-79"]
+      category: security
+    pattern-sources:
+      - pattern: location.hash
+      - pattern: location.search
+    pattern-sanitizers:
+      - pattern: DOMPurify.sanitize(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $NODE.innerHTML = $HTML
+          - focus-metavariable: $HTML

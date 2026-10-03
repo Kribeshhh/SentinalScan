@@ -101,7 +101,7 @@ class FoundationTests(unittest.TestCase):
                 db.execute("UPDATE findings SET scan_id=999 WHERE id=?", (finding_id,))
             db.rollback()
             row = db.execute("SELECT * FROM findings WHERE id=?", (finding_id,)).fetchone()
-            fields = {key:row[key] for key in Finding.__dataclass_fields__}
+            fields = {key:row[key] for key in Finding.__dataclass_fields__ if key != "context_json"}
             finding = Finding(**fields)
             self.assertEqual(finding.fingerprint, row["fingerprint"])
             with self.assertRaises(sqlite3.IntegrityError):

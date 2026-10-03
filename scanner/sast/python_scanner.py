@@ -2,11 +2,71 @@
 import ast
 from dataclasses import replace
 from scanner.sast.common import add,files,check_budget
+from scanner.sast.evidence import semantic
 from scanner.sast.flow import Value,UNKNOWN,combine,merge_environments,confidence,evidence,sensitive_name
 
 
 class Analyzer:
-    def __init__(self,ctx,path):self.ctx=ctx;self.path=path;self.env={};self.aliases={};self.target=''
+    def __init__(self,ctx,path):self.ctx=ctx;self.path=path;self.env={};self.aliases={};self.target='';self.function_name=None;self.functions={};self.global_env={};self.global_aliases={};self.active=[];self.expansions=0;self.returns=[];self.limited=False;self.class_depth=0
+
+    def prepare(self,tree):
+        # Only unambiguous plain module functions; no dispatch, decorators or closures.
+        definitions={}
+        for node in tree.body:
+            if isinstance(node,ast.FunctionDef):definitions.setdefault(node.name,[]).append(node)
+        for name,nodes in list(definitions.items())[:100]:
+            node=nodes[0]
+            if len(nodes)==1 and not node.decorator_list and not node.args.vararg and not node.args.kwarg:
+                self.functions[name]=node
+                self.env[name]=Value(callable_name=name)
+        self.global_env=self.env.copy()
+
+    def invoke(self,name,args,keywords):
+        if name in self.active or len(self.active)>=4 or self.expansions>=100:
+            self.limited=True
+            return replace(combine(args),static=False,uncertain=True,callable_name=None)
+        node=self.functions[name]
+        params=node.args.posonlyargs+node.args.args
+        if len(args)>len(params) or None in keywords:
+            return replace(combine(args),static=False,uncertain=True,callable_name=None)
+        supplied={p.arg:v for p,v in zip(params,args)}
+        if any(key in supplied for key in keywords):return replace(combine(args),static=False,uncertain=True)
+        if any(key not in {p.arg for p in params+node.args.kwonlyargs} for key in keywords):
+            return replace(combine([*args,*keywords.values()]),static=False,uncertain=True)
+        supplied.update(keywords)
+        defaults=dict(zip([p.arg for p in params][-len(node.args.defaults):],node.args.defaults)) if node.args.defaults else {}
+        defaults.update({p.arg:v for p,v in zip(node.args.kwonlyargs,node.args.kw_defaults) if v is not None})
+        if any(p.arg in keywords for p in node.args.posonlyargs) or any(p.arg not in supplied and p.arg not in defaults for p in params+node.args.kwonlyargs):
+            return replace(combine([*args,*keywords.values()]),static=False,uncertain=True)
+
+        saved=self.env,self.aliases,self.target,self.function_name,self.returns
+        self.env=self.global_env.copy();self.aliases=self.global_aliases.copy();self.target='';self.function_name=name;self.returns=[]
+        self.active.append(name);self.expansions+=1
+        try:
+            # A local declaration shadows a module helper even before assignment.
+            def bind_locals(nodes):
+                for child in nodes:
+                    if isinstance(child,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,ast.Lambda)):
+                        if hasattr(child,'name'):self.env[child.name]=UNKNOWN
+                        continue
+                    if isinstance(child,ast.Name) and isinstance(child.ctx,ast.Store):
+                        self.env[child.id]=UNKNOWN;self.aliases.pop(child.id,None)
+                    bind_locals(ast.iter_child_nodes(child))
+            bind_locals(node.body)
+            for param in params+node.args.kwonlyargs:
+                value=supplied.get(param.arg)
+                if value is None:value=self.expr(defaults[param.arg]) if param.arg in defaults else UNKNOWN
+                self.env[param.arg]=replace(value.assigned(name+'('+param.arg+')'),calls=(value.calls+(name,))[-6:])
+                self.aliases.pop(param.arg,None)
+            self.block(node.body)
+            result=(self.returns[0] if len(self.returns)==1 else combine(self.returns,preserve_html=True)) if self.returns else UNKNOWN
+            # A function with a possible fallthrough cannot be called a constant sanitizer.
+            if not node.body or not isinstance(node.body[-1],ast.Return):
+                result=replace(result,static=False,uncertain=True)
+            return replace(result,trace=(result.trace+(name+'() return',))[-8:],calls=(result.calls+(name,))[-6:])
+        finally:
+            self.active.pop()
+            self.env,self.aliases,self.target,self.function_name,self.returns=saved
 
     def name(self,node):
         if isinstance(node,ast.Name):return self.aliases.get(node.id,node.id if node.id not in self.env else '')
@@ -17,7 +77,7 @@ class Analyzer:
         detail=evidence(value,sink)
         if category=='Cryptography':
             detail=sink+(': security-sensitive naming/context detected; confirm actual use.' if severity=='High' else ': weak hash detected; checksum-only use may be acceptable. Purpose requires review.')
-        add(self.ctx,self.path,node.lineno,title,category,detail,recommendation,severity,level or confidence(value))
+        add(self.ctx,self.path,node.lineno,title,category,detail,recommendation,severity,level or confidence(value),semantic=semantic(node,value,sink,"Python",self.function_name))
 
     def expr(self,node):
         if node is None:return UNKNOWN
@@ -36,6 +96,11 @@ class Analyzer:
             fn=self.name(node.func)
             receiver=self.expr(node.func.value) if isinstance(node.func,ast.Attribute) else UNKNOWN
             args=[self.expr(a) for a in node.args];keywords={k.arg:self.expr(k.value) for k in node.keywords}
+            callable_value=self.env.get(node.func.id,UNKNOWN) if isinstance(node.func,ast.Name) else UNKNOWN
+            if callable_value.callable_name in self.functions:
+                if any(isinstance(arg,ast.Starred) for arg in node.args):
+                    return replace(combine(args),static=False,uncertain=True)
+                return self.invoke(callable_value.callable_name,args,keywords)
             first=args[0] if args else UNKNOWN
             source=receiver.sources or ((fn,) if fn in ('request.get_json','flask.request.get_json','input','builtins.input') else ())
             result=replace(combine([receiver,*args]),static=False,literal=None)
@@ -43,7 +108,7 @@ class Analyzer:
             if fn in ('str','bytes') and args:return first
             if fn in ('int','float') and args:
                 # Numeric conversion constrains SQL/shell metacharacters, but is not a generic sanitizer.
-                return replace(first,static=False,sources=(),constructed=False)
+                return replace(first,static=False,constructed=False,protections=("sql-value",))
             if isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join'):
                 result=combine([receiver,*args,*keywords.values()],constructed=True)
             if fn in ('eval','exec','builtins.eval','builtins.exec') and args and not first.static:
@@ -53,7 +118,7 @@ class Analyzer:
             shell=keywords.get('shell',Value(static=True,literal=False))
             if fn in ('subprocess.run','subprocess.call','subprocess.Popen','subprocess.check_call','subprocess.check_output') and args and not first.static and shell.literal is True:
                 self.report(node,'Unsafe subprocess shell invocation','Injection',first,fn+'(shell=True)','High','Use an argument array and shell=False.')
-            if isinstance(node.func,ast.Attribute) and node.func.attr in ('execute','executemany','executescript','raw') and args and not first.static and (first.constructed or first.sources):
+            if isinstance(node.func,ast.Attribute) and node.func.attr in ('execute','executemany','executescript','raw') and args and not first.static and (first.constructed or first.sources) and 'sql-value' not in first.protections:
                 self.report(node,'Potential SQL injection in constructed query','Injection',first,'SQL '+node.func.attr,'High','Use database-bound parameters instead of concatenation or interpolation.')
             unsafe=fn in ('pickle.load','pickle.loads','dill.load','dill.loads','marshal.loads','marshal.load')
             if fn=='yaml.load':
@@ -68,6 +133,8 @@ class Analyzer:
                 self.report(node,'Weak hash algorithm usage' if weak else 'Weak hash algorithm selection','Cryptography',data,fn,
                     'High' if sensitive else 'Low','Use dedicated password hashing for credentials; checksum-only use may be acceptable. Review the purpose before changing algorithms.',
                     ('High' if data.sources else 'Medium') if sensitive else 'Low')
+            if not source and fn not in ('str','bytes') and not (isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join')):
+                result=replace(result,uncertain=True,protections=(),trace=(result.trace+((fn or '<unresolved call>')+'() transformation',))[-8:])
             return result
         if isinstance(node,(ast.BinOp,ast.JoinedStr)):
             children=[self.expr(n) for n in ast.iter_child_nodes(node) if not isinstance(n,ast.operator)]
@@ -84,7 +151,9 @@ class Analyzer:
             for item in target.elts:self.assign(item,UNKNOWN)
 
     def function(self,node):
-        saved=self.env,self.aliases,self.target
+        saved=self.env,self.aliases,self.target,self.function_name
+        self.function_name=getattr(node,"name","<lambda>")
+        saved_returns=self.returns;self.returns=[]
         self.env=self.env.copy();self.aliases=self.aliases.copy();self.target=''
         # Local names shadow outer variables even before their first assignment.
         def locals_in(nodes):
@@ -101,15 +170,20 @@ class Analyzer:
         for name in locals_in(body):self.env[name]=UNKNOWN;self.aliases.pop(name,None)
         if isinstance(node,ast.Lambda):self.expr(node.body)
         else:self.block(body)
-        self.env,self.aliases,self.target=saved
+        self.env,self.aliases,self.target,self.function_name=saved
+        self.returns=saved_returns
 
     def block(self,nodes):
         for node in nodes:
             if 'deadline' in self.ctx:check_budget(self.ctx)
+            if self.function_name is None and not self.class_depth:
+                self.global_env=self.env.copy();self.global_aliases=self.aliases.copy()
+            if isinstance(node,ast.Return):
+                self.returns.append(self.expr(node.value));break
             if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)):
-                self.function(node);self.env[node.name]=UNKNOWN;self.aliases.pop(node.name,None)
+                self.function(node);self.env[node.name]=Value(callable_name=node.name) if self.functions.get(node.name) is node else UNKNOWN;self.aliases.pop(node.name,None)
             elif isinstance(node,ast.ClassDef):
-                saved=self.env,self.aliases;self.env=self.env.copy();self.aliases=self.aliases.copy();self.block(node.body);self.env,self.aliases=saved
+                saved=self.env,self.aliases;self.env=self.env.copy();self.aliases=self.aliases.copy();self.class_depth+=1;self.block(node.body);self.class_depth-=1;self.env,self.aliases=saved
             elif isinstance(node,(ast.Import,ast.ImportFrom)):
                 for alias in node.names:
                     key=alias.asname or (alias.name.split('.')[0] if isinstance(node,ast.Import) else alias.name)
@@ -123,6 +197,8 @@ class Analyzer:
                 for target in targets:self.assign(target,value)
                 self.target=''
             elif isinstance(node,ast.If):
+                if isinstance(node.test,ast.Constant):
+                    self.block(node.body if node.test.value else node.orelse);continue
                 self.expr(node.test);before=self.env.copy();aliases=self.aliases.copy()
                 self.block(node.body);left=self.env.copy();left_alias=self.aliases.copy()
                 self.env=before.copy();self.aliases=aliases.copy();self.block(node.orelse)
@@ -148,9 +224,18 @@ class Analyzer:
 
 
 def run(ctx):
-    count=0;errors=[]
+    count=0;errors=[];limited=[];start=len(ctx['findings'])
     for path,source in files(ctx,('.py',)):
-        try:tree=ast.parse(source);Analyzer(ctx,path).block(tree.body)
+        try:
+            tree=ast.parse(source);analyzer=Analyzer(ctx,path);analyzer.prepare(tree);analyzer.block(tree.body)
+            if analyzer.limited:limited.append(path)
         except (SyntaxError,ValueError,RecursionError):errors.append(path);continue
         count+=1
-    return {'parsed_files':count,'unparsed_files':errors[:100],'note':'Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; no interprocedural analysis or execution.'}
+    # Keep the strongest supported path per existing fingerprint, not duplicate call-site findings.
+    unique={}
+    rank={'Low':0,'Medium':1,'High':2}
+    for finding in ctx['findings'][start:]:
+        prior=unique.get(finding.fingerprint)
+        if prior is None or rank[finding.confidence]>rank[prior.confidence]:unique[finding.fingerprint]=finding
+    ctx['findings'][start:]=list(unique.values())
+    return {'flow_limited_files':limited,'parsed_files':count,'unparsed_files':errors[:100],'note':'Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof.'}

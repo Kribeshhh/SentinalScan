@@ -1,0 +1,11 @@
+{% if solution.evidence_review %}
+{% set review = solution.evidence_review %}
+<details class="help"><summary>AI evidence review: {{ review.assessment|replace('_',' ')|title }}</summary>
+{% if review.disagreement %}<p>The analyst and skeptical reviewer disagree. Deterministic guidance is retained; review the evidence manually.</p>{% endif %}
+{% for role in ['analyst','skeptic'] %}
+<p><strong>{{ 'Security analyst' if role == 'analyst' else 'Skeptical reviewer' }}:</strong> {{ review[role].assessment|replace('_',' ')|title }}. {{ review[role].reason }}</p>
+{% if review[role].false_positive_indicators %}<ul>{% for indicator in review[role].false_positive_indicators %}<li>{{ indicator }}</li>{% endfor %}</ul>{% endif %}
+{% endfor %}
+<p>{{ review.confidence_basis }}</p>
+</details>
+{% endif %}

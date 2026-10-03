@@ -1,7 +1,9 @@
 from tree_sitter import Language, Parser
 import tree_sitter_javascript
 import warnings
+from dataclasses import replace
 from scanner.sast.common import add,files
+from scanner.sast.evidence import semantic
 
 
 def walk(root):
@@ -38,19 +40,19 @@ def analyze(ctx,path,source,offset=0):
                 value=combine(args)
                 if not value.static:
                     add(ctx,path,line,'Dynamic JavaScript code execution','Code Security',evidence(value,callee),
-                        'Use explicit functions and structured data instead of dynamically compiling code.','High' if value.sources else 'Medium',confidence(value))
+                        'Use explicit functions and structured data instead of dynamically compiling code.','High' if value.sources else 'Medium',confidence(value),semantic=semantic(node,replace(value,html_safe=any(arg.html_safe for arg in args)),callee,'JavaScript',offset=offset))
             if callee=='document.write' and args:
                 value=combine(args,preserve_html=True)
                 if not value.static and not value.html_safe:
                     add(ctx,path,line,'Potential unsafe document.write','Injection',evidence(value,callee),
-                        'Use textContent or safe DOM construction; sanitize HTML when HTML is required.','Medium',confidence(value))
+                        'Use textContent or safe DOM construction; sanitize HTML when HTML is required.','Medium',confidence(value),semantic=semantic(node,value,callee if node.type=='call_expression' else prop,'JavaScript',offset=offset))
         elif node.type=='assignment_expression':
             left=node.child_by_field_name('left');value=args[0]
             if left and left.type in ('member_expression','subscript_expression'):
                 prop=text(left.child_by_field_name('property') or left.child_by_field_name('index')).strip('"\'')
                 if prop in ('innerHTML','outerHTML') and not value.static and not value.html_safe:
                     add(ctx,path,line,'Potential unsafe DOM HTML assignment','Injection',evidence(value,prop),
-                        'Use textContent for text, or a maintained HTML sanitizer before assigning HTML.','Medium',confidence(value))
+                        'Use textContent for text, or a maintained HTML sanitizer before assigning HTML.','Medium',confidence(value),semantic=semantic(node,value,callee if node.type=='call_expression' else prop,'JavaScript',offset=offset))
     TreeFlow(ctx,inspect,'js').value(root)
     return True
 

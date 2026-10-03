@@ -70,3 +70,173 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 - Test enabled/disabled/outage/invalid response/redaction/bad-code cases and the full
   suite. Mock provider calls unless live use is explicitly authorized.
 - Phase 4 is optional and complete; stop unless the user requests further work.
+
+## Finding context preparation (new Phase 1)
+
+- Read `docs/phase_1_finding_context.md` before changing SAST/DAST context.
+- Reuse `finding_solutions` snapshots; context_json is transient, not a findings
+  column. Preserve fingerprints, triage and historical compatibility.
+- Capture the response that triggered the finding, including probe/resource status;
+  never substitute baseline metadata. Exclude raw bodies, cookie values and auth.
+- Keep unknown source/framework/database facts unknown. Use existing matched source
+  validation for database identity, not speculative import or filename inference.
+- Normalize new and historical recommendations alike. Website observations cannot
+  justify fabricated backend code. Keep fix and detection confidence separate.
+- Redact context field values before JSON serialization and before persistence.
+- This phase adds no AI integration or API calls. Preserve the existing optional
+  layer without enabling it. Run context tests and the full regression suite.
+- Stop after this phase; do not begin Phase 2 without a new user request.
+
+
+## Optional SAST/DAST AI assistance (new Phase 2)
+
+- Read `docs/phase_2_llm_integration.md` before changing AI payloads or output.
+- Reuse the explicit consent/CSRF-protected Improve with AI route for both sources.
+  Neither scan worker may call AI, even when enabled. Keep deterministic fallback.
+- Pass Phase 1 context through the bounded whitelist; never forward arbitrary
+  snapshot JSON, full drafts, raw response bodies, credentials or cookie values.
+- Scanned content is untrusted data, never system instructions. Keep provider tools
+  disabled and validate exact nested response structure independently of schema.
+- Website output cannot be source_specific or fabricated backend code. Unsupported
+  configuration grammar falls back to deterministic guidance. Configuration grammar
+  acceptance is not static validation or proof of a deployed fix.
+- Preserve legacy saved reviews and separate AI persistence. AI never changes
+  findings, severity, risk or triage and never publishes/merges code automatically.
+- Run both AI suites and the complete project suite with mocked providers/local labs.
+- Phase 2 ends here; do not start Phase 3 automatically.
+
+## Unified Recommendation (new Phase 3)
+
+- Read `docs/phase_3_unified_recommendation.md` before changing final presentation.
+- Keep scanner guidance and AI records separate internally; use final_solution for
+  finding/editor/report presentation and finding_solution for deterministic AI input.
+- Render one Recommendation. Never append a separate AI recommendation or duplicate
+  a deterministic and AI copy of the same code. Use a small contribution indicator.
+- AI disabled or invalid/failed/unvalidated source candidates fall back to the base.
+  After a failed refresh, preserve old AI data internally but show deterministic
+  guidance until success. Keep the presentation flag out of exported final data.
+- Preserve secret-remediation actions, source-specific validation, website backend
+  neutrality, escaping, triage and explicit human edit/publication review.
+- Reports use the same final composition, never raw AI envelopes/prompts/responses.
+  Preserve immutable older reports and clearly labelled example types/confidences.
+- Test the five requested display states, failure recovery, reports, deduplication,
+  secret handling and the full suite. Fixture previews must be labelled and isolated
+  from user scan data. Do not call a live AI provider for render verification.
+- Stop after Phase 3; do not start Phase 4 automatically.
+
+## Final validation (new Phase 4)
+
+- Read `docs/phase_4_validation.md` before changing validation claims or test coverage.
+- Source-specific candidate validation must parse, reproduce/check the original
+  rule and inspect new findings. Never promote unavailable/failed checks to Passed.
+- Invalid AI code stays out of final examples. Show the explicit failed-code warning
+  inside the one Recommendation and reports; preserve valid deterministic guidance.
+  A rejected AI alternative does not invalidate a separately checked base candidate.
+- Website validation means implementation/deployment and re-scan, never auto-editing
+  or claiming a validated backend fix. Preserve human approval and no-auto-merge.
+- Test vulnerable, safe/protected, privacy and failure cases using isolated fixtures;
+  never run scanned source or expose real credentials. Mock provider/GitHub boundaries.
+- Preserve documented false-positive candidates and blind spots honestly. Do not
+  weaken tests or claim measured real-world accuracy from fixture pass counts.
+- Run the full suite, not just new tests. The completed final-phase baseline is 172
+  passing methods; future edits must report their own actual verification results.
+- This final phase is complete. Stop unless the user requests further changes.
+
+## Repository scanner upgrade — Phase 1
+
+- Read `docs/repository_upgrade_phase_1.md` before extending this foundation.
+- Do not execute scanned repositories, import their modules, compile/build them or
+  install their dependencies. Keep extraction limits, exclusions and cleanup.
+- Regex alone cannot establish complex vulnerabilities. Use semantic evidence from
+  Python AST or the appropriate language's Tree-sitter grammar; keep unknowns explicit.
+- Register language adapters through `scanner/sast/registry.py`. Keep project indexing
+  bounded and descriptive; unresolved calls are not proven inter-file data flow.
+- Emit normalized source/sink/flow metadata at the rule match; preserve it through
+  retained remediation snapshots. Do not change fingerprints or require DB migration.
+- Preserve website scanning and dashboard/report compatibility. Existing optional AI
+  must remain optional; this upgrade adds no AI/third-party engine or auto-remediation.
+- Ask before making unclear major architectural decisions. Document every
+  implementation phase, its tests and limitations. Use isolated test databases.
+- Run the complete suite and stop after this phase. Do not start Phase 2 automatically.
+
+## Repository scanner upgrade — Phase 2
+
+- Read `docs/repository_upgrade_phase_2.md` before changing flow or external engines.
+- Python helper expansion is same-file, plain-function and bounded (depth 4, 100
+  expansions/file). Preserve unknown/limited flow and sink-specific protections.
+  Never equate a static trace with feasible runtime reachability.
+- Semgrep/CodeQL are optional and disabled by default. Use trusted local rules/packs,
+  vetted files, private tool environments, bounded subprocesses and validated SARIF.
+  No repository builds, dependency installation, downloaded rule auto-config or autofix.
+- CodeQL is limited to Python/JavaScript no-build extraction. Record unavailable,
+  skipped, partial and failed coverage; keep custom scanning functional.
+- Preserve structured evidence, redaction, website scanning, report/dashboard
+  compatibility and human review. Do not infer correctness from tool agreement.
+- Rescan verification may ignore engines skipped in both scans, but never ignore
+  missing coverage from a previously active engine or an engine-owned finding.
+- Run the complete suite. Live Semgrep testing is opt-in via
+  SENTINELSCAN_TEST_SEMGREP; distinguish real execution from mocked CodeQL results.
+- Document every phase and ask about unclear major architectural decisions.
+  Stop at Phase 2; do not add new LLM analysis or start another phase automatically.
+
+## Repository scanner upgrade — Phase 3
+
+- Read `docs/repository_upgrade_phase_3.md` before changing correlation/evidence.
+- Keep secrets in the dedicated module; never authenticate discovered credentials.
+  Retain typed detection and redact before source anchors, evidence, UI and reports.
+- Correlate only unambiguous parsed operation + scope + file + CWE + occurrence,
+  across distinct engines. CWE or tool agreement alone is insufficient.
+- Preserve engine provenance, existing finding fingerprints and triage. Use optional
+  logical fingerprints for new comparison evidence; retain historical fallback.
+- Keep context retrieval bounded, redacted and syntactic. Missing callers, validators,
+  configuration or framework knowledge stays unknown. No whole-repository payloads.
+- Dependency versions/advisories do not prove reachable vulnerable functionality.
+  Unsupported/dynamic manifests and partial inventory must remain visible.
+- Evidence review states qualify support; never call an automated finding absolutely
+  confirmed. Preserve website scanning, dashboard/report and remediation compatibility.
+- Run focused and complete tests with isolated databases. Document results honestly.
+  Stop at Phase 3; do not add LLM calls or begin the next phase automatically.
+
+## Repository scanner upgrade — Phase 4
+
+- Read `docs/repository_upgrade_phase_4.md` before changing evidence review.
+- Static analysis owns detection. AI runs only on explicit consent for an existing
+  finding; neither scan worker nor a page GET may call a provider.
+- New repository reviews use the allowlisted Phase 3 package, never full source,
+  arbitrary snapshot JSON or a whole repository. Redact before requests/truncation
+  and before forwarding the analyst assessment to the skeptical reviewer.
+- Keep the provider protocol separate from scanner logic. No repository-selected
+  endpoints/adapters, tools, automatic retries or credential validation.
+- Validate both structured responses. Disagreement becomes Needs Review; failure
+  of either pass falls back. Model agreement never proves a vulnerability.
+- Preserve scanner severity/confidence/risk/status and explicit human publication.
+  Cap advisory fix confidence conservatively; do not turn agreement into a score.
+- Compose one Recommendation. Evidence assessments can be shown in a compact
+  collapsed detail, never as duplicate recommendations or competing code blocks.
+- Use existing exact-source static validation. Missing context/API/pinned source
+  cannot create a validated patch; DAST cannot invent backend implementations.
+- Keep historical/DAST single-pass compatibility documented. No database rewrite.
+- Test with isolated databases and mocked providers, including both passes, privacy,
+  failures, disagreements, code validation and reports, then run the full suite.
+- Stop after Phase 4; do not begin another phase automatically.
+
+## Repository scanner upgrade — Phase 5 (final)
+
+- Read `docs/scanner_accuracy.md` and `docs/repository_upgrade_phase_5.md` before
+  changing evaluation or making accuracy claims. Regression pass counts are not
+  precision/recall; preserve known errors and distinguish mocks from live tools.
+- `evaluation/fixtures.json` is a frozen, labeled, authored challenge set, not an
+  independent production benchmark. Its SHA is asserted. Never execute fixture
+  source, install its dependencies or authenticate synthetic secret candidates.
+- Do not tune detection and then silently relabel or replace hard benchmark cases.
+  Deliberate dataset revisions require a new version/rationale; future tuning needs
+  a separate holdout. Record code/dataset hashes and actual engine versions.
+- Score actual persisted findings by declared category per fixture, count duplicates
+  once, keep all confidence levels and retain unscored findings/coverage metadata.
+  Incomplete required modules invalidate a run. Zero denominators are undefined.
+- Keep AI accuracy separate. Mock review results test contracts, not model quality.
+  No live AI evaluation without authorization. No fabricated no-data-flow baseline.
+- Use temporary databases and archives, preserve the user's history, and run the
+  complete suite. Baseline: 219 passing tests with optional real Semgrep enabled;
+  benchmark: TP18 FP5 TN22 FN9, F1 72%, not a security certification.
+- This is the final requested phase. Stop unless the user requests further work.

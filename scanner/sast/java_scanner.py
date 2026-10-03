@@ -2,6 +2,7 @@
 import tree_sitter_java
 from scanner.sast.javascript_scanner import text,parse_source
 from scanner.sast.common import add,files
+from scanner.sast.evidence import semantic
 from scanner.sast.tree_flow import TreeFlow
 from scanner.sast.flow import UNKNOWN,combine,confidence,evidence,sensitive_name
 
@@ -21,7 +22,7 @@ def run(ctx):
                 detail=evidence(value,method or kind)
                 if category=='Cryptography':
                     detail='Weak algorithm selected; '+('security-sensitive naming/context detected.' if severity=='High' else 'purpose and deployment require review; checksum-only hashing may be acceptable.')
-                add(ctx,path,line,title,category,detail,recommendation,severity,level or confidence(value))
+                add(ctx,path,line,title,category,detail,recommendation,severity,level or confidence(value),semantic=semantic(node,value,method or kind,'Java'))
             runtime=method=='exec' and (obj.startswith(('Runtime.getRuntime()','java.lang.Runtime.getRuntime()')) or flow.types.get(obj,'').split('.')[-1]=='Runtime')
             if (runtime or kind=='ProcessBuilder') and args:
                 value=combine(args)

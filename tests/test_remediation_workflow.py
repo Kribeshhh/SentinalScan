@@ -136,6 +136,15 @@ class WorkflowTests(unittest.TestCase):
             self.assertEqual(assess_rescan(db,f,scan)[0],'Inconclusive')
             with self.assertRaises(ValueError):assess_rescan(db,f,db.execute('SELECT * FROM scans WHERE id=?',(f['scan_id'],)).fetchone())
 
+    def test_previously_active_optional_engine_still_requires_coverage(self):
+        first=self.scan();second=self.scan()
+        with self.app.app_context():
+            db=get_db();f=db.execute('SELECT * FROM findings WHERE scan_id=?',(first,)).fetchone()
+            scan=db.execute('SELECT * FROM scans WHERE id=?',(second,)).fetchone()
+            self.assertEqual(assess_rescan(db,f,scan)[0],'Still detected')
+            db.execute("UPDATE scan_modules SET status='Completed' WHERE scan_id=? AND name='Semgrep'",(first,))
+            self.assertEqual(assess_rescan(db,f,scan)[0],'Inconclusive')
+
     def test_retained_context_masks_multiline_keys_preserves_lines(self):
         source='first\n-----BEGIN PRIVATE KEY-----\nSENSITIVEKEYVALUE\n-----END PRIVATE KEY-----\npassword="RealCredential987"\nlast\n'
         masked=mask_source(source)

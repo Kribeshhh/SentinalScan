@@ -42,8 +42,13 @@ def assess_rescan(db,finding,scan):
     if finding['category']=='Dependency' and not after_options.get('osv_enabled'):
         return 'Inconclusive','Dependency vulnerability lookup was disabled in the later scan.'
     modules=db.execute('SELECT name,status FROM scan_modules WHERE scan_id=?',(scan['id'],)).fetchall()
-    prior={r[0] for r in db.execute('SELECT name FROM scan_modules WHERE scan_id=?',(baseline['id'],))}
-    if not prior or not modules or not prior.issubset({r['name'] for r in modules}) or any(r['status']!='Completed' for r in modules):
+    prior_status={r['name']:r['status'] for r in db.execute('SELECT name,status FROM scan_modules WHERE scan_id=?',(baseline['id'],))}
+    prior=set(prior_status)
+    # An engine disabled in both scans does not invalidate custom-rule coverage.
+    # Previously active engines and engine-owned findings still require completion.
+    optional_skips={name for name in ('Semgrep','CodeQL') if prior_status.get(name) in (None,'Skipped')
+                    and not finding['title'].startswith(name+' candidate:')}
+    if not prior or not modules or not prior.issubset({r['name'] for r in modules}) or any(r['status']!='Completed' and not (r['name'] in optional_skips and r['status']=='Skipped') for r in modules):
         return 'Inconclusive','Module coverage is incomplete or changed. A missing finding is not sufficient evidence of a fix.'
     if finding['source']=='Repository':
         repo=db.execute('SELECT * FROM repositories WHERE id=?',(baseline['repository_id'],)).fetchone()
@@ -78,7 +83,7 @@ def finding_solution(db,finding,draft=None):
         snapshot=json.loads(saved[0])
         if finding['status']=='False Positive' or snapshot.get('summary')=='This finding is marked False Positive.':
             current=solution_for(finding)
-            current.update(context=snapshot.get('context'),source_status=snapshot.get('source_status'))
+            current.update(context=snapshot.get('context'),source_status=snapshot.get('source_status'),finding_context=snapshot.get('finding_context',current.get('finding_context')))
             return current
         from analysis.recommendation import recommendation_for
         return recommendation_for(finding,snapshot)
