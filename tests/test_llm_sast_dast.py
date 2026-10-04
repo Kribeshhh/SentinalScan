@@ -98,10 +98,15 @@ class WebsiteAIRouteTests(unittest.TestCase):
         self.client.get('/')
         with self.client.session_transaction() as s:self.csrf=s['csrf_token']
     def tearDown(self):self.app.extensions['scan_manager'].shutdown();self.tmp.cleanup()
-    def submit(self):return self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf,'share_context':'yes'},follow_redirects=True)
+    def submit(self):
+        from analysis.llm_review import refine_finding
+        with self.app.app_context():
+            db=get_db()
+            refine_finding(db,db.execute('SELECT * FROM findings WHERE id=?',(self.id,)).fetchone(),self.app.config)
+        return self.client.get(f'/findings/{self.id}')
 
-    def test_explicit_website_review_display_and_immutable_finding(self):
-        page=self.client.get(f'/findings/{self.id}');self.assertIn(b'Improve with AI',page.data);self.assertFalse(self.calls)
+    def test_automatic_website_review_display_and_immutable_finding(self):
+        page=self.client.get(f'/findings/{self.id}');self.assertNotIn(b'Improve with AI',page.data);self.assertFalse(self.calls)
         with self.app.app_context():before=tuple(get_db().execute('SELECT * FROM findings').fetchone())
         page=self.submit();self.assertIn(b'Configuration',page.data);self.assertIn(b'X-Content-Type-Options: nosniff',page.data)
         self.assertNotIn(b'Use the existing source editor',page.data)
@@ -119,19 +124,19 @@ class WebsiteAIRouteTests(unittest.TestCase):
         page=self.client.get(f'/findings/{self.id}')
         self.assertEqual(page.status_code,200);self.assertIn(b'Old review',page.data);self.assertFalse(self.calls)
 
-    def test_website_disabled_consent_failure_preserves_previous_review(self):
-        self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf}).status_code,400)
+    def test_website_disabled_removed_route_failure_preserves_previous_review(self):
+        self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf}).status_code,404)
         self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review').status_code,400)
-        self.app.config['LLM_ENABLED']=False;self.assertEqual(self.submit().status_code,404);self.assertFalse(self.calls)
+        self.app.config['LLM_ENABLED']=False;self.assertEqual(self.submit().status_code,200);self.assertFalse(self.calls)
         self.app.config['LLM_ENABLED']=True;self.submit()
         with self.app.app_context():before=get_db().execute('SELECT data_json FROM ai_reviews').fetchone()[0]
         for provider in (lambda *_:None,lambda *_:configuration('cursor.execute(query)')):
-            self.app.config['LLM_REVIEW_PROVIDER']=provider;page=self.submit();self.assertIn(b'Deterministic guidance remains',page.data)
+            self.app.config['LLM_REVIEW_PROVIDER']=provider;page=self.submit();self.assertIn(b'Recommended Fix',page.data);self.assertNotIn(b'AI Assisted',page.data)
             with self.app.app_context():self.assertEqual(before,get_db().execute('SELECT data_json FROM ai_reviews').fetchone()[0])
 
 
 class WebsitePipelineAIIsolationTests(unittest.TestCase):
-    def test_website_pipeline_never_calls_provider_enabled_or_disabled(self):
+    def test_website_pipeline_survives_optional_provider_failure(self):
         from tests.test_website_scanner import WebsiteTests
         WebsiteTests.setUpClass()
         try:
@@ -141,9 +146,35 @@ class WebsitePipelineAIIsolationTests(unittest.TestCase):
                     try:
                         def forbidden(*_):raise AssertionError('Scan called AI')
                         fixture.app.config.update(LLM_ENABLED=enabled,LLM_REVIEW_PROVIDER=forbidden)
-                        with patch('llm_routes.review',side_effect=forbidden) as provider:
-                            fixture.test_localhost_real_assessment_pipeline()
-                            provider.assert_not_called()
+                        fixture.test_localhost_real_assessment_pipeline()
                         with fixture.app.app_context():self.assertEqual(get_db().execute('SELECT COUNT(*) FROM ai_reviews').fetchone()[0],0)
                     finally:fixture.tearDown()
         finally:WebsiteTests.tearDownClass()
+
+    def test_website_completion_refines_actual_probe_context_automatically(self):
+        from tests.test_website_scanner import WebsiteTests
+        WebsiteTests.setUpClass()
+        fixture=WebsiteTests('test_localhost_real_assessment_pipeline');fixture.setUp()
+        calls=[]
+        try:
+            def provider(payload,config):
+                # Completion hook sees durable scan results, not an in-flight detector.
+                self.assertEqual(get_db().execute('SELECT status FROM scans').fetchone()[0],'Completed')
+                calls.append(payload)
+                return response(remediation='Review the affected response policy using the recorded probe evidence.')
+            fixture.app.config.update(LLM_ENABLED=True,LLM_REVIEW_PROVIDER=provider)
+            fixture.test_localhost_real_assessment_pipeline()
+            self.assertTrue(calls)
+            sql=next(p for p in calls if p['category']=='SQL Injection')
+            self.assertEqual(sql['website_context']['observations']['parameter'],'q')
+            self.assertIn('baseline_status',sql['website_context']['observations'])
+            self.assertTrue(sql['website_context']['observations']['new_database_error_signatures'])
+            self.assertIsNone(sql['website_context']['response_snippet'])
+            self.assertNotIn('LAB_COOKIE_VALUE_MUST_NOT_BE_STORED',json.dumps(calls))
+            with fixture.app.app_context():
+                db=get_db();fid=db.execute('SELECT finding_id FROM ai_reviews LIMIT 1').fetchone()[0]
+            page=fixture.client.get(f'/findings/{fid}').data
+            self.assertIn(b'AI Assisted',page);self.assertNotIn(b'Improve with AI',page)
+            self.assertEqual(page.count(b'id="recommendation"'),1)
+        finally:
+            fixture.tearDown();WebsiteTests.tearDownClass()

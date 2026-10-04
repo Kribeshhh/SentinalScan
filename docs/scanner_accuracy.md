@@ -181,3 +181,10 @@ AI and remote dependency lookup, and never touches user scan history. No fake Gi
 results are used: the network/archive boundary is a local controlled archive, while
 all scanner modules and persistence/correlation paths execute normally. Tool version
 changes may change results; the output records versions and content hashes.
+
+## Subsequent maintenance
+
+The tables above are the preserved Phase 5 baseline. See
+[accuracy and finding readability maintenance](accuracy_and_finding_readability.md)
+for separately saved before/after results after rule changes. The original fixtures
+and `evaluation/results.json` were not relabeled or overwritten.

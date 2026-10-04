@@ -49,7 +49,12 @@ def analyze(ctx,path,source,offset=0):
         elif node.type=='assignment_expression':
             left=node.child_by_field_name('left');value=args[0]
             if left and left.type in ('member_expression','subscript_expression'):
-                prop=text(left.child_by_field_name('property') or left.child_by_field_name('index')).strip('"\'')
+                property_node=left.child_by_field_name('property') or left.child_by_field_name('index')
+                prop=text(property_node).strip('"\'')
+                if left.type=='subscript_expression':
+                    # Only resolve a literal or tracked constant, never evaluate JS.
+                    constant=flow.value(property_node)
+                    prop=constant.literal if constant.static and isinstance(constant.literal,str) else ''
                 if prop in ('innerHTML','outerHTML') and not value.static and not value.html_safe:
                     add(ctx,path,line,'Potential unsafe DOM HTML assignment','Injection',evidence(value,prop),
                         'Use textContent for text, or a maintained HTML sanitizer before assigning HTML.','Medium',confidence(value),semantic=semantic(node,value,callee if node.type=='call_expression' else prop,'JavaScript',offset=offset))

@@ -1,0 +1,3229 @@
+{
+  "dataset_sha256": "9fabe35ae18ac86e7ca97f9714b49f59ff626880dafc51685203e547ed999bb1",
+  "scanner_sha256": "06793737ec74a47d5a09f4cd8894b964f22d22955b4aeed3e984e00c60f6b918",
+  "fixture_count": 26,
+  "python": "3.14.6",
+  "packages": {
+    "Flask": "3.1.3",
+    "tree-sitter": "0.25.2",
+    "tree-sitter-javascript": "0.25.0",
+    "tree-sitter-java": "0.23.5"
+  },
+  "semgrep_version": "1.179.0",
+  "codeql": "Not evaluated: unavailable; no accuracy claim.",
+  "llm": "Not evaluated: no live provider. Mocked behavior tests are not accuracy metrics.",
+  "unit": "One category-presence decision per fixture. All confidences count; duplicates count once.",
+  "stages": [
+    {
+      "stage": "custom-with-dataflow",
+      "scan_status": "Completed",
+      "coverage": [
+        {
+          "name": "Repository retrieval",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Secrets",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Python",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "JavaScript",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Java",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "HTML",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Configuration",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Dependencies",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Semgrep",
+          "status": "Skipped",
+          "error": "Semgrep is disabled."
+        },
+        {
+          "name": "CodeQL",
+          "status": "Skipped",
+          "error": "CodeQL is disabled."
+        }
+      ],
+      "coverage_details": {
+        "Repository retrieval": {
+          "repository": {
+            "full_name": "evaluation/controlled-fixtures"
+          },
+          "branch": "fixed-dataset",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inventory": {
+            "files": 26,
+            "bytes": 2534,
+            "excluded": 0,
+            "oversized_files": 0,
+            "binary_files": 0,
+            "unsupported_files": 0
+          },
+          "languages": {
+            "Python": 21,
+            "JavaScript": 4,
+            "Configuration / other text": 1
+          },
+          "project_index": {
+            "schema_version": 1,
+            "files": [
+              {
+                "file": "actual_passphrase.py",
+                "language": "Python"
+              },
+              {
+                "file": "argv_echo.py",
+                "language": "Python"
+              },
+              {
+                "file": "bound_dispatch.py",
+                "language": "Python"
+              },
+              {
+                "file": "builtins_exec.py",
+                "language": "Python"
+              },
+              {
+                "file": "computed_html_alias.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_reassigned.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_sanitized.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_text.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dispatch_cursor_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "dispatch_shell_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "eval_returned.py",
+                "language": "Python"
+              },
+              {
+                "file": "fixed_shell.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_no_exit.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_reassigned.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_return.py",
+                "language": "Python"
+              },
+              {
+                "file": "http_alias_unverified.py",
+                "language": "Python"
+              },
+              {
+                "file": "literal_data.py",
+                "language": "Python"
+              },
+              {
+                "file": "modern_digest.py",
+                "language": "Python"
+              },
+              {
+                "file": "numeric_bound.py",
+                "language": "Python"
+              },
+              {
+                "file": "quote_unknown_transform.py",
+                "language": "Python"
+              },
+              {
+                "file": "quoted_inside_double_quotes.py",
+                "language": "Python"
+              },
+              {
+                "file": "quoted_posix_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "static_eval_dispatch.py",
+                "language": "Python"
+              },
+              {
+                "file": "unrelated_verify.py",
+                "language": "Python"
+              },
+              {
+                "file": "weak_password_sha.py",
+                "language": "Python"
+              }
+            ],
+            "languages": {
+              "Python": 21,
+              "JavaScript": 4
+            },
+            "records": [
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "builtins",
+                    "alias": "language"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "sanitize",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "computed_sanitized.js"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": "rq"
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "rq.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": "platform_os"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "function",
+                "name": "expression",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": "expression",
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "eval",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "expression",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "ValueError",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "function",
+                "name": "listing",
+                "line": 2,
+                "end_line": 6,
+                "scope": null,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": "listing",
+                "resolved": false,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": "listing",
+                "resolved": false,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "requests",
+                    "alias": "http"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "http_alias_unverified.py"
+              },
+              {
+                "kind": "call",
+                "name": "http.post",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "http_alias_unverified.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "ast",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "call",
+                "name": "ast.literal_eval",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashlib.sha256",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "str",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  },
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "value.strip",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  },
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "quote",
+                    "alias": "protect"
+                  }
+                ],
+                "module": "shlex",
+                "line": 1,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 2,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 3,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "protect",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "builtins",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "class",
+                "name": "Widget",
+                "line": 1,
+                "end_line": 2,
+                "scope": null,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "function",
+                "name": "get",
+                "line": 2,
+                "end_line": 2,
+                "scope": "Widget",
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "call",
+                "name": "Widget",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "call",
+                "name": "widget.get",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "credential.encode",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              }
+            ],
+            "unparsed_files": [],
+            "framework_indicators": [
+              "flask"
+            ],
+            "truncated": false,
+            "note": "Declarations and syntactic calls only; imports do not prove framework use or resolved call relationships."
+          }
+        },
+        "Secrets": {
+          "potential_secrets": 1,
+          "values_retained": false,
+          "note": "Candidates are not tested against services. Placeholders are suppressed. False positives remain possible."
+        },
+        "Python": {
+          "flow_limited_files": [],
+          "parsed_files": 21,
+          "unparsed_files": [],
+          "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+        },
+        "JavaScript": {
+          "parsed_files": 4,
+          "unparsed_files": [],
+          "note": "Tree-sitter statement-order local variable and sanitizer context; comments and string contents do not trigger code rules. TypeScript and interprocedural data flow are not supported."
+        },
+        "Java": {
+          "parsed_files": 0,
+          "unparsed_files": [],
+          "note": "Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review."
+        },
+        "HTML": {
+          "parsed_files": 0,
+          "unparsed_inline_scripts": 0,
+          "note": "HTML and inline JavaScript are parsed without rendering, executing scripts or fetching resources."
+        },
+        "Configuration": {
+          "configuration_files": 0,
+          "unparsed_files": [],
+          "note": "Literal configuration inspection only; environment overrides and runtime behavior are not evaluated. JSON/YAML locations are file-level line 1."
+        },
+        "Dependencies": {
+          "dependencies": [],
+          "unparsed_manifests": [],
+          "inventory_capped": false,
+          "queried_packages": 0,
+          "lookup_failures": 0,
+          "unsupported_manifests": [],
+          "limited_manifests": [],
+          "note": "Only exact declared or locked versions are queried; unsupported formats are explicitly listed; no dependency installation, transitive resolution or guessing of version ranges. Unknown advisory severity is Informational. Private package names/versions are sent to OSV only when enabled."
+        },
+        "Semgrep": {
+          "status": "Skipped",
+          "note": "Semgrep is disabled."
+        },
+        "CodeQL": {
+          "status": "Skipped",
+          "note": "CodeQL is disabled."
+        }
+      },
+      "archive_cleaned": true,
+      "ai_reviews": 0,
+      "final_finding_count": 13,
+      "unscored_findings": [],
+      "overall": {
+        "TP": 13,
+        "FP": 0,
+        "TN": 13,
+        "FN": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "categories": {
+        "Command Injection": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Configuration": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "DOM XSS": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Dynamic Code Execution": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SQL Injection": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Secrets": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Weak Cryptography": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      },
+      "cases": [
+        {
+          "id": "dispatch_cursor_alias",
+          "path": "dispatch_cursor_alias.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "dispatch_cursor_alias.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "Constant attribute alias still calls SQL with unbound input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "bound_dispatch",
+          "path": "bound_dispatch.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Assume SQLite DB: values are bound.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_return",
+          "path": "guard_return.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Invalid identifiers exit; remaining names are fixed.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_no_exit",
+          "path": "guard_no_exit.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "guard_no_exit.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "Logging does not reject invalid input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_reassigned",
+          "path": "guard_reassigned.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "guard_reassigned.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "New tainted assignment invalidates the guard.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "numeric_bound",
+          "path": "numeric_bound.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Integer conversion constrains value syntax.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "dispatch_shell_alias",
+          "path": "dispatch_shell_alias.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "dispatch_shell_alias.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Unquoted form data enters shell command.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quoted_posix_alias",
+          "path": "quoted_posix_alias.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "POSIX shell, fixed echo executable and single quoted argument.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quoted_inside_double_quotes",
+          "path": "quoted_inside_double_quotes.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "quoted_inside_double_quotes.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Single-quote escaping is not safe inside shell double quotes.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quote_unknown_transform",
+          "path": "quote_unknown_transform.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "quote_unknown_transform.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Removing quote boundaries restores shell metacharacter interpretation.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "argv_echo",
+          "path": "argv_echo.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "No shell interpreter used.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "fixed_shell",
+          "path": "fixed_shell.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "No dynamic input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "builtins_exec",
+          "path": "builtins_exec.py",
+          "category": "Dynamic Code Execution",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "builtins_exec.py",
+              "title": "Dynamic Python code execution",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Dynamic Code Execution",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.code.dynamic"
+            }
+          ],
+          "ground_truth": "Untrusted code executes via constant built-in lookup.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "static_eval_dispatch",
+          "path": "static_eval_dispatch.py",
+          "category": "Dynamic Code Execution",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Static expression only.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "eval_returned",
+          "path": "eval_returned.py",
+          "category": "Dynamic Code Execution",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "eval_returned.py",
+              "title": "Dynamic Python code execution",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Dynamic Code Execution",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.code.dynamic"
+            }
+          ],
+          "ground_truth": "Helper returns untrusted expression.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "literal_data",
+          "path": "literal_data.py",
+          "category": "Dynamic Code Execution",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Data-only literal parsing, code execution is the evaluated property.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_html_alias",
+          "path": "computed_html_alias.js",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "computed_html_alias.js",
+              "title": "Potential unsafe DOM HTML assignment",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.dom.html"
+            }
+          ],
+          "ground_truth": "Computed HTML sink receives untrusted content.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_text",
+          "path": "computed_text.js",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Text insertion is not HTML parsing.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_sanitized",
+          "path": "computed_sanitized.js",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Trusted standard DOMPurify default HTML sanitizer.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_reassigned",
+          "path": "computed_reassigned.js",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "computed_reassigned.js",
+              "title": "Potential unsafe DOM HTML assignment",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.dom.html"
+            }
+          ],
+          "ground_truth": "Latest property assignment selects HTML sink.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "http_alias_unverified",
+          "path": "http_alias_unverified.py",
+          "category": "Configuration",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "http_alias_unverified.py",
+              "title": "Security control disabled in configuration",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "Configuration",
+              "engines": [
+                "configuration"
+              ],
+              "rule": null
+            }
+          ],
+          "ground_truth": "Disabled certificate verification on real requests API.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "unrelated_verify",
+          "path": "unrelated_verify.py",
+          "category": "Configuration",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Unrelated method is not a TLS API.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "doc_sentence",
+          "path": "doc_sentence.md",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "UI explanatory prose, not an authentication credential.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "actual_passphrase",
+          "path": "actual_passphrase.py",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "actual_passphrase.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "ground_truth": "Fixture contract: actual hardcoded multiword credential.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "weak_password_sha",
+          "path": "weak_password_sha.py",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "weak_password_sha.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "ground_truth": "Weak fast digest for authentication material.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "modern_digest",
+          "path": "modern_digest.py",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Modern non-password digest.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        }
+      ],
+      "valid_run": true
+    },
+    {
+      "stage": "custom-plus-semgrep",
+      "scan_status": "Completed",
+      "coverage": [
+        {
+          "name": "Repository retrieval",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Secrets",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Python",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "JavaScript",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Java",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "HTML",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Configuration",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Dependencies",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Semgrep",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "CodeQL",
+          "status": "Skipped",
+          "error": "CodeQL is disabled."
+        }
+      ],
+      "coverage_details": {
+        "Repository retrieval": {
+          "repository": {
+            "full_name": "evaluation/controlled-fixtures"
+          },
+          "branch": "fixed-dataset",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inventory": {
+            "files": 26,
+            "bytes": 2534,
+            "excluded": 0,
+            "oversized_files": 0,
+            "binary_files": 0,
+            "unsupported_files": 0
+          },
+          "languages": {
+            "Python": 21,
+            "JavaScript": 4,
+            "Configuration / other text": 1
+          },
+          "project_index": {
+            "schema_version": 1,
+            "files": [
+              {
+                "file": "actual_passphrase.py",
+                "language": "Python"
+              },
+              {
+                "file": "argv_echo.py",
+                "language": "Python"
+              },
+              {
+                "file": "bound_dispatch.py",
+                "language": "Python"
+              },
+              {
+                "file": "builtins_exec.py",
+                "language": "Python"
+              },
+              {
+                "file": "computed_html_alias.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_reassigned.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_sanitized.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "computed_text.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dispatch_cursor_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "dispatch_shell_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "eval_returned.py",
+                "language": "Python"
+              },
+              {
+                "file": "fixed_shell.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_no_exit.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_reassigned.py",
+                "language": "Python"
+              },
+              {
+                "file": "guard_return.py",
+                "language": "Python"
+              },
+              {
+                "file": "http_alias_unverified.py",
+                "language": "Python"
+              },
+              {
+                "file": "literal_data.py",
+                "language": "Python"
+              },
+              {
+                "file": "modern_digest.py",
+                "language": "Python"
+              },
+              {
+                "file": "numeric_bound.py",
+                "language": "Python"
+              },
+              {
+                "file": "quote_unknown_transform.py",
+                "language": "Python"
+              },
+              {
+                "file": "quoted_inside_double_quotes.py",
+                "language": "Python"
+              },
+              {
+                "file": "quoted_posix_alias.py",
+                "language": "Python"
+              },
+              {
+                "file": "static_eval_dispatch.py",
+                "language": "Python"
+              },
+              {
+                "file": "unrelated_verify.py",
+                "language": "Python"
+              },
+              {
+                "file": "weak_password_sha.py",
+                "language": "Python"
+              }
+            ],
+            "languages": {
+              "Python": 21,
+              "JavaScript": 4
+            },
+            "records": [
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "argv_echo.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "bound_dispatch.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "builtins",
+                    "alias": "language"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "builtins_exec.py"
+              },
+              {
+                "kind": "call",
+                "name": "sanitize",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "computed_sanitized.js"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": "rq"
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "rq.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_cursor_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": "platform_os"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "dispatch_shell_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "function",
+                "name": "expression",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": "expression",
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "eval",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "call",
+                "name": "expression",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "eval_returned.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "fixed_shell.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_no_exit.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "ValueError",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "guard_reassigned.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "function",
+                "name": "listing",
+                "line": 2,
+                "end_line": 6,
+                "scope": null,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": "listing",
+                "resolved": false,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": "listing",
+                "resolved": false,
+                "file": "guard_return.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "requests",
+                    "alias": "http"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "http_alias_unverified.py"
+              },
+              {
+                "kind": "call",
+                "name": "http.post",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "http_alias_unverified.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "ast",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "call",
+                "name": "ast.literal_eval",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "literal_data.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashlib.sha256",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "modern_digest.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 1,
+                "scope": null,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "str",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "numeric_bound.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  },
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "value.strip",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "quote_unknown_transform.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  },
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_inside_double_quotes.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "quote",
+                    "alias": "protect"
+                  }
+                ],
+                "module": "shlex",
+                "line": 1,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 2,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 3,
+                "scope": null,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "protect",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "quoted_posix_alias.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "builtins",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "static_eval_dispatch.py"
+              },
+              {
+                "kind": "class",
+                "name": "Widget",
+                "line": 1,
+                "end_line": 2,
+                "scope": null,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "function",
+                "name": "get",
+                "line": 2,
+                "end_line": 2,
+                "scope": "Widget",
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "call",
+                "name": "Widget",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "call",
+                "name": "widget.get",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "unrelated_verify.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "getattr",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              },
+              {
+                "kind": "call",
+                "name": "credential.encode",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "weak_password_sha.py"
+              }
+            ],
+            "unparsed_files": [],
+            "framework_indicators": [
+              "flask"
+            ],
+            "truncated": false,
+            "note": "Declarations and syntactic calls only; imports do not prove framework use or resolved call relationships."
+          }
+        },
+        "Secrets": {
+          "potential_secrets": 1,
+          "values_retained": false,
+          "note": "Candidates are not tested against services. Placeholders are suppressed. False positives remain possible."
+        },
+        "Python": {
+          "flow_limited_files": [],
+          "parsed_files": 21,
+          "unparsed_files": [],
+          "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+        },
+        "JavaScript": {
+          "parsed_files": 4,
+          "unparsed_files": [],
+          "note": "Tree-sitter statement-order local variable and sanitizer context; comments and string contents do not trigger code rules. TypeScript and interprocedural data flow are not supported."
+        },
+        "Java": {
+          "parsed_files": 0,
+          "unparsed_files": [],
+          "note": "Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review."
+        },
+        "HTML": {
+          "parsed_files": 0,
+          "unparsed_inline_scripts": 0,
+          "note": "HTML and inline JavaScript are parsed without rendering, executing scripts or fetching resources."
+        },
+        "Configuration": {
+          "configuration_files": 0,
+          "unparsed_files": [],
+          "note": "Literal configuration inspection only; environment overrides and runtime behavior are not evaluated. JSON/YAML locations are file-level line 1."
+        },
+        "Dependencies": {
+          "dependencies": [],
+          "unparsed_manifests": [],
+          "inventory_capped": false,
+          "queried_packages": 0,
+          "lookup_failures": 0,
+          "unsupported_manifests": [],
+          "limited_manifests": [],
+          "note": "Only exact declared or locked versions are queried; unsupported formats are explicitly listed; no dependency installation, transitive resolution or guessing of version ranges. Unknown advisory severity is Informational. Private package names/versions are sent to OSV only when enabled."
+        },
+        "Semgrep": {
+          "candidates": 3,
+          "rejected_results": 0,
+          "status": "Completed"
+        },
+        "CodeQL": {
+          "status": "Skipped",
+          "note": "CodeQL is disabled."
+        }
+      },
+      "archive_cleaned": true,
+      "ai_reviews": 0,
+      "final_finding_count": 14,
+      "unscored_findings": [],
+      "overall": {
+        "TP": 13,
+        "FP": 1,
+        "TN": 12,
+        "FN": 0,
+        "precision": 0.9285714285714286,
+        "recall": 1.0,
+        "f1": 0.9629629629629629
+      },
+      "categories": {
+        "Command Injection": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Configuration": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "DOM XSS": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Dynamic Code Execution": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SQL Injection": {
+          "TP": 3,
+          "FP": 1,
+          "TN": 2,
+          "FN": 0,
+          "precision": 0.75,
+          "recall": 1.0,
+          "f1": 0.8571428571428571
+        },
+        "Secrets": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Weak Cryptography": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 1,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      },
+      "cases": [
+        {
+          "id": "dispatch_cursor_alias",
+          "path": "dispatch_cursor_alias.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "dispatch_cursor_alias.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "Constant attribute alias still calls SQL with unbound input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "bound_dispatch",
+          "path": "bound_dispatch.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Assume SQLite DB: values are bound.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_return",
+          "path": "guard_return.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": true,
+          "outcome": "FP",
+          "findings": [
+            {
+              "file": "guard_return.py",
+              "title": "Semgrep candidate: sentinelscan.python.flask-sql-flow",
+              "severity": "High",
+              "confidence": "Low",
+              "category": "SQL Injection",
+              "engines": [
+                "Semgrep"
+              ],
+              "rule": "sentinelscan.python.flask-sql-flow"
+            }
+          ],
+          "ground_truth": "Invalid identifiers exit; remaining names are fixed.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_no_exit",
+          "path": "guard_no_exit.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "guard_no_exit.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast",
+                "Semgrep"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "Logging does not reject invalid input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "guard_reassigned",
+          "path": "guard_reassigned.py",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "guard_reassigned.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast",
+                "Semgrep"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "ground_truth": "New tainted assignment invalidates the guard.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "numeric_bound",
+          "path": "numeric_bound.py",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Integer conversion constrains value syntax.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "dispatch_shell_alias",
+          "path": "dispatch_shell_alias.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "dispatch_shell_alias.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Unquoted form data enters shell command.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quoted_posix_alias",
+          "path": "quoted_posix_alias.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "POSIX shell, fixed echo executable and single quoted argument.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quoted_inside_double_quotes",
+          "path": "quoted_inside_double_quotes.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "quoted_inside_double_quotes.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Single-quote escaping is not safe inside shell double quotes.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "quote_unknown_transform",
+          "path": "quote_unknown_transform.py",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "quote_unknown_transform.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "ground_truth": "Removing quote boundaries restores shell metacharacter interpretation.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "argv_echo",
+          "path": "argv_echo.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "No shell interpreter used.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "fixed_shell",
+          "path": "fixed_shell.py",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "No dynamic input.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "builtins_exec",
+          "path": "builtins_exec.py",
+          "category": "Dynamic Code Execution",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "builtins_exec.py",
+              "title": "Dynamic Python code execution",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Dynamic Code Execution",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.code.dynamic"
+            }
+          ],
+          "ground_truth": "Untrusted code executes via constant built-in lookup.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "static_eval_dispatch",
+          "path": "static_eval_dispatch.py",
+          "category": "Dynamic Code Execution",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Static expression only.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "eval_returned",
+          "path": "eval_returned.py",
+          "category": "Dynamic Code Execution",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "eval_returned.py",
+              "title": "Dynamic Python code execution",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Dynamic Code Execution",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.code.dynamic"
+            }
+          ],
+          "ground_truth": "Helper returns untrusted expression.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "literal_data",
+          "path": "literal_data.py",
+          "category": "Dynamic Code Execution",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Data-only literal parsing, code execution is the evaluated property.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_html_alias",
+          "path": "computed_html_alias.js",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "computed_html_alias.js",
+              "title": "Potential unsafe DOM HTML assignment",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.dom.html"
+            }
+          ],
+          "ground_truth": "Computed HTML sink receives untrusted content.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_text",
+          "path": "computed_text.js",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Text insertion is not HTML parsing.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_sanitized",
+          "path": "computed_sanitized.js",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Trusted standard DOMPurify default HTML sanitizer.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "computed_reassigned",
+          "path": "computed_reassigned.js",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "computed_reassigned.js",
+              "title": "Potential unsafe DOM HTML assignment",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.dom.html"
+            }
+          ],
+          "ground_truth": "Latest property assignment selects HTML sink.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "http_alias_unverified",
+          "path": "http_alias_unverified.py",
+          "category": "Configuration",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "http_alias_unverified.py",
+              "title": "Security control disabled in configuration",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "Configuration",
+              "engines": [
+                "configuration"
+              ],
+              "rule": null
+            }
+          ],
+          "ground_truth": "Disabled certificate verification on real requests API.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "unrelated_verify",
+          "path": "unrelated_verify.py",
+          "category": "Configuration",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Unrelated method is not a TLS API.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "doc_sentence",
+          "path": "doc_sentence.md",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "UI explanatory prose, not an authentication credential.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "actual_passphrase",
+          "path": "actual_passphrase.py",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "actual_passphrase.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "ground_truth": "Fixture contract: actual hardcoded multiword credential.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "weak_password_sha",
+          "path": "weak_password_sha.py",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": true,
+          "outcome": "TP",
+          "findings": [
+            {
+              "file": "weak_password_sha.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "ground_truth": "Weak fast digest for authentication material.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        },
+        {
+          "id": "modern_digest",
+          "path": "modern_digest.py",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "outcome": "TN",
+          "findings": [],
+          "ground_truth": "Modern non-password digest.",
+          "future_improvement": "Evaluate generalization without changing this frozen label."
+        }
+      ],
+      "valid_run": true
+    }
+  ]
+}

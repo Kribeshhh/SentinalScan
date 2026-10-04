@@ -1,5 +1,12 @@
 # Phase 4: optional LLM review and validation
 
+> Current activation/UI policy: the 2026-10-04 final simplification supersedes
+> the manual Improve with AI workflow described in this historical phase record.
+> Manual activation/consent instructions and old route references below are archival,
+> not current setup requirements. Enabled/configured AI now refines persisted findings
+> through the bounded new-scan completion hook; page/report GETs never call providers.
+> See [current behavior and audit](phase_3_unified_recommendation.md#final-simplification-2026-10-04).
+
 ## What detects findings
 
 The existing deterministic SAST modules remain the only candidate detectors.

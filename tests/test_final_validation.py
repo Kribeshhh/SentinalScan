@@ -79,9 +79,10 @@ class FinalValidationTests(unittest.TestCase):
     def test_known_accuracy_limits_are_recorded_not_claimed_as_security(self):
         scanner=test_detection_accuracy.DetectionAccuracyTests()
         checksum=scanner.scan('import hashlib\nchecksum=hashlib.md5(file_contents)')
-        self.assertEqual([(f.title,f.severity) for f in checksum],[('Weak hash algorithm usage','Low')])
-        # Known dynamic-dispatch blind spot: this fixture is parsed, never executed.
-        self.assertEqual(scanner.scan('getattr(cursor,"execute")("SELECT "+request.args.get("q"))'),[])
+        self.assertEqual([(f.title,f.severity) for f in checksum],[('Weak hash algorithm usage','Informational')])
+        # Constant dispatch is now resolved; unknown runtime dispatch stays unknown.
+        self.assertTrue(scanner.scan('getattr(cursor,"execute")("SELECT "+request.args.get("q"))'))
+        self.assertEqual(scanner.scan('getattr(cursor,operation)("SELECT "+request.args.get("q"))'),[])
         # Safely serialized marker in a script string still triggers a potential-XSS indicator.
         r=Response('https://lab.invalid/?q=hello',200,[('Content-Type','text/html')],b'<p>Baseline</p>',False,[])
         def get(url):
@@ -112,13 +113,18 @@ class FinalFailureAndPrivacyTests(unittest.TestCase):
             with db:self.scan=db.execute("INSERT INTO scans(scan_type,target,status) VALUES ('Repository','fixture/repo','Completed')").lastrowid
             self.id=save_finding(db,self.scan,Finding(**test_llm_review.finding(),severity='High',confidence='High',description='Controlled',impact='Review',recommendation='Use text insertion when intended.'))
     def tearDown(self):self.app.extensions['scan_manager'].shutdown();self.tmp.cleanup()
-    def submit(self):return self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf,'share_context':'yes'},follow_redirects=True)
+    def submit(self):
+        from analysis.llm_review import refine_finding
+        with self.app.app_context():
+            db=get_db()
+            refine_finding(db,db.execute('SELECT * FROM findings WHERE id=?',(self.id,)).fetchone(),self.app.config)
+        return self.client.get(f'/findings/{self.id}')
 
     def test_all_provider_failures_render_one_safe_fallback_without_logging(self):
         stream=io.StringIO();handler=logging.StreamHandler(stream);self.app.logger.addHandler(handler)
         try:
             self.app.config['LLM_ENABLED']=False
-            with patch('integrations.llm.request') as send:self.assertEqual(self.submit().status_code,404);send.assert_not_called()
+            with patch('integrations.llm.request') as send:self.assertEqual(self.submit().status_code,200);send.assert_not_called()
             self.app.config['LLM_ENABLED']=True;self.app.config['LLM_API_KEY']=''
             with patch('integrations.llm.request') as send:self.assertEqual(self.submit().status_code,200);send.assert_not_called()
             self.app.config['LLM_API_KEY']='fixture-key'

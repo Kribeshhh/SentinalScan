@@ -1,40 +1,37 @@
 {% if solution %}
-<section class="solution-card{% if presentation is not defined %} card detail-card{% endif %}" id="recommendation" aria-labelledby="recommendation-heading">
+<section class="solution-card streamlined-fix" id="recommendation" aria-labelledby="recommendation-heading">
 <span id="code-solution"></span>
-<h2 id="recommendation-heading">Recommendation</h2>
-{% if solution.finding_context %}<details><summary>Recorded finding context</summary>
-<dl class="metadata">{% for key, value in solution.finding_context.items() %}<dt>{{ key.replace('_', ' ').capitalize() }}</dt><dd>{% if value is none %}Not recorded / unknown{% elif value is mapping or (value is sequence and value is not string) %}<pre class="evidence">{{ value | tojson(indent=2) }}</pre>{% else %}{{ value }}{% endif %}</dd>{% endfor %}</dl></details>{% endif %}
-{% if solution.finding_context and solution.finding_context.analysis and solution.finding_context.analysis.detected_by %}
-{% set analysis = solution.finding_context.analysis %}
-<h3>Evidence review: {{ 'Rejected / False Positive' if solution.dismissed else analysis.verification_status }}</h3>
-<p class="help">Static evidence support, not confirmation of runtime exploitability.</p>
-<p><strong>Detected by:</strong> {% for item in analysis.detected_by %}{{ item.engine }}{% if item.rule_id %} · {{ item.rule_id }}{% endif %}{{ '; ' if not loop.last else '' }}{% endfor %}</p>
-{% endif %}
-{% if solution.ai_assisted %}<p class="help">AI-assisted recommendation</p>{% endif %}
-{% include '_evidence_review.html' %}
+<div class="recommendation-title"><h2 id="recommendation-heading">Recommended Fix</h2>{% if solution.ai_assisted %}<span class="ai-enhanced" title="AI-assisted recommendation">✦ AI Assisted<span class="visually-hidden"> · AI-assisted recommendation</span></span>{% endif %}</div>
 {% if solution.validation_notice %}<p class="form-error" role="status">{{ solution.validation_notice }} AI suggestion static validation: {{ solution.rejected_suggestion_status }}. The recommendation below uses deterministic guidance.</p>{% endif %}
-<h3>What to change</h3><p>{{ solution.action }}</p>
-{% if solution.before and (solution.ai_assisted or presentation is not defined or not presentation.context) %}<h3>Current Code</h3><pre class="evidence solution-code"><code>{{ solution.before }}</code></pre>
-{% elif presentation is defined and presentation.context %}
-<h3>Current Code</h3><p class="help">{{ solution.source_status }}</p>
-<pre class="evidence solution-code source-context">{% for row in presentation.context %}<span class="source-line{% if row.highlight %} detected-line{% endif %}"><span class="line-number">{{ row.number }} {{ '▶' if row.highlight else ' ' }} | </span>{{ row.code }}</span>{{ '\n' if not loop.last else '' }}{% endfor %}</pre>
-{% elif solution.context %}<h3>Current Code</h3><pre class="evidence solution-code">{{ solution.context }}</pre>
-{% elif solution.source_type != 'Website' %}<p class="help">{{ solution.source_status }}</p>{% endif %}
-<h3>{{ solution.solution_heading or 'Suggested Code Solution' }}</h3>
-{% if solution.unavailable %}<p class="help">{{ solution.unavailable }}</p>{% endif %}
-{% if not solution.examples and not solution.dismissed %}<p>SentinelScan can provide remediation guidance for this finding, but it does not have enough context to safely generate replacement code.</p>{% endif %}
-
-{% for item in solution.examples %}
-<div class="solution-example"><div class="editor-toolbar"><h4>{{ item.kind or solution.kind }} · {{ item.language }}</h4><button type="button" class="button secondary" data-copy-solution="solution-code-{{ loop.index }}">Copy code</button></div><pre class="evidence solution-code" id="solution-code-{{ loop.index }}"><code>{{ item.code }}</code></pre>{% if item.validation %}<p class="help">{{ 'Static validation passed' if item.validation.status == 'Passed' else 'Static validation failed' if item.validation.status in ['Failed', 'Not passed'] else 'Static validation unavailable' }} · Application behavior not tested.</p><p class="help">Checks: syntax, target rule, and new findings in the relevant language module and secret detector. Other modules were not checked.</p>{% endif %}</div>
-{% endfor %}
-<h3>Why this change helps</h3><p>{{ solution.why }}</p>
-{% if solution.additional_actions %}<h3>Additional actions</h3><ul class="solution-notes">{% for note in solution.additional_actions %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}
-<h3>Fix Confidence: {{ solution.fix_confidence }}</h3><p class="help">{{ solution.fix_reason }}</p>
-{% if solution.reference %}<a class="text-link" href="{{ solution.reference }}" target="_blank" rel="noopener noreferrer">Security guidance ↗</a>{% endif %}
-<h3>{{ 'Validation' if solution.source_type == 'Website' else 'Static Validation' }}</h3><p>{{ solution.validation_message or solution.validation_status }}</p>
-{% if solution.ai_assisted and solution.validation_status == 'Passed' %}<p class="help">Static validation passed. Runtime behavior remains untested.</p>{% endif %}
-{% if finding is defined and finding.source == 'Repository' and not solution.dismissed %}<a class="button secondary" href="{{ url_for('edit_finding',finding_id=finding_id) }}">Review / Edit Fix</a>{% endif %}
-{% include "_ai_review.html" %}
+<div class="fix-summary"><p>{{ finding_ui.action if finding_ui is defined else solution.action }}</p></div>
+{% if solution.code_pair %}
+<div class="code-comparison">
+<div class="current-code"><div class="code-toolbar"><strong>Current Code</strong><button type="button" class="button secondary" data-copy-solution="current-code">Copy code</button></div><pre class="evidence solution-code" id="current-code"><code>{{ solution.code_pair.current }}</code></pre></div>
+<span class="code-direction" aria-hidden="true"></span>
+<div class="primary-fix suggested-fix"><div class="code-toolbar"><strong>Recommended Code</strong><button type="button" class="button secondary" data-copy-solution="solution-code-1">Copy code</button></div><pre class="evidence solution-code" id="solution-code-1"><code>{{ solution.code_pair.recommended }}</code></pre></div>
+</div>
+{% else %}
+{% for item in solution.examples[:1] %}<div class="primary-fix suggested-fix"><div class="code-toolbar"><span>Example Secure Pattern · {{ item.language }}</span><button type="button" class="button secondary" data-copy-solution="solution-code-1">Copy code</button></div><pre class="evidence solution-code" id="solution-code-1"><code>{{ item.code }}</code></pre>{% if item.note %}<p class="help">{{ item.note }}</p>{% else %}<p class="help">Illustrative example; adapt to your implementation. This is not a source-specific replacement.</p>{% endif %}</div>{% endfor %}
+{% endif %}
+{% if finding_ui is defined and finding_ui.essential %}<ul class="solution-notes essential-actions">{% for note in finding_ui.essential %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}
+<div class="fix-checks">{% if solution.fix_confidence %}<strong>Fix Confidence: {{ solution.fix_confidence }}</strong>{% endif %}<span>{{ 'Validation' if solution.source_type == 'Website' else 'Static Validation' }}: {{ solution.validation_message or solution.validation_status }}</span></div>
+<details class="technical-details" id="technical-details"><summary>Technical Details</summary>
+{% include '_finding_technical.html' %}
+{% if solution.unavailable or solution.source_status or solution.fix_reason or solution.why %}<section class="technical-subsection"><h3>Recommendation details</h3>
+{% if finding_ui is defined and finding_ui.action != solution.action %}<p>{{ solution.action }}</p>{% endif %}
+{% if solution.why %}<p>{{ solution.why }}</p>{% endif %}{% if solution.unavailable %}<p>{{ solution.unavailable }}</p>{% endif %}{% if solution.fix_reason %}<p class="help">{{ solution.fix_reason }}</p>{% endif %}
+{% if solution.reference %}<a class="text-link" href="{{ solution.reference }}" target="_blank" rel="noopener noreferrer">Security guidance ↗</a>{% endif %}</section>{% endif %}
+{% for item in solution.examples[1:] %}<section class="technical-subsection"><h3>Alternative: {{ item.kind or solution.kind }} · {{ item.language }}</h3><pre class="evidence solution-code" id="solution-code-{{ loop.index+1 }}"><code>{{ item.code }}</code></pre><button type="button" class="button secondary" data-copy-solution="solution-code-{{ loop.index+1 }}">Copy code</button></section>{% endfor %}
+{% if solution.validation_status or solution.additional_actions %}<section class="technical-subsection"><h3>Validation and follow-up</h3><p>{{ solution.validation_message or solution.validation_status }}</p>
+{% for item in solution.examples %}{% if item.validation %}<p class="help">{{ item.kind or solution.kind }}: {{ 'Static validation passed' if item.validation.status == 'Passed' else 'Static validation failed' if item.validation.status in ['Failed','Not passed'] else 'Static validation unavailable' }} · Application behavior not tested.</p><p class="help">Checks: syntax, target rule, and new findings in the relevant language module and secret detector. Other modules were not checked.</p>{% endif %}{% endfor %}
+{% if solution.additional_actions %}<ul class="solution-notes">{% for note in solution.additional_actions %}<li>{{ note }}</li>{% endfor %}</ul>{% endif %}</section>{% endif %}
+{% set recorded = namespace(available=false) %}{% for key,value in (solution.finding_context or {}).items() %}{% if value is not none and value != '' and value != [] and value != {} %}{% set recorded.available=true %}{% endif %}{% endfor %}
+{% if recorded.available %}<section class="technical-subsection"><h3>Recorded context and scanner details</h3><dl class="metadata">{% for key,value in solution.finding_context.items() %}{% if value is not none and value != '' and value != [] and value != {} %}<dt>{{ key.replace('_',' ')|capitalize }}</dt><dd>{% if value is mapping or (value is sequence and value is not string) %}<pre class="evidence">{{ value|tojson(indent=2) }}</pre>{% else %}{{ value }}{% endif %}</dd>{% endif %}{% endfor %}</dl></section>{% endif %}
+{% if solution.finding_context and solution.finding_context.analysis and solution.finding_context.analysis.detected_by %}<section class="technical-subsection"><h3>Evidence review: {{ 'Rejected / False Positive' if solution.dismissed else solution.finding_context.analysis.verification_status }}</h3><p>Detected by: {% for item in solution.finding_context.analysis.detected_by %}{{ item.engine }}{% if item.rule_id %} · {{ item.rule_id }}{% endif %}{{ '; ' if not loop.last else '' }}{% endfor %}</p><p class="help">Static support does not establish runtime exploitability.</p></section>{% endif %}
+{% if solution.ai_review_details and not solution.evidence_review %}<section class="technical-subsection"><h3>AI review details</h3><p>{{ solution.ai_review_details.assessment|replace('_',' ')|title }}</p><p>{{ solution.ai_review_details.reason }}</p>{% if solution.ai_review_details.note %}<p class="help">{{ solution.ai_review_details.note }}</p>{% endif %}</section>{% endif %}
+{% include '_evidence_review.html' %}
+{% if finding is defined and finding.fingerprint %}<section class="technical-subsection"><h3>Fingerprint</h3><pre class="evidence">{{ finding.fingerprint }}</pre></section>{% endif %}
+</details>
 <p class="help" data-copy-status role="status" aria-live="polite"></p>
 </section>
 {% endif %}

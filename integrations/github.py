@@ -76,21 +76,16 @@ class GitHubClient:
     def __repr__(self):
         return '<GitHubClient credentials withheld>'
 
-    def api(self,path,method='GET',payload=None):
+    def api(self,path):
         headers={'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
         if self._token:
             headers['Authorization']='Bearer '+self._token
         try:
-            if payload is not None:
-                headers['Content-Type']='application/json'
-            status, received, body=request('api.github.com',path,headers=headers,method=method,
-                body=json.dumps(payload).encode() if payload is not None else None)
+            status, received, body=request('api.github.com',path,headers=headers)
         except RemoteError as exc:
             raise GitHubError(str(exc)) from None
         if status not in (200,201):
             message=access_error(status, received)
-            if method!='GET':
-                message='GitHub could not publish this change. Check Contents and Pull requests write permissions, repository rules, and branch conflicts. You can retry using the same draft.'
             raise GitHubError(message,status)
         try:
             return json.loads(body)
@@ -112,36 +107,9 @@ class GitHubClient:
             if not re.fullmatch('[a-f0-9]{40,64}',sha):
                 raise ValueError()
         except (ValueError,KeyError,UnicodeError,TypeError):
-            raise GitHubError('The editor supports regular UTF-8 source files up to 512 KiB.') from None
+            raise GitHubError('Source preview supports regular UTF-8 source files up to 512 KiB.') from None
         validate_content(content)
         return content,sha
-
-    def publish_fix(self,draft):
-        """Retry on the same branch; never update the scanned branch or merge a PR."""
-        name=repository_name(draft['repository']);prefix='/repos/'+name
-        head=draft['head_branch'];base=draft['base_branch']
-        pulls=self.api(prefix+'/pulls?state=all&head='+quote(name.split('/')[0]+':'+head,safe='')+'&base='+quote(base,safe=''))
-        if pulls:
-            return 'https://github.com/'+name+'/pull/'+str(int(pulls[0]['number']))
-        if self.commit(name,base)!=draft['commit_sha']:
-            raise GitHubError('The scanned branch has changed. Run a new scan and prepare a fix from its findings to avoid overwriting newer code.')
-        try:
-            self.api(prefix+'/git/ref/heads/'+quote(head,safe=''))
-        except GitHubError as exc:
-            if exc.status!=404:
-                raise
-            self.api(prefix+'/git/refs',method='POST',payload={'ref':'refs/heads/'+head,'sha':draft['commit_sha']})
-        content,sha=self.source_file(name,draft['path'],head)
-        if content!=draft['edited']:
-            if content!=draft['original'] or sha!=draft['blob_sha']:
-                raise GitHubError('The fix branch file has changed. Review it on GitHub before continuing.')
-            self.api(prefix+'/contents/'+quote(draft['path'],safe='/'),method='PUT',payload={
-                'message':f"Fix SentinelScan finding #{draft['finding_id']}",'branch':head,'sha':sha,
-                'content':base64.b64encode(draft['edited'].encode('utf-8')).decode('ascii')})
-        result=self.api(prefix+'/pulls',method='POST',payload={
-            'title':f"Fix SentinelScan finding #{draft['finding_id']}",'head':head,'base':base,
-            'body':f"User-reviewed source edit for SentinelScan finding #{draft['finding_id']}, based on commit {draft['commit_sha']}.\n\nReview and test this change before merging. Re-scan after merging to verify remediation."})
-        return 'https://github.com/'+name+'/pull/'+str(int(result['number']))
 
     def repositories(self,owner='',page=1):
         if not 1<=page<=1000:
@@ -159,27 +127,6 @@ class GitHubClient:
         self.has_more_repositories=len(rows)==30
         results=[self.metadata(row) for row in rows]
         return [row for row in results if not self._token or not owner or row['owner'].lower()==owner.lower()]
-
-    def pull_status(self,draft):
-        name=repository_name(draft['repository'])
-        match=re.fullmatch('https://github.com/'+re.escape(name)+r'/pull/([1-9][0-9]*)',draft['pr_url'] or '')
-        if not match: raise GitHubError('No valid pull request is linked to this draft.')
-        data=self.api('/repos/'+name+'/pulls/'+match[1])
-        if (data.get('base',{}).get('ref')!=draft['base_branch'] or
-            data.get('head',{}).get('ref')!=draft['head_branch'] or
-            data.get('base',{}).get('repo',{}).get('full_name','').lower()!=name.lower()):
-            raise GitHubError('The pull request no longer matches this draft repository and branches.')
-        merged=bool(data.get('merged'))
-        sha=data.get('merge_commit_sha') if merged else None
-        if merged and not re.fullmatch('[a-fA-F0-9]{40,64}',sha or ''):
-            raise GitHubError('GitHub did not return a valid merge commit.')
-        return {'state':'Merged' if merged else 'Open' if data.get('state')=='open' else 'Closed', 'merge_commit':sha}
-
-    def includes_commit(self,name,ancestor,descendant):
-        if not all(re.fullmatch('[a-fA-F0-9]{40,64}',value or '') for value in (ancestor,descendant)):
-            raise GitHubError('Invalid verification commit.')
-        data=self.api('/repos/'+repository_name(name)+'/compare/'+ancestor+'...'+descendant)
-        return data.get('status') in ('ahead','identical')
 
     @staticmethod
     def metadata(row):

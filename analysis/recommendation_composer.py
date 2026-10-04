@@ -13,6 +13,7 @@ def compose(finding, base, review=None, enabled=False):
         from analysis.evidence_review import display_review
         evidence_review=display_review(review['evidence_review'])
     failed_candidate=False
+    validated_answer=None
     if enabled and isinstance(review,dict) and f.get('status')!='False Positive':
         try:
             from analysis.llm_review import validate_response,clean,website_example
@@ -23,6 +24,7 @@ def compose(finding, base, review=None, enabled=False):
                 rec=dict(what_to_change=review['remediation'],suggested_code_or_config=code,
                     example_type='source_specific' if code else 'none',why=review['reason'],additional_actions=[])
             answer=validate_response({key:review[key] for key in ('assessment','reason','original_code','fix_confidence')} | {'recommendation':rec})
+            validated_answer=answer
             rec=answer['recommendation'];code=rec['suggested_code_or_config'];kind=rec['example_type']
             if evidence_review and evidence_review['assessment']!='likely_valid':
                 raise ValueError('Disputed evidence keeps deterministic guidance')
@@ -36,6 +38,15 @@ def compose(finding, base, review=None, enabled=False):
             # Clean text independently; code was sanitized before AI persistence.
             rec={k:[clean(x) for x in v] if isinstance(v,list) else clean(v) for k,v in rec.items()}
             code=scrub(code)
+            normalize=lambda value: ' '.join(str(value or '').split()).casefold()
+            # Valid JSON is not evidence of useful contribution. Keep the base for
+            # generic non-actions and exact repeats, without claiming semantic quality.
+            if normalize(rec['what_to_change']).rstrip('.') in ('review the code','review code','fix the issue','fix the vulnerability','follow best practices','no changes needed'):
+                raise ValueError('No actionable enhancement')
+            same_code=not code or any(normalize(item['code'])==normalize(code) for item in result.get('examples',[]))
+            same_notes=all(normalize(note) in {normalize(n) for n in result.get('notes',[])} for note in rec['additional_actions'])
+            if normalize(rec['what_to_change'])==normalize(result.get('action')) and normalize(rec['why'])==normalize(result.get('why')) and same_code and same_notes:
+                raise ValueError('No recommendation contribution')
             # One chosen example replaces the base examples, never appends a copy.
             if code:
                 example=dict(language='Configuration' if f['source']=='Website' else result.get('finding_context',{}).get('language') or 'Source',code=code)
@@ -49,11 +60,22 @@ def compose(finding, base, review=None, enabled=False):
             result['notes']=list(dict.fromkeys(list(result.get('notes',[]))+rec['additional_actions']))
         except (ValueError,KeyError,TypeError,AttributeError):
             result=deepcopy(base);result.update(ai_assisted=False,recommendation_source='Deterministic')
+    if validated_answer is not None:
+        result['ai_review_details']={'assessment':validated_answer['assessment'],
+            'reason':clean(validated_answer['reason']),
+            'note':clean(review.get('note','')) if isinstance(review.get('note',''),str) else ''}
     if failed_candidate:
         result['validation_notice']='Suggested code failed static validation and requires manual review.'
         result['rejected_suggestion_status']='Failed'
     if evidence_review:
         result['evidence_review']=evidence_review
+    # Add only a safe illustration when no usable code survived composition.
+    if not result.get('examples') or all(e.get('language')=='Dependency update checklist' for e in result['examples']):
+        from analysis.recommendation import example_secure_pattern
+        example=example_secure_pattern(f,result)
+        if example:
+            result.update(examples=[example],example_type='illustrative',exact=False,source_matched=False,
+                          validation_status='Not Available',fix_confidence='Low')
     # Deduplicate equal snippets without collapsing alternatives with different behavior.
     examples=[];seen=set()
     for item in result.get('examples',[]):
@@ -69,8 +91,10 @@ def compose(finding, base, review=None, enabled=False):
     result['kind']={'source_specific':'Suggested Source Fix','illustrative':'Illustrative Secure Example','configuration':'Configuration Example','none':'Remediation guidance'}[kind]
     result['solution_heading']={'source_specific':'Suggested Code Solution','illustrative':'Illustrative Secure Example','configuration':'Configuration Example','none':'Suggested Solution'}[kind]
     result['validation_message']='Requires implementation and re-scan.' if f['source']=='Website' else result.get('validation_status','Not Available')
-    if f['source']=='Website' and not examples:
+    if f['source']=='Website' and (not examples or kind=='illustrative'):
         result['unavailable']='Source-specific code unavailable because the website scanner does not have access to the backend implementation.'
+    from analysis.recommendation import paired_code
+    result['code_pair']=paired_code(f,result)
     return scrub(result)
 
 

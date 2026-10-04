@@ -1,0 +1,17 @@
+{% if presentation is defined %}
+<section class="technical-subsection"><h3>Finding record</h3>
+<dl class="metadata"><dt>Source</dt><dd>{{ finding.source }}</dd><dt>Category</dt><dd>{{ finding.category }}</dd><dt>Detected (UTC)</dt><dd>{{ finding.created_at }}</dd>
+{% if presentation.metadata.function and presentation.metadata.function != 'Could not be determined statically' %}<dt>Function</dt><dd>{{ presentation.metadata.function }}</dd>{% endif %}</dl>
+{% if presentation.description %}<p>{{ presentation.description }}</p>{% endif %}
+{% if finding.impact %}<h4>Impact</h4><p>{{ finding.impact }}</p>{% endif %}
+<form method="post" action="{{ url_for('update_finding_status', finding_id=finding.id) }}" class="status-form"><input type="hidden" name="csrf_token" value="{{ session.csrf_token }}"><label>Finding status<select name="status">{% for status in statuses %}<option {% if status == finding.status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select></label><button class="button secondary" type="submit">Update status</button></form>
+</section>
+{% if finding.evidence or presentation.evidence %}<section class="technical-subsection"><h3>Evidence</h3>
+{% if presentation.evidence %}<dl class="metadata">{% for key,value in presentation.evidence.items() %}{% if value %}<dt>{{ key.replace('_',' ')|capitalize }}</dt><dd>{{ value }}</dd>{% endif %}{% endfor %}</dl>{% endif %}
+{% if finding.evidence %}<pre class="evidence">{{ finding.evidence }}</pre>{% endif %}</section>{% endif %}
+{% endif %}
+{% if solution.source_type == 'Repository' and (solution.context or (presentation is defined and presentation.context) or (solution.before and solution.source_matched and not solution.code_pair)) %}<section class="technical-subsection current-source"><h3>Source context</h3>
+{% if solution.before and solution.source_matched and not solution.code_pair and (solution.ai_assisted or presentation is not defined or not presentation.context) %}<pre class="evidence solution-code"><code>{{ solution.before }}</code></pre>
+{% elif presentation is defined and presentation.context %}<pre class="evidence solution-code source-context">{% for row in presentation.context %}<span class="source-line{% if row.highlight %} detected-line{% endif %}"><span class="line-number">{{ row.number }} {{ '▶' if row.highlight else ' ' }} | </span>{{ row.code }}</span>{{ '\n' if not loop.last else '' }}{% endfor %}</pre>
+{% else %}<pre class="evidence solution-code">{{ solution.context }}</pre>{% endif %}
+{% if solution.source_status %}<p class="help">{{ solution.source_status }}</p>{% endif %}</section>{% endif %}

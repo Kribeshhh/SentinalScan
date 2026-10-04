@@ -1,9 +1,0 @@
-{% if ai_enabled and (finding is defined or (context is defined and context and context.finding)) %}
-<details id="ai-review"><summary>Improve with AI</summary>
-<p class="help">Share this finding’s redacted context and base recommendation with {{ ai_provider_name }}. Repository evidence packages receive an analyst pass and a skeptical review. AI may be wrong; your finding status and scanner evidence remain unchanged.</p>
-<form method="post" action="{{ url_for('ai_review',finding_id=finding_id) }}">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-<label><input type="checkbox" name="share_context" value="yes" required> Send this finding’s redacted context to {{ ai_provider_name }} for review.</label>
-<button class="button secondary" type="submit">Improve with AI</button>
-</form></details>
-{% endif %}

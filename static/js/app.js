@@ -61,39 +61,6 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted && document.querySelector('form[aria-busy="true"]')) window.location.reload();
 });
 
-const sourceEditor = document.querySelector('#source-editor');
-if (sourceEditor) {
-  const position = document.querySelector('#editor-position');
-  const publishForm = document.querySelector('#publish-fix-form');
-  const initial = sourceEditor.value;
-  let leaving = false;
-  function showPosition() {
-    const line = sourceEditor.value.slice(0, sourceEditor.selectionStart).split('\n').length;
-    position.textContent = `Line ${line} · ${sourceEditor.value.split('\n').length} lines`;
-  }
-  ['input', 'click', 'keyup'].forEach(event => sourceEditor.addEventListener(event, showPosition));
-  document.querySelector('#jump-to-finding').addEventListener('click', () => {
-    const lines = sourceEditor.value.split('\n');
-    const index = Math.min(lines.length - 1, Math.max(0, Number(sourceEditor.dataset.line) - 1));
-    const start = lines.slice(0, index).reduce((total, line) => total + line.length + 1, 0);
-    sourceEditor.focus();
-    sourceEditor.setSelectionRange(start, start + lines[index].length);
-    sourceEditor.scrollTop = Math.max(0, index * parseFloat(getComputedStyle(sourceEditor).lineHeight) - 100);
-    showPosition();
-  });
-  document.querySelector('#source-editor-form').addEventListener('submit', () => { leaving = true; });
-  if (publishForm) publishForm.addEventListener('submit', event => {
-    if (sourceEditor.value !== initial || sourceEditor.dataset.unsaved === 'true') {
-      event.preventDefault();
-      window.alert('Save your current edits and review the saved diff before publishing.');
-      publishForm.removeAttribute('aria-busy');
-    } else leaving = true;
-  }, true);
-  window.addEventListener('beforeunload', event => {
-    if (!leaving && sourceEditor.value !== initial) { event.preventDefault(); event.returnValue = ''; }
-  });
-}
-
 // Copy trusted solution text as plain text, never interpreted markup.
 document.querySelectorAll('[data-copy-solution]').forEach(button => {
   button.addEventListener('click', async () => {
@@ -111,3 +78,16 @@ document.querySelectorAll('[data-copy-solution]').forEach(button => {
     }
   });
 });
+
+// Preserve deep links when their destination is inside collapsed evidence.
+function revealFindingAnchor() {
+  let id;
+  try { id = decodeURIComponent(window.location.hash.slice(1)); } catch (_) { return; }
+  const target = document.getElementById(id);
+  if (!target) return;
+  for (let parent = target.parentElement; parent; parent = parent.parentElement) {
+    if (parent.tagName === 'DETAILS') parent.open = true;
+  }
+}
+window.addEventListener('hashchange', revealFindingAnchor);
+revealFindingAnchor();

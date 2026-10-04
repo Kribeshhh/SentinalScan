@@ -11,13 +11,16 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <aside class="sidebar" id="navigation">
   <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-icon">S</span><span>Sentinel<span class="accent">Scan</span><small>SECURITY WORKSPACE</small></span></a>
-  <p class="nav-label">WORKSPACE</p>
   <nav aria-label="Main navigation">
-  {% for endpoint, label, icon in [('dashboard','Dashboard','◫'), ('website_scan','Website Scan','◎'), ('repository_scan','Repository Scan','⌘'), ('scans','Scan History','◷'), ('findings','Findings','◇'), ('reports','Reports','▤'), ('comparisons','Compare scans','⇄'), ('risk_trends','Risk trends','↗')] %}
-    <a href="{{ url_for(endpoint) }}" class="nav-item {{ 'active' if request.endpoint == endpoint or (endpoint == 'findings' and request.endpoint == 'finding_detail') else '' }}" {% if request.endpoint == endpoint %}aria-current="page"{% endif %}><span aria-hidden="true">{{ icon }}</span>{{ label }}</a>
+  {% for group, items in [('Overview',[('dashboard','Dashboard','◫')]),('Assess',[('website_scan','Website Scan','◎'),('repository_scan','Repository Scan','⌘')]),('Analysis',[('findings','Findings','◇'),('scans','Scan History','◷'),('comparisons','Compare Scans','⇄'),('risk_trends','Risk Trends','↗')]),('Reports',[('reports','Reports','▤')])] %}
+    <div class="nav-group"><p class="nav-label">{{ group|upper }}</p>
+    {% for endpoint,label,icon in items %}
+      {% set active = request.endpoint == endpoint or (endpoint == 'findings' and request.endpoint == 'finding_detail') or (endpoint == 'scans' and request.endpoint == 'scan_detail') or (endpoint == 'comparisons' and request.endpoint == 'comparison_detail') %}
+      <a href="{{ url_for(endpoint) }}" class="nav-item {{ 'active' if active else '' }}" {% if active %}aria-current="page"{% endif %}><span aria-hidden="true">{{ icon }}</span>{{ label }}</a>
+    {% endfor %}</div>
   {% endfor %}
   </nav>
-  <div class="sidebar-footer"><span class="local-dot"></span> Local workspace<small>DAST · SAST · Remediation</small></div>
+  <div class="sidebar-footer"><span class="local-dot"></span> Local workspace<small>SCAN · DETECT · RECOMMEND</small></div>
 </aside>
 <div class="workspace">
   <header class="topbar"><div><button class="menu-toggle" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">☰</button><span class="breadcrumb">Workspace <span>/</span> <strong>{{ title }}</strong></span></div><span class="environment"><span class="local-dot"></span> LOCAL INSTANCE</span></header>

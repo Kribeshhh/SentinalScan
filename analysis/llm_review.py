@@ -1,4 +1,4 @@
-"""Explicit, bounded review with redaction before provider request construction."""
+"""Optional, bounded review with redaction before provider request construction."""
 import json
 import re
 from pathlib import PurePosixPath
@@ -163,7 +163,7 @@ def process(finding,payload,response,original=None,known=()):
         data['validation']={'status':'Failed'};return data
     data['diff']=source_diff(snippet,data['suggested_code'],'reviewed-snippet')
     if original is None:
-        data['note']='Static validation not available: load the pinned source in the existing editor, then request review again. This diff covers only the excerpt.'
+        data['note']='Static validation not available: review the pinned source in the existing editor. This diff covers only the excerpt.'
         return data
     lines=original.splitlines(keepends=True);count=len(snippet.splitlines())
     span=''.join(lines[start-1:start-1+count])
@@ -176,3 +176,64 @@ def process(finding,payload,response,original=None,known=()):
     data['validation']=dict(result,status='Passed' if result['status']=='Passed' else 'Failed' if result['status']=='Not passed' else 'Not Available')
     data['diff']=clean(source_diff(original,edited,'reviewed-source'),known)
     return data
+
+
+def refine_finding(db, finding, config, known=()):
+    """Refine one persisted candidate; failure never changes scanner records."""
+    if not config.get('LLM_ENABLED') or finding['status'] == 'False Positive':
+        return False
+    from analysis.remediation_workflow import finding_solution
+    from analysis.recommendation_composer import record_attempt
+    from analysis.evidence_review import prepare_evidence, run_review
+    from integrations.llm import review
+    import os
+    known = tuple(value for value in (*known, config.get('LLM_API_KEY'), os.environ.get('SENTINELSCAN_GITHUB_TOKEN')) if value)
+    try:
+        context = db.execute('SELECT * FROM finding_context WHERE finding_id=?', (finding['id'],)).fetchone()
+        solution = finding_solution(db, finding)
+        draft = db.execute('SELECT original FROM remediation_drafts WHERE finding_id=?', (finding['id'],)).fetchone()
+        original = draft['original'] if draft else None  # Local validation only; never provider input.
+        payload = prepare_evidence(finding, solution, known) if finding['source'] == 'Repository' else None
+        if payload is not None:
+            result = run_review(finding, payload, config, original, known)
+        else:
+            payload = prepare(finding, context, known, solution=solution)
+            result = process(finding, payload, config.get('LLM_REVIEW_PROVIDER', review)(payload, config), original, known)
+        result['model'] = clean(config.get('LLM_MODEL', 'Configured provider'), known)
+        with db:
+            db.execute("INSERT INTO ai_reviews(finding_id,data_json) VALUES (?,?) ON CONFLICT(finding_id) DO UPDATE SET data_json=excluded.data_json,created_at=strftime('%Y-%m-%dT%H:%M:%fZ','now')",
+                       (finding['id'], json.dumps(result)))
+        record_attempt(db, finding, False)
+        return True
+    except Exception:
+        # No provider bodies, source, credentials or exceptions enter logs/UI.
+        db.rollback()
+        record_attempt(db, finding, True)
+        return False
+
+
+def refine_scan(app, scan_id, known=()):
+    """Completion callback on the existing queue, not a detector or a page side effect.
+
+    At most 20 candidates and 60 seconds between requests; an in-flight bounded
+    provider call may finish later. Stop on the first outage. Remaining findings
+    retain their useful deterministic guidance. No retries or extra worker pool.
+    """
+    import time
+    from database import get_db
+    if not app.config.get('LLM_ENABLED'):
+        return
+    if not (app.config.get('LLM_REVIEW_PROVIDER') or app.config.get('LLM_EVIDENCE_PROVIDER') or
+            (app.config.get('LLM_API_KEY') and app.config.get('LLM_MODEL'))):
+        return
+    try:
+        with app.app_context():
+            db = get_db()
+            deadline = time.monotonic() + 60
+            findings = db.execute("SELECT f.* FROM findings f LEFT JOIN ai_reviews a ON a.finding_id=f.id WHERE f.scan_id=? AND f.status!='False Positive' AND a.finding_id IS NULL ORDER BY CASE f.severity WHEN 'Critical' THEN 0 WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END,f.id LIMIT 20", (scan_id,)).fetchall()
+            for finding in findings:
+                if time.monotonic() >= deadline or not refine_finding(db, finding, app.config, known):
+                    break
+    except Exception:
+        # Optional post-processing cannot fail a completed scan or its queue.
+        return

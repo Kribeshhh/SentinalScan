@@ -171,7 +171,6 @@ def init_app(app):
                 db.execute(f"ALTER TABLE repositories ADD COLUMN {name} {definition}")
         migrate_reports(db)
         # The local single-process server can recover interrupted publication on restart.
-        db.execute("UPDATE remediation_drafts SET state='Retry' WHERE state='Publishing'")
         # Older completed scans can be reconstructed from all their detected findings.
         from analysis.risk_engine import calculate_risk
         for scan in db.execute("SELECT id FROM scans WHERE status IN ('Completed','Failed') AND assessment_risk IS NULL").fetchall():

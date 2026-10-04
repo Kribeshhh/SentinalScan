@@ -119,8 +119,9 @@ def code_digest():
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,default=ROOT/'evaluation/results.json')
+    parser.add_argument('--dataset',type=Path,default=DATASET)
     parser.add_argument('--semgrep',help='Trusted installed Semgrep binary; adds a real second stage')
-    args=parser.parse_args();fixtures,digest=load_dataset()
+    args=parser.parse_args();fixtures,digest=load_dataset(args.dataset)
     stages=[run_stage(fixtures)]
     tool_version=None
     if args.semgrep:

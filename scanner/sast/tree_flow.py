@@ -100,7 +100,12 @@ class TreeFlow:
             return self.value(node.child_by_field_name('object') or node.child_by_field_name('array'))
         if kind=='template_string' and not any(n.type=='template_substitution' for n in node.named_children):return Value(static=True)
         if kind in ('binary_expression','template_string'):
-            return combine([self.value(n) for n in node.named_children],constructed=True,preserve_html=True)
+            values=[self.value(n) for n in node.named_children]
+            result=combine(values,constructed=True,preserve_html=True)
+            if kind=='binary_expression' and text(node.child_by_field_name('operator'))=='+' and len(values)==2 and all(v.static and isinstance(v.literal,str) for v in values):
+                literal=values[0].literal+values[1].literal
+                if len(literal)<=1000:result=replace(result,literal=literal)
+            return result
         if kind in ('string_fragment','escape_sequence'):return Value(static=True)
         values=[]
         for child in node.named_children:

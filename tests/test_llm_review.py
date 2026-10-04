@@ -97,30 +97,35 @@ class LLMRouteTests(unittest.TestCase):
 
     def tearDown(self):self.app.extensions['scan_manager'].shutdown();self.tmp.cleanup()
 
-    def submit(self):return self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf,'share_context':'yes'},follow_redirects=True)
+    def submit(self):
+        from analysis.llm_review import refine_finding
+        with self.app.app_context():
+            db=get_db()
+            refine_finding(db,db.execute('SELECT * FROM findings WHERE id=?',(self.id,)).fetchone(),self.app.config)
+        return self.client.get(f'/findings/{self.id}')
 
     def test_enabled_persists_separate_review_and_escapes_inside_recommendation(self):
         page=self.submit();self.assertEqual(page.status_code,200)
         self.assertEqual(len(self.calls),1)
         soup=BeautifulSoup(page.data,'html.parser')
-        self.assertIsNotNone(soup.select_one('#recommendation #ai-review'))
+        self.assertIsNone(soup.select_one('#recommendation #ai-review'));self.assertNotIn('Improve with AI',soup.get_text())
         self.assertIn('AI-assisted recommendation',page.get_data(as_text=True));self.assertNotIn('<script>bad()</script>',page.get_data(as_text=True))
         with self.app.app_context():
             db=get_db();self.assertEqual(db.execute('SELECT status FROM findings').fetchone()[0],'Open')
             self.assertEqual(db.execute('SELECT COUNT(*) FROM ai_reviews').fetchone()[0],1)
         self.client.get(f'/findings/{self.id}');self.assertEqual(len(self.calls),1)
 
-    def test_disabled_csrf_and_explicit_share(self):
+    def test_disabled_and_removed_route_preserve_csrf(self):
         self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review').status_code,400)
-        self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf}).status_code,400)
+        self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf}).status_code,404)
         self.app.config['LLM_ENABLED']=False
-        self.assertEqual(self.submit().status_code,404);self.assertEqual(self.calls,[])
+        self.assertEqual(self.submit().status_code,200);self.assertEqual(self.calls,[])
         self.assertEqual(self.client.get(f'/findings/{self.id}').status_code,200)
 
     def test_outage_and_invalid_output_keep_finding(self):
         for provider in (lambda *_:None,lambda *_:response(assessment='invalid')):
             self.app.config['LLM_REVIEW_PROVIDER']=provider
-            page=self.submit();self.assertEqual(page.status_code,200);self.assertIn(b'Deterministic guidance remains',page.data)
+            page=self.submit();self.assertEqual(page.status_code,200);self.assertIn(b'Recommended Fix',page.data);self.assertNotIn(b'AI Assisted',page.data)
         def fail(*_):raise TimeoutError('sensitive error body')
         self.app.config['LLM_REVIEW_PROVIDER']=fail
         page=self.submit();self.assertNotIn(b'sensitive error body',page.data)
@@ -155,3 +160,54 @@ class LLMPipelineTests(unittest.TestCase):
         code='node.innerHTML=input;\nother.textContent=input;'
         result=process(finding(),payload,response(original_code=payload['snippet'],suggested_code=code),original)
         self.assertEqual(result['validation']['status'],'Failed')
+
+    def test_completed_repository_automatically_refines_without_changing_detection(self):
+        from tests.test_source_scanner import FixtureGitHub, REPO
+        from tests.test_repository_phase4 import Provider, answer
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled), tempfile.TemporaryDirectory() as directory:
+                provider=Provider(*[answer() for _ in range(40)])
+                calls=[]
+                def legacy(payload,config):
+                    calls.append(payload)
+                    return response(remediation='Review this affected operation using its recorded context.')
+                app=create_app(dict(TESTING=True,DATABASE=str(Path(directory)/'scan.db'),GITHUB_CLIENT_FACTORY=FixtureGitHub,
+                    LLM_ENABLED=enabled,LLM_EVIDENCE_PROVIDER=provider,LLM_REVIEW_PROVIDER=legacy))
+                client=app.test_client();client.get('/')
+                with client.session_transaction() as session:csrf=session['csrf_token']
+                result=client.post('/repository-scan',data=dict(csrf_token=csrf,action='start',repository=REPO['full_name'],branch='main',authorized='yes'))
+                self.assertEqual(result.status_code,303)
+                app.extensions['scan_manager'].shutdown()
+                with app.app_context():
+                    db=get_db()
+                    self.assertEqual(db.execute('SELECT status FROM scans').fetchone()[0],'Completed')
+                    rows=[tuple(row) for row in db.execute('SELECT title,severity,confidence,evidence,fingerprint,status FROM findings ORDER BY id')]
+                    if not enabled:baseline=rows
+                    else:
+                        self.assertEqual(rows,baseline)
+                        self.assertGreater(db.execute('SELECT COUNT(*) FROM ai_reviews').fetchone()[0],0)
+                    self.assertEqual(bool(provider.calls or calls),enabled)
+                    for payload, *_ in provider.calls:
+                        self.assertIn('evidence_package',payload)
+
+    def test_refinement_budget_failure_and_saved_reviews_are_bounded(self):
+        from analysis.llm_review import refine_scan
+        with tempfile.TemporaryDirectory() as directory:
+            calls=[]
+            def provider(payload,config):calls.append(payload);return response()
+            app=create_app(dict(TESTING=True,DATABASE=str(Path(directory)/'scan.db'),LLM_ENABLED=True,LLM_REVIEW_PROVIDER=provider))
+            with app.app_context():
+                db=get_db()
+                with db:scan=db.execute("INSERT INTO scans(scan_type,target,status) VALUES ('Repository','o/r','Completed')").lastrowid
+                for n in range(25):
+                    save_finding(db,scan,Finding(**finding(location=f'o/r/ui.js:{n+1}'),severity='Low',confidence='Low',description='Candidate',impact='Review',recommendation='Use safe text.'))
+            refine_scan(app,scan)
+            self.assertEqual(len(calls),20)
+            def fail(*_):calls.append('failure');raise TimeoutError('private-body')
+            app.config['LLM_REVIEW_PROVIDER']=fail
+            refine_scan(app,scan)
+            self.assertEqual(len(calls),21)  # Saved reviews skipped, one outage stops remaining calls.
+            with app.app_context():
+                self.assertEqual(get_db().execute('SELECT COUNT(*) FROM ai_reviews').fetchone()[0],20)
+                self.assertEqual(get_db().execute('SELECT status FROM scans').fetchone()[0],'Completed')
+            app.extensions['scan_manager'].shutdown()

@@ -167,3 +167,112 @@ def finding_presentation(finding,solution):
             'protection':'No parameterized query was recognized for the constructed SQL.' if 'sql injection' in title else 'No protection was recognized for this operation.',
             'source_line':'Not recorded'}
     return scrub(dict(description=detail,evidence=structured,context=context,metadata=solution.get('metadata') or source_metadata(f)))
+
+
+
+def brief(value, limit=420):
+    text=' '.join(str(value or '').split())
+    sentences=re.split(r'(?<=[.!?])\s+',text)
+    selected=' '.join(sentences[:3])
+    if len(selected)>limit:
+        selected=selected[:limit].rsplit(' ',1)[0]+'…'
+    elif len(sentences)>3:
+        selected+='…'
+    return scrub(selected)
+
+
+def presentation_summary(presentation,solution,finding):
+    action=brief(solution.get('action'))
+    # Preserve the imperative and conditional nature of secret remediation.
+    essential=[]
+    if solution.get('dismissed'):
+        essential=[]
+    elif finding['category']=='Secret Exposure':
+        essential=['If this is a real credential, rotate or revoke it and check repository history for exposure.']
+    elif solution.get('notes'):
+        essential=[brief(solution['notes'][0],280)]
+    description=presentation['description']
+    impact=finding['impact'] if 'impact' in dict(finding) else ''
+    if impact and impact not in description:description+=' '+str(impact)
+    return dict(description=brief(description),action=action,
+                essential=essential)
+
+
+def example_secure_pattern(finding, solution):
+    """Small teaching patterns, never replacement spans or validated source fixes."""
+    f=dict(finding)
+    if f.get('status')=='False Positive' or solution.get('dismissed'):
+        return None
+    title=f['title'].lower();repo=f['source']=='Repository'
+    suffix=PurePosixPath(re.sub(r':\d+$','',f['location'])).suffix.lower()
+    language=code=note=None
+    if repo and f['category']=='Dependency':
+        from analysis.dependency_solution import dependency_solution
+        prepared={}
+        try:dependency_solution(prepared,f)
+        except (ValueError,TypeError,AttributeError,KeyError):return None
+        return prepared.get('dependency_example')
+    if 'sql injection' in title:
+        language='Pseudocode · database API unknown'
+        code='query("SELECT id FROM example_table WHERE id = <value-placeholder>",\n      parameters=[user_input])'
+        note='Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver’s binding API; allowlist dynamic identifiers separately.'
+    elif repo and suffix=='.py' and ('shell' in title or 'command injection' in title):
+        language='Python · illustrative'
+        code='import subprocess\n\n# Validate the argument against the command’s allowed values first.\nsubprocess.run(["/path/to/approved-command", validated_value],\n               shell=False, check=True)'
+        note='Illustrative only: choose a fixed executable and validate its arguments. Separate arguments prevent shell interpretation, but do not prevent command-specific option injection.'
+    elif repo and f['category']=='Secret Exposure' and suffix=='.py':
+        language='Python · illustrative'
+        code='import os\n\ncredential = os.environ["SERVICE_CREDENTIAL"]'
+        note='Illustrative only: these names are examples, not detected source. Provision a protected runtime environment or secret manager; never commit the value.'
+    elif ('dom html' in title or 'document.write' in title) and repo and suffix in ('.js','.jsx','.mjs','.cjs'):
+        language='JavaScript · plain-text example'
+        code='// Only when the intended output is plain text:\nelement.textContent = userInput;'
+        note='Illustrative only: element and userInput are example names. Intentional HTML needs a maintained sanitizer and an explicit policy instead.'
+    elif not repo and f['category']=='CORS':
+        language='Pseudocode · origin allowlist'
+        code='if request.origin in configured_trusted_origins:\n    response.allow_origin = request.origin\n    response.vary.add("Origin")'
+        note='Illustrative policy, not a backend API. Define trusted origins explicitly; enable credentials only when required and handle preflight in the actual deployment.'
+    elif not repo and f['category']=='Reflected XSS':
+        language='Pseudocode · contextual encoding'
+        code='response.write(encode_for_output_context(user_input))'
+        note='Illustrative only: select the encoder for the actual HTML/attribute/URL context. Avoid inserting untrusted input into scripts or event handlers; no backend language is inferred.'
+    if code:
+        return dict(language=language,code=code,kind='Example Secure Pattern',note=note)
+    return None
+
+
+def paired_code(finding, solution):
+    """Display only retained source paired with an already-supported replacement."""
+    if finding['source']!='Repository' or finding['category']=='Secret Exposure' or solution.get('dismissed'):
+        return None
+    before=solution.get('before');examples=solution.get('examples') or []
+    if finding['category']=='Dependency':
+        import json
+        from analysis.dependency_solution import dependency_solution
+        try:
+            prepared={};dependency_solution(prepared,dict(finding))
+            expected=json.loads(prepared['dependency_example']['code'])['dependencies']
+            data=json.loads(finding['evidence']);package=data['package'];version=data['version']
+            if '<verified-safe-version>' in expected.values():return None
+            if not solution.get('before_label','').startswith('Actual dependency entry'):
+                # Read an actual retained manifest line; never build the old value
+                # from advisory metadata. A unique complete entry is required.
+                matches=[]
+                for line in (solution.get('context') or '').splitlines():
+                    row=re.match(r'^\s*\d+ [> ] (.*)$',line)
+                    if not row:continue
+                    entry=row[1].strip().removesuffix(',')
+                    try: parsed=json.loads('{'+entry+'}')
+                    except ValueError:continue
+                    if parsed=={package:version}:matches.append(entry)
+                if len(matches)!=1:return None
+                before=matches[0]
+            if json.loads('{'+before.strip()+'}')!={package:version}:return None
+            replacement=json.dumps(package)+': '+json.dumps(expected[package])
+            return scrub({'current':before,'recommended':replacement})
+        except (ValueError,KeyError,TypeError,AttributeError):return None
+    if (not before or not examples or not solution.get('source_matched') or
+            solution.get('example_type')!='source_specific' or
+            examples[0].get('validation',{}).get('status')!='Passed'):
+        return None
+    return scrub({'current':before,'recommended':examples[0]['code']})

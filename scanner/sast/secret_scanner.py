@@ -15,6 +15,11 @@ def credential_assignment(path,key,value):
         return False
     if re.fullmatch(r'\$[A-Za-z_][A-Za-z0-9_]*',value.strip()):return False
     if re.fullmatch(r'(?i)(?:dummy|test|sample|fake)[_-](?:password|token|secret|key)(?:[_-]\d+)?',value.strip()):return False
+    # Only recognizable instructional prose in documentation is suppressed;
+    # spaced passphrases in source/configuration remain credential candidates.
+    if PurePosixPath(path).suffix.lower() in ('.md', '.rst') and re.fullmatch(
+        r'(?i)(?:enter|type|choose) (?:your |the |an? )?(?:account )?(?:password|passphrase)(?: to [a-z ]+)?[.!]?', value.strip()):
+        return False
     return plausible(value)
 
 

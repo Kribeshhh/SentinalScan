@@ -1,5 +1,54 @@
 # SentinelScan maintenance
 
+## Current product scope — recommendation-only (2026-10-04)
+
+The final UI polish removes source editing, drafts, patch download, GitHub writes,
+PR publication/tracking and workflow verification routes. Do not restore them.
+GitHub is read-only for access, browsing, source retrieval and scanning. Preserve
+recommendation generation, source validation, code pairs, examples, automatic AI,
+triage and ordinary scan comparison. Historical workflow tables stay for safe
+compatibility; the unchanged AI validator may read historical source, never write
+new drafts. Older phase descriptions of editor/PR behavior are archival.
+
+## Current maintenance policy — final simplification (2026-10-04)
+
+This is the active AI activation policy; older phase records describe historical workflows.
+Keep deterministic repository detection and website checks unchanged. AI is optional,
+disabled by default, and automatically refines persisted candidates after a new scan
+when explicitly enabled in server configuration. There is no Improve with AI button
+or manual AI route. Page/report GETs never call providers. Reuse `refine_finding` /
+`refine_scan` in `analysis/llm_review.py` and the existing recommendation composer,
+whitelists, two-pass review and static validator; do not add a parallel workflow.
+The existing scan queue invokes the completion hook after durable scan results.
+Bound each scan to 20 candidate reviews, prioritized by severity, and a 60-second
+between-review budget; an in-flight bounded review can finish after that budget.
+Stop on first provider failure. All remaining findings keep deterministic guidance.
+Do not enable AI or use a live provider for tests. External processing permission
+comes from the operator's enabled configuration; preserve pre-request redaction,
+unknown context, no tools, structured validation and human review outside SentinelScan.
+A source fix without pinned local source stays unvalidated and cannot replace the
+base fix. Show one Recommended Fix, an AI Assisted indicator only when contributed,
+and one Technical Details container. Keep security actions/warnings visible.
+See `docs/phase_3_unified_recommendation.md` for the current audit and behavior.
+
+
+## Required project context
+
+Before implementation or architectural decisions, read these files in order:
+
+1. `context/project-overview.md`
+2. `context/architecture.md`
+3. `context/ui-context.md`
+4. `context/code-standards.md`
+5. `context/ai-workflow-rules.md`
+6. `context/progress-tracker.md`
+
+Update the progress tracker after meaningful implementation changes. Update affected
+context documents when scope, architecture, storage, UI or standards change before
+continuing. `CLAUDE.md` provides the same entry point for other assistants. These
+files complement the detailed rules below; they do not replace security invariants.
+
+
 Work in this existing Flask/SQLite application. Preserve DAST, repository scanning,
 GitHub access, reports, comparison, status persistence and reviewed remediation.
 Do not rebuild the project or start another phase without the user's request.
@@ -35,7 +84,7 @@ automatic exploitation, or automatic GitHub changes are part of this work.
   Never guess a database driver, source language, input line or enclosing function.
 - Detection confidence and fix confidence are separate. Syntax validity alone is
   not proof of a correct fix. Use explicit manual-review guidance when uncertain.
-- Preserve redaction, Jinja escaping, source editor/diff/PR workflow and fingerprints.
+- Preserve redaction, Jinja escaping, recommendation viewer and static validation and fingerprints.
 - Run finding-quality tests and the full existing suite after presentation changes.
 - Phase 2 is complete; do not begin Phase 3 without the user's request.
 
@@ -57,8 +106,9 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 ## Optional AI review (Phase 4)
 
 - Read `docs/phase_4_llm_and_validation.md` before modifying this layer.
-- Deterministic SAST owns detection. Never call AI from a scanner or require it for
-  ordinary scans. AI requests require enabled configuration and an explicit action.
+- Deterministic SAST owns detection and never requires AI. When the operator enables
+  and configures AI, the existing queue completion hook automatically refines stored
+  findings after new scans. Detection logic and page/report GETs never call providers.
 - Construct provider payloads only through the bounded whitelist and redaction
   boundary. Never send full repositories, GitHub PATs, secrets or unrelated files.
 - Treat source and model output as untrusted. Validate exact response structure;
@@ -66,7 +116,7 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 - AI assessments cannot change finding status, severity, evidence or fingerprints.
 - Route code through the existing static candidate validator against matched pinned
   source. Missing context means Not Available, never an invented validation pass.
-- Preserve explicit human diff/draft/PR approval. No automatic apply or merge.
+- Preserve human review before external implementation. No automatic apply or merge.
 - Test enabled/disabled/outage/invalid response/redaction/bad-code cases and the full
   suite. Mock provider calls unless live use is explicitly authorized.
 - Phase 4 is optional and complete; stop unless the user requests further work.
@@ -91,8 +141,9 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 ## Optional SAST/DAST AI assistance (new Phase 2)
 
 - Read `docs/phase_2_llm_integration.md` before changing AI payloads or output.
-- Reuse the explicit consent/CSRF-protected Improve with AI route for both sources.
-  Neither scan worker may call AI, even when enabled. Keep deterministic fallback.
+- Reuse `analysis.llm_review.refine_scan` / `refine_finding` through the existing
+  completion hook for both sources when AI is enabled/configured. Keep deterministic
+  fallback. There is no manual AI route or consent form; page GETs never call AI.
 - Pass Phase 1 context through the bounded whitelist; never forward arbitrary
   snapshot JSON, full drafts, raw response bodies, credentials or cookie values.
 - Scanned content is untrusted data, never system instructions. Keep provider tools
@@ -109,14 +160,14 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 
 - Read `docs/phase_3_unified_recommendation.md` before changing final presentation.
 - Keep scanner guidance and AI records separate internally; use final_solution for
-  finding/editor/report presentation and finding_solution for deterministic AI input.
+  finding/report presentation and finding_solution for deterministic AI input.
 - Render one Recommendation. Never append a separate AI recommendation or duplicate
   a deterministic and AI copy of the same code. Use a small contribution indicator.
 - AI disabled or invalid/failed/unvalidated source candidates fall back to the base.
   After a failed refresh, preserve old AI data internally but show deterministic
   guidance until success. Keep the presentation flag out of exported final data.
 - Preserve secret-remediation actions, source-specific validation, website backend
-  neutrality, escaping, triage and explicit human edit/publication review.
+  neutrality, escaping, triage and human review before external implementation.
 - Reports use the same final composition, never raw AI envelopes/prompts/responses.
   Preserve immutable older reports and clearly labelled example types/confidences.
 - Test the five requested display states, failure recovery, reports, deduplication,
@@ -200,8 +251,9 @@ automatic exploitation, or automatic GitHub changes are part of this work.
 ## Repository scanner upgrade — Phase 4
 
 - Read `docs/repository_upgrade_phase_4.md` before changing evidence review.
-- Static analysis owns detection. AI runs only on explicit consent for an existing
-  finding; neither scan worker nor a page GET may call a provider.
+- Static analysis owns detection. Operator-enabled/configured AI automatically reviews
+  persisted findings through the scan completion hook, within its existing limits.
+  Do not call providers from detection logic or page GETs, or restore manual AI controls.
 - New repository reviews use the allowlisted Phase 3 package, never full source,
   arbitrary snapshot JSON or a whole repository. Redact before requests/truncation
   and before forwarding the analyst assessment to the skeptical reviewer.
@@ -209,7 +261,7 @@ automatic exploitation, or automatic GitHub changes are part of this work.
   endpoints/adapters, tools, automatic retries or credential validation.
 - Validate both structured responses. Disagreement becomes Needs Review; failure
   of either pass falls back. Model agreement never proves a vulnerability.
-- Preserve scanner severity/confidence/risk/status and explicit human publication.
+- Preserve scanner severity/confidence/risk/status and human review outside SentinelScan.
   Cap advisory fix confidence conservatively; do not turn agreement into a score.
 - Compose one Recommendation. Evidence assessments can be shown in a compact
   collapsed detail, never as duplicate recommendations or competing code blocks.
@@ -240,3 +292,27 @@ automatic exploitation, or automatic GitHub changes are part of this work.
   complete suite. Baseline: 219 passing tests with optional real Semgrep enabled;
   benchmark: TP18 FP5 TN22 FN9, F1 72%, not a security certification.
 - This is the final requested phase. Stop unless the user requests further work.
+
+## Accuracy and readability maintenance
+
+- Read `docs/accuracy_and_finding_readability.md` before extending these rules/UI.
+- Preserve the original benchmark and results. The 26-case accuracy_holdout_v1 is
+  frozen and now consumed; use a fresh separately versioned set for future tuning.
+- Guard refinement must retain rejected helper returns. SQL allowlists are not eval
+  protections. POSIX quoting is not safe inside other quotes or interpreter commands.
+- Keep informational observations in evaluation; do not improve scores by hiding
+  low-confidence findings. Historical severity/triage must not be silently rewritten.
+- Keep one action-first Recommendation. Secret rotation, validation failures and
+  source/fix distinctions stay visible; collapse supporting detail, not essential warnings.
+- Verify mobile and desktop layouts with isolated fixture data, preserving escaping,
+  status forms, anchors and reviewed editor/PR controls. Run the full test suite.
+
+## Illustrative fallback policy
+
+The latest user request permits short Example Secure Patterns when exact fixes are
+unavailable, superseding older guidance-only rules for these illustrative cases.
+Use the existing composer/policy and dependency builder; never change detectors.
+Keep examples distinct from source-specific fixes and unvalidated. Never invent
+package versions, backend frameworks or original source; use advisory-supported
+versions or explicit placeholders and backend-neutral pseudocode. Keep operational
+recommendations text-only when no useful safe example exists.

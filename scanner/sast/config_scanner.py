@@ -30,7 +30,8 @@ def run(ctx):
     for path in ctx['paths']:
         check_budget(ctx)
         name=PurePosixPath(path).name
-        if not (name.startswith('.env') or path.endswith(('.json','.yaml','.yml','.properties','.ini','.cfg','.conf')) or name in ('config.py','settings.py')):
+        python_config=name in ('config.py','settings.py') or bool(re.fullmatch(r'(?:config|settings)_[A-Za-z0-9_]+\.py',name))
+        if not (name.startswith('.env') or path.endswith(('.json','.yaml','.yml','.properties','.ini','.cfg','.conf')) or python_config):
             continue
         count+=1;text=(ctx['root']/path).read_text(encoding='utf-8-sig');entries=[]
         try:

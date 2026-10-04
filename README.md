@@ -372,51 +372,29 @@ Limitations:
 - Fine-grained PAT authorization is implemented; OAuth, GitHub Apps, Enterprise hosts, multi-user authentication and credential storage are outside current scope.
 - Native PDF generation is not implemented; HTML reports have print styles and can be saved as PDF using your browser. Possible future extensions: asset ownership, status audit history, scheduled scans, notifications, authentication and broader scanner coverage.
 
-### Edit a finding and create a pull request
+### Read-only recommendations
 
-Open a repository finding and choose **Edit source & create pull request**. Load the
-file from the scan's immutable commit, edit it, preview the diff, and save the draft.
-Review the saved diff and check the publication checkbox to create a GitHub branch
-and pull request against the scanned branch. The app never merges the PR or marks
-the finding resolved automatically. Review/test on GitHub and re-scan after merging.
+SentinelScan scans, detects, explains and recommends. GitHub access is read-only:
+connect, browse repositories, select branches, retrieve source and scan. Contents
+and Metadata read permissions are sufficient; no write or Pull Request scope is needed.
 
-Connect a fine-grained token for the repository with **Contents: read and write**
-and **Pull requests: read and write** to publish. Public source can be loaded without
-a token. Private source requires working read access; editing does not bypass GitHub
-permissions. Fork creation is not supported: publication requires write access to the
-scanned repository. Workflow files are excluded from this editor.
+Finding pages show one Recommended Fix with Current Code → Recommended Code when
+supported, otherwise an Example Secure Pattern or textual advice. Copy suggestions
+for review and implementation outside SentinelScan. The app does not edit files,
+create drafts/branches/commits/PRs, publish patches or track publication.
 
-Drafts and PR links persist in the new `remediation_drafts` SQLite table. Only the
-file selected from the finding's stored location can be edited; the browser cannot
-choose filesystem paths, repository, branch, or commit parameters. Text files are
-limited to 512 KiB. Files with detected secrets/masking are blocked rather than storing
-or publishing secrets or replacing source with masked placeholders. Detection is
-heuristic; review code for sensitive material before saving/publishing. Drafts contain
-source code and should be protected with the local database. They are not reports.
-
-A version check prevents stale browser tabs from overwriting saved drafts. If the
-base branch moved after the scan, run a new scan before publishing. Publication locks
-the draft, uses a unique `sentinelscan/fix-*` branch, and retries against that same
-branch, recognizing already-created PRs. A failed attempt may leave a branch/commit
-on GitHub; the UI reports this and offers retry. On a local server restart, interrupted
-publication becomes retryable. Do not run multiple app processes against this database.
-
-Routes: `GET/POST /findings/<id>/edit`, `POST /findings/<id>/publish`, and
-`GET /findings/<id>/patch`. All mutations require CSRF validation. No source is
-executed, no shell or Git CLI is invoked, and no token is persisted with drafts.
-
-Tests: `.venv/bin/python -m unittest discover -s tests -v`. Remediation tests exercise
-SQLite persistence, preview/save, XSS escaping, secret blocking, CSRF, stale drafts,
-branch conflicts, patch downloads, and recovery after a lost GitHub response.
-GitHub publication tests simulate API responses and never create real remote PRs.
+The former edit, publish, patch, validate, PR refresh, merged rescan and verification
+routes have been removed. Historical draft/tracking tables are retained without
+new writes or destructive migration; old local source may still support existing AI
+validation. Scanner snapshots and static recommendation validation remain intact.
 
 ### Code solutions after scanning
 
-Open any finding and scroll to **Code solution**, or use **View solution** in the
+Open any finding and scroll to **Recommended Fix**, or use **View solution** in the
 scan findings table. Supported scanner rules show a code/configuration example,
 application notes and verification steps. Copy code uses plain text; if clipboard
 access is unavailable it selects the snippet for manual copying. The same guidance
-appears beside the repository source editor and in newly generated HTML, JSON and
+appears in newly generated HTML, JSON and
 CSV reports (CSV stores the structured solution in `details_json`). Existing saved
 reports remain unchanged snapshots.
 
@@ -431,60 +409,31 @@ certificate findings require certificate renewal/configuration, not just code.
 
 These examples are adaptation guides, not automatically verified patches. They do
 not alter source, publish a PR, execute commands or change finding status. Adapt
-repository fixes using the existing draft/diff/PR workflow, test, then re-scan.
+repository fixes in your own development environment, test, then re-scan.
 
-Solutions now show **What to change** and labeled vulnerable/replacement examples.
-Repository findings offer **Load actual code from scanned commit**, using the
-existing bounded source loader and persistent draft. The loaded detection line is
-shown with surrounding context. Exact JavaScript DOM assignment candidates are
-provided only for one unambiguous parsed assignment at the recorded line; variable
-names and expression text are preserved. Plain-text and sanitized-HTML alternatives
-are distinguished, including DOMPurify setup requirements. Full candidate files are
-syntax-checked, but this does not verify runtime semantics or prove exploitability.
-Other rule types retain explicitly labeled examples alongside source context. DAST
-cannot supply exact backend source lines. Inaccessible source produces an access
-error, never fabricated original code. New reports include vulnerable examples and
-replacement boundaries; actual private source context is not added to reports.
-
+Repository recommendations use retained source from the scanned commit. Supported
+source-specific candidates preserve actual names and replacement spans and undergo
+static validation. Other cases show clearly labelled examples; DAST cannot supply
+backend source. Missing context never justifies invented current code. Current Code
+and Recommended Code appear together when their retained evidence supports a pair.
 
 ### Remediation validation and verification
 
 New repository scans retain a redacted excerpt around each finding (up to seven
 lines, 1,000 characters per line, 1 MiB total per scan), the scan commit, and hashes
 of analyzed files. Existing scans need a rescan to gain retained excerpts; their
-full source can still be loaded through GitHub. Full temporary checkouts are deleted.
-Secret masking is heuristic. Excerpts and editor drafts are local sensitive data.
+new source context is prepared during scanning. Full temporary checkouts are deleted.
+Secret masking is heuristic. Retained excerpts and historical source are sensitive local data.
 
-Saving a draft runs supported syntax checks and the relevant scanner module against
-original and edited source. Syntax errors, a remaining original detection, or new
-High/Critical detections in that module block publication. Unsupported checks are
+Source-specific suggestions use supported syntax checks and the relevant scanner
+module against original and candidate source. Syntax errors, a remaining original detection, or new
+High/Critical detections in that module qualify suggested code. Unsupported checks are
 labeled unavailable and require manual review. No application code is executed;
 passing static checks does not establish correct runtime behavior.
 
-On a finding's **Remediation workflow** panel:
-
-1. Load source, edit, save, review the diff and validation, then explicitly publish a PR.
-2. Refresh its status from GitHub. Review and merge on GitHub.
-3. Authorize **Scan merged branch**, then return using the scan's finding link.
-4. Verify against the completed scan. Optionally mark the original finding Resolved.
-
-Verification checks matching target/branch, module coverage, analyzed file presence,
-and—when a PR is linked—that the scan commit contains the actual merge commit.
-Results are **Still detected**, **Not detected**, or **Inconclusive**. Failed/partial
-coverage and missing files do not count as verified absence. Matching uses the
-existing stable fingerprint, ignoring line movement; this is scanner verification,
-not a guarantee that the application is secure. Website findings can be checked
-against a later scan of the same target with equivalent path coverage.
-
-Additive SQLite tables: `finding_context`, `scan_files`, `draft_checks`,
-`pull_request_tracking`, `remediation_verifications`. New POST routes beneath
-`/findings/<id>`: `/validate`, `/pull-request/refresh`, `/rescan`, `/verify`.
-All require CSRF protection; explicit authorization is required for a rescan.
-`analysis/source_context.py`, `analysis/fix_validation.py`,
-`analysis/remediation_workflow.py`, `workflow_routes.py` and `_workflow.html`
-implement the workflow. Tests cover real fixture scans and mocked GitHub PR APIs,
-merge ancestry, redaction, blocked edits, coverage failures and restart persistence.
-
+Apply reviewed recommendations outside SentinelScan, then run an authorized scan and
+use Scan History / Compare Scans to review detections. Absence from a newer scan is
+not proof of a fix. Finding status remains an explicit user choice.
 
 ### Scan from a GitHub URL
 
@@ -502,7 +451,7 @@ New repository scans prepare redacted source context and source-matched remediat
 candidates while the scanned checkout is available; viewing the finding needs no
 GitHub fetch or draft creation. Snapshots use `finding_solutions` (8 MiB budget per
 scan). Existing scans require regeneration from their pinned source to gain these
-snapshots. The editor is separate and now supports text files up to 512 KiB.
+snapshots. No source editor is available.
 
 npm dependency locations identify the actual package/version entry. Guidance shows
 recorded advisory severity, actual source, and candidate fixed releases where the
@@ -534,8 +483,8 @@ are changed. This improves recovery but cannot guarantee an unavailable network.
 ### Optional AI finding review (SAST and DAST)
 
 SAST and DAST perform finding detection. AI is disabled by default and never
-replaces either scanner or runs automatically during scans. To enable explicit review of individual
-findings, configure the server environment:
+replaces either scanner. It automatically refines persisted findings after new scans
+when enabled. To allow bounded redacted context to be processed externally, configure:
 
 ```ini
 SENTINELSCAN_LLM_ENABLED=true
@@ -544,17 +493,16 @@ SENTINELSCAN_LLM_API_KEY=<your provider API key>
 ```
 
 Use a secret manager/environment for the real key; do not commit it or use your
-GitHub PAT. Restart Flask, open a repository or website finding and choose **Improve with AI**
-inside Recommendation after reviewing the context-sharing notice. This sends a
+GitHub PAT. Restart Flask and run a new authorized scan. Its completion callback sends
 bounded, redacted context and base recommendation to OpenAI. Repository secrets are redacted before AI
 processing; secret findings send a synthetic redacted assignment only. Unrecognized
 sensitive content can still require manual review, so keep AI disabled for source
 you cannot share externally.
 
 AI output may be wrong. Its assessment never changes scanner evidence or triage
-status. Generated fixes need static validation and human review. Load pinned source
-in the existing editor before requesting review if you want full-file local checks;
-otherwise validation is **Not Available**. Nothing is automatically applied or merged.
+status. Generated fixes need static validation and human review. Without a matched
+pinned local file, source-specific AI code is not promoted; validation is **Not Available**.
+Nothing is automatically applied or merged.
 Missing keys, outages and invalid responses leave deterministic guidance available.
 
 Website reviews use recorded HTTP/TLS/CORS/cookie observations and never invent
@@ -571,7 +519,7 @@ payload/schema and website-support details.
 ### Unified Recommendation (Phase 3)
 
 Scanner guidance and optional AI review remain separate internally, but finding
-pages, the source editor and newly generated HTML/JSON/CSV reports display **one
+pages and newly generated HTML/JSON/CSV reports display **one
 final Recommendation**. Eligible AI content improves that recommendation and adds
 only a small **AI-assisted recommendation** indicator. It does not append a second
 AI recommendation or duplicate the same code.
@@ -593,8 +541,8 @@ and [five rendered fixture examples](docs/phase_3_recommendation_examples.html).
 The final flow is:
 
 - Repository: SAST → finding → base recommendation → optional AI enhancement →
-  one final recommendation → static validation → human review/edit/diff → saved
-  draft → explicit approval → GitHub fix branch and PR. No automatic merge.
+  one final recommendation → static validation → human review and implementation
+  outside SentinelScan → re-scan/compare. No GitHub writes.
 - Website: DAST → finding → base recommendation → optional AI enhancement →
   one final recommendation → developer implementation/deployment → re-scan/compare.
 
@@ -606,7 +554,7 @@ re-scan**. Humans make the final decision.
 
 Final verification: **172 tests passed, 0 failed**, including controlled source and
 website cases, negative/protected fixtures, optional-AI failure/privacy checks,
-reporting, reviewed remediation, Flask restart and SQLite persistence. No live paid
+reporting, recommendation advice, Flask restart and SQLite persistence. No live paid
 AI request or external-target scan was used. SentinelScan has false positives and
 false negatives, limited local SAST flow analysis and bounded unauthenticated DAST.
 AI and generated fixes may be wrong; neither findings nor static checks prove
@@ -653,7 +601,7 @@ See [Phase 3 decisions, limits and verification](docs/repository_upgrade_phase_3
 ### Repository upgrade Phase 4: optional evidence review
 
 Phase 3 repository evidence can now receive an optional security-analyst pass and
-an independent skeptical review through the existing **Improve with AI** action.
+an independent skeptical review through the existing optional automatic refinement.
 Static analyzers still detect findings. Disagreement requires manual review; AI
 cannot change severity, risk or triage. Eligible improvements appear in one final
 Recommendation, with existing static code validation and human approval preserved.
@@ -676,3 +624,46 @@ that real engine too; it is never installed automatically. AI is disabled during
 evaluation, source fixtures are never executed, and user scan history is untouched.
 See [accuracy results and every known FP/FN](docs/scanner_accuracy.md) and
 [final architecture/security review](docs/repository_upgrade_phase_5.md).
+
+### Accuracy and finding readability maintenance
+
+Finding pages now prioritize the recommended action, source/fix comparison and
+validation status, with supporting detail collapsed. Detection improvements cover
+constant dispatch, computed HTML properties, narrow protections and configuration.
+Re-scan to apply the new rules; saved findings and historical reports are preserved.
+
+The original challenge set now measures custom TP26/FP4/TN23/FN1 (F1 91.23%);
+custom + real Semgrep has one additional false positive (F1 89.66%). These are small
+authored-set results, not real-world accuracy. The earlier 72% result above remains
+the historical baseline. See [changes, separate evaluation and limitations](docs/accuracy_and_finding_readability.md).
+
+### Final simplification (2026-10-04)
+
+One Recommended Fix appears on finding pages, with a small **AI Assisted** indicator
+only when accepted AI content improves it. Supporting source/evidence/validation is
+inside Technical Details. SentinelScan provides recommendations only; Edit/Push is removed.
+There is no manual AI endpoint or Improve with AI button. Browsing/report generation
+does not call a provider. Deterministic guidance is immediately available; refresh
+after automatic refinement completes to see any improvement. No historical backfill
+or automatic retry occurs. Each new scan reviews at most 20 candidates in severity
+order within a 60-second between-review budget (an active bounded call may finish
+later); first failure stops the optional pass. Remaining findings retain base guidance.
+AI remains disabled unless configured. No detector, website category, dependency,
+provider, database table or second recommendation system was added.
+See [current audit and consolidation](docs/phase_3_unified_recommendation.md#final-simplification-2026-10-04).
+
+When no source-specific fix is available, Recommendation may show a short
+**Example Secure Pattern**. It is illustrative, not retrieved replacement code or
+a validated fix. Dependency patterns use retained advisory candidates or an explicit
+`<verified-safe-version>` placeholder; unknown website backends use pseudocode.
+Operational findings remain text-only when a safe useful example is unavailable.
+
+### Final interface polish (2026-10-04)
+
+Shared charcoal surfaces, emerald accents, consistent controls and grouped sidebar
+navigation cover all existing pages. The dashboard leads with recorded risk; forms
+keep scope expandable; finding tables expose confidence/location/scan; code pairs
+stack on mobile. Technical Details remains collapsed. Wide tables scroll within
+keyboard-focusable regions. HTML reports retain a printable light surface and show
+the same paired code or illustrative pattern. No scanner, scoring or AI architecture
+changed. Historical reports remain immutable.

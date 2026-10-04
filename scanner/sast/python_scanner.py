@@ -1,5 +1,6 @@
 """Order-sensitive intraprocedural AST checks. Source is never executed."""
 import ast
+import re
 from dataclasses import replace
 from scanner.sast.common import add,files,check_budget
 from scanner.sast.evidence import semantic
@@ -69,8 +70,14 @@ class Analyzer:
             self.env,self.aliases,self.target,self.function_name,self.returns=saved
 
     def name(self,node):
-        if isinstance(node,ast.Name):return self.aliases.get(node.id,node.id if node.id not in self.env else '')
+        if isinstance(node,ast.Name):
+            value=self.env.get(node.id,UNKNOWN)
+            return self.aliases.get(node.id,node.id if node.id not in self.env else value.callable_name if value.callable_name not in self.functions else '') or ''
         if isinstance(node,ast.Attribute):return self.name(node.value)+'.'+node.attr
+        if isinstance(node,ast.Call) and self.name(node.func) in ('getattr','builtins.getattr') and len(node.args)==2 and not node.keywords:
+            attr=node.args[1]
+            value=attr.value if isinstance(attr,ast.Constant) else self.env.get(attr.id,UNKNOWN).literal if isinstance(attr,ast.Name) else None
+            if isinstance(value,str) and value.isidentifier():return self.name(node.args[0])+'.'+value
         return ''
 
     def report(self,node,title,category,value,sink,severity='Medium',recommendation='Replace dynamic execution with explicit parsing or constrained data formats.',level=None):
@@ -102,6 +109,8 @@ class Analyzer:
                     return replace(combine(args),static=False,uncertain=True)
                 return self.invoke(callable_value.callable_name,args,keywords)
             first=args[0] if args else UNKNOWN
+            if fn in ('getattr','builtins.getattr') and self.name(node):
+                return Value(callable_name=self.name(node))
             source=receiver.sources or ((fn,) if fn in ('request.get_json','flask.request.get_json','input','builtins.input') else ())
             result=replace(combine([receiver,*args]),static=False,literal=None)
             if source:result=replace(result,sources=source)
@@ -109,17 +118,23 @@ class Analyzer:
             if fn in ('int','float') and args:
                 # Numeric conversion constrains SQL/shell metacharacters, but is not a generic sanitizer.
                 return replace(first,static=False,constructed=False,protections=("sql-value",))
+            if fn=='shlex.quote' and len(args)==1 and not keywords:
+                return replace(first,static=False,literal=None,protections=('posix-quoted-argument',))
             if isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join'):
                 result=combine([receiver,*args,*keywords.values()],constructed=True)
             if fn in ('eval','exec','builtins.eval','builtins.exec') and args and not first.static:
                 self.report(node,'Dynamic Python code execution','Code Security',first,fn,'High' if first.sources else 'Medium')
-            if fn in ('os.system','os.popen') and args and not first.static:
+            if fn in ('os.system','os.popen') and args and not first.static and 'fixed-posix-command' not in first.protections:
                 self.report(node,'Potential shell command injection','Injection',first,fn,'High','Use a fixed executable and an argument list with shell=False; validate allowed arguments.')
             shell=keywords.get('shell',Value(static=True,literal=False))
-            if fn in ('subprocess.run','subprocess.call','subprocess.Popen','subprocess.check_call','subprocess.check_output') and args and not first.static and shell.literal is True:
+            if fn in ('subprocess.run','subprocess.call','subprocess.Popen','subprocess.check_call','subprocess.check_output') and args and not first.static and shell.literal is True and 'fixed-posix-command' not in first.protections:
                 self.report(node,'Unsafe subprocess shell invocation','Injection',first,fn+'(shell=True)','High','Use an argument array and shell=False.')
-            if isinstance(node.func,ast.Attribute) and node.func.attr in ('execute','executemany','executescript','raw') and args and not first.static and (first.constructed or first.sources) and 'sql-value' not in first.protections:
-                self.report(node,'Potential SQL injection in constructed query','Injection',first,'SQL '+node.func.attr,'High','Use database-bound parameters instead of concatenation or interpolation.')
+            method=node.func.attr if isinstance(node.func,ast.Attribute) else fn.rsplit('.',1)[-1] if '.' in fn else ''
+            if method in ('execute','executemany','executescript','raw') and args and not first.static and (first.constructed or first.sources) and 'sql-value' not in first.protections:
+                self.report(node,'Potential SQL injection in constructed query','Injection',first,'SQL '+method,'High','Use database-bound parameters instead of concatenation or interpolation.')
+            if fn in ('requests.get','requests.post','requests.put','requests.patch','requests.delete','requests.head','requests.options','requests.request') and any(v=='requests' or v==fn for v in self.aliases.values()) and keywords.get('verify',UNKNOWN).literal is False:
+                add(self.ctx,self.path,node.lineno,'Security control disabled in configuration','Configuration','An imported requests API explicitly disables TLS certificate verification.',
+                    'Enable TLS certificate verification. Configure a trusted CA bundle when required instead of verify=False.','Medium','High')
             unsafe=fn in ('pickle.load','pickle.loads','dill.load','dill.loads','marshal.loads','marshal.load')
             if fn=='yaml.load':
                 loaders=[k.value for k in node.keywords if k.arg=='Loader']+node.args[1:2]
@@ -131,14 +146,32 @@ class Analyzer:
                 data=first if weak else (args[1] if len(args)>1 else UNKNOWN)
                 sensitive=data.sensitive or sensitive_name(self.target)
                 self.report(node,'Weak hash algorithm usage' if weak else 'Weak hash algorithm selection','Cryptography',data,fn,
-                    'High' if sensitive else 'Low','Use dedicated password hashing for credentials; checksum-only use may be acceptable. Review the purpose before changing algorithms.',
+                    'High' if sensitive else 'Informational','Use dedicated password hashing for credentials; checksum-only use may be acceptable. Review the purpose before changing algorithms.',
                     ('High' if data.sources else 'Medium') if sensitive else 'Low')
             if not source and fn not in ('str','bytes') and not (isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join')):
                 result=replace(result,uncertain=True,protections=(),trace=(result.trace+((fn or '<unresolved call>')+'() transformation',))[-8:])
+            elif source:
+                # A transformed tainted receiver is still tainted; a previously
+                # recognized quoting/allowlist protection must not survive it.
+                result=replace(result,protections=())
             return result
         if isinstance(node,(ast.BinOp,ast.JoinedStr)):
             children=[self.expr(n) for n in ast.iter_child_nodes(node) if not isinstance(n,ast.operator)]
-            return combine(children,constructed=True)
+            result=combine(children,constructed=True)
+            if isinstance(node,ast.BinOp) and isinstance(node.op,ast.Add) and len(children)==2:
+                left,right=children
+                if isinstance(left.literal,str) and isinstance(right.literal,str) and len(left.literal)+len(right.literal)<=1000:
+                    result=replace(result,literal=left.literal+right.literal)
+                # POSIX quoting only protects a complete argument after a fixed
+                # executable, not interpolation inside quotes or executable choice.
+                prefix=left.literal
+                safe=left.static and isinstance(prefix,str) and prefix.split(' ',1)[0] in ('/bin/echo','/usr/bin/echo','/usr/bin/printf') and re.fullmatch(r'[A-Za-z0-9_./-]+(?: +[A-Za-z0-9_./-]+)* +',prefix)
+                protections=set(result.protections)-{'posix-quoted-argument','fixed-posix-command'}
+                if safe and 'posix-quoted-argument' in right.protections:protections.add('fixed-posix-command')
+                result=replace(result,protections=tuple(sorted(protections)))
+            else:
+                result=replace(result,protections=tuple(p for p in result.protections if p not in ('posix-quoted-argument','fixed-posix-command')))
+            return result
         if isinstance(node,(ast.List,ast.Tuple,ast.Set)):
             return combine([self.expr(n) for n in node.elts]) if node.elts else Value(static=True)
         if isinstance(node,ast.Dict):return combine([self.expr(n) for n in node.values])
@@ -180,6 +213,8 @@ class Analyzer:
                 self.global_env=self.env.copy();self.global_aliases=self.aliases.copy()
             if isinstance(node,ast.Return):
                 self.returns.append(self.expr(node.value));break
+            if isinstance(node,ast.Raise):
+                self.expr(node.exc);break
             if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)):
                 self.function(node);self.env[node.name]=Value(callable_name=node.name) if self.functions.get(node.name) is node else UNKNOWN;self.aliases.pop(node.name,None)
             elif isinstance(node,ast.ClassDef):
@@ -199,6 +234,20 @@ class Analyzer:
             elif isinstance(node,ast.If):
                 if isinstance(node.test,ast.Constant):
                     self.block(node.body if node.test.value else node.orelse);continue
+                guard=node.test
+                if (isinstance(guard,ast.Compare) and isinstance(guard.left,ast.Name) and len(guard.ops)==1 and isinstance(guard.ops[0],ast.NotIn)
+                    and isinstance(guard.comparators[0],(ast.Tuple,ast.List,ast.Set)) and not node.orelse and len(node.body)==1
+                    and (isinstance(node.body[0],ast.Raise) or isinstance(node.body[0],ast.Return) and self.function_name is not None)):
+                    choices=guard.comparators[0].elts
+                    if 0<len(choices)<=32 and all(isinstance(x,ast.Constant) and isinstance(x.value,str) and re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*',x.value) for x in choices):
+                        self.expr(guard)
+                        before_exit=self.env.copy();before_aliases=self.aliases.copy()
+                        exit_value=self.expr(node.body[0].exc if isinstance(node.body[0],ast.Raise) else node.body[0].value)
+                        if isinstance(node.body[0],ast.Return):self.returns.append(exit_value)
+                        self.env=before_exit;self.aliases=before_aliases
+                        old=self.env.get(guard.left.id,UNKNOWN)
+                        self.env[guard.left.id]=replace(old,protections=tuple(set(old.protections)|{'sql-value'}))
+                        continue
                 self.expr(node.test);before=self.env.copy();aliases=self.aliases.copy()
                 self.block(node.body);left=self.env.copy();left_alias=self.aliases.copy()
                 self.env=before.copy();self.aliases=aliases.copy();self.block(node.orelse)

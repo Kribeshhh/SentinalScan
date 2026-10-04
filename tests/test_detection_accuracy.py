@@ -45,7 +45,7 @@ class DetectionAccuracyTests(unittest.TestCase):
         findings=self.scan('import pickle\npickle.loads(request.args.get("x"))');self.assertEqual(findings[0].confidence,'High')
         findings=self.scan('import pickle\npickle.loads(data)');self.assertEqual(findings[0].confidence,'Low')
         findings=self.scan('import hashlib\nchecksum=hashlib.md5(file_contents)\npassword_hash=hashlib.md5(password.encode())')
-        self.assertEqual([(f.severity,f.confidence) for f in findings],[('Low','Low'),('High','Medium')])
+        self.assertEqual([(f.severity,f.confidence) for f in findings],[('Informational','Low'),('High','Medium')])
         self.assertEqual(self.scan('import hashlib\nhashlib.sha256(data)'),[])
 
     def test_javascript_html_protection_aliases_and_sources(self):
@@ -83,7 +83,7 @@ class DetectionAccuracyTests(unittest.TestCase):
         findings=self.java('ObjectInputStream s=new ObjectInputStream(stream);s.readObject();')
         self.assertEqual(findings[0].confidence,'Low')
         findings=self.java('MessageDigest checksum=MessageDigest.getInstance("MD5");MessageDigest passwordHash=MessageDigest.getInstance("SHA-1");')
-        self.assertEqual([f.severity for f in findings],['Low','High'])
+        self.assertEqual([f.severity for f in findings],['Informational','High'])
         self.assertEqual(self.java('MessageDigest.getInstance("SHA-256");Cipher.getInstance("AES/GCM/NoPadding");mapper.readValue(json,Data.class);'),[])
 
     def test_secret_placeholders_and_masking(self):

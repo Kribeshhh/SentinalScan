@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "description": "Authored before accuracy changes; separate challenge set, not a blinded independent benchmark. Do not relabel after evaluation.",
+  "fixtures": [
+    {
+      "id": "dispatch_cursor_alias",
+      "path": "dispatch_cursor_alias.py",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "from flask import request as rq\nlookup=\"execute\"\ngetattr(db,lookup)(\"SELECT * FROM invoices WHERE customer=\"+rq.args.get(\"customer\"))",
+      "ground_truth": "Constant attribute alias still calls SQL with unbound input.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "bound_dispatch",
+      "path": "bound_dispatch.py",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "from flask import request\ngetattr(db,\"execute\")(\"SELECT * FROM invoices WHERE customer=?\",(request.args.get(\"customer\"),))",
+      "ground_truth": "Assume SQLite DB: values are bound.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "guard_return",
+      "path": "guard_return.py",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "from flask import request\ndef listing():\n field=request.args.get(\"field\")\n if field not in (\"created_at\",\"total\"):\n  return None\n db.execute(\"SELECT * FROM invoices ORDER BY \"+field)",
+      "ground_truth": "Invalid identifiers exit; remaining names are fixed.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "guard_no_exit",
+      "path": "guard_no_exit.py",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "from flask import request\nfield=request.args.get(\"field\")\nif field not in (\"created_at\",\"total\"):\n print(\"invalid\")\ndb.execute(\"SELECT * FROM invoices ORDER BY \"+field)",
+      "ground_truth": "Logging does not reject invalid input.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "guard_reassigned",
+      "path": "guard_reassigned.py",
+      "category": "SQL Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "from flask import request\nfield=request.args.get(\"field\")\nif field not in (\"created_at\",\"total\"):\n raise ValueError()\nfield=request.args.get(\"other\")\ndb.execute(\"SELECT * FROM invoices ORDER BY \"+field)",
+      "ground_truth": "New tainted assignment invalidates the guard.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "numeric_bound",
+      "path": "numeric_bound.py",
+      "category": "SQL Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "from flask import request\ndb.execute(\"SELECT * FROM invoices WHERE id=\"+str(int(request.args.get(\"id\"))))",
+      "ground_truth": "Integer conversion constrains value syntax.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "dispatch_shell_alias",
+      "path": "dispatch_shell_alias.py",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import os as platform_os\nfrom flask import request\ngetattr(platform_os,\"system\")(\"printf \"+request.form.get(\"message\"))",
+      "ground_truth": "Unquoted form data enters shell command.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "quoted_posix_alias",
+      "path": "quoted_posix_alias.py",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "from shlex import quote as protect\nimport os\nfrom flask import request\nitem=protect(request.args.get(\"item\"))\nos.system(\"/bin/echo -- \"+item)",
+      "ground_truth": "POSIX shell, fixed echo executable and single quoted argument.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "quoted_inside_double_quotes",
+      "path": "quoted_inside_double_quotes.py",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import shlex,os\nfrom flask import request\nos.system('echo \"'+shlex.quote(request.args.get(\"item\"))+'\"')",
+      "ground_truth": "Single-quote escaping is not safe inside shell double quotes.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "quote_unknown_transform",
+      "path": "quote_unknown_transform.py",
+      "category": "Command Injection",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import shlex,os\nfrom flask import request\nvalue=shlex.quote(request.args.get(\"item\"))\nvalue=value.strip(\"'\")\nos.system(\"echo \"+value)",
+      "ground_truth": "Removing quote boundaries restores shell metacharacter interpretation.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "argv_echo",
+      "path": "argv_echo.py",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "import subprocess\nfrom flask import request\nsubprocess.run([\"/bin/echo\",\"--\",request.args.get(\"item\")])",
+      "ground_truth": "No shell interpreter used.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "fixed_shell",
+      "path": "fixed_shell.py",
+      "category": "Command Injection",
+      "expected": false,
+      "variant": "protected",
+      "source": "import os\ngetattr(os,\"system\")(\"echo welcome\")",
+      "ground_truth": "No dynamic input.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "builtins_exec",
+      "path": "builtins_exec.py",
+      "category": "Dynamic Code Execution",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import builtins as language\nfrom flask import request\ngetattr(language,\"exec\")(request.form.get(\"program\"))",
+      "ground_truth": "Untrusted code executes via constant built-in lookup.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "static_eval_dispatch",
+      "path": "static_eval_dispatch.py",
+      "category": "Dynamic Code Execution",
+      "expected": false,
+      "variant": "protected",
+      "source": "import builtins\ngetattr(builtins,\"eval\")(\"40 + 2\")",
+      "ground_truth": "Static expression only.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "eval_returned",
+      "path": "eval_returned.py",
+      "category": "Dynamic Code Execution",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "from flask import request\ndef expression():\n return request.args.get(\"formula\")\neval(expression())",
+      "ground_truth": "Helper returns untrusted expression.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "literal_data",
+      "path": "literal_data.py",
+      "category": "Dynamic Code Execution",
+      "expected": false,
+      "variant": "protected",
+      "source": "import ast\nfrom flask import request\nast.literal_eval(request.args.get(\"object\"))",
+      "ground_truth": "Data-only literal parsing, code execution is the evaluated property.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "computed_html_alias",
+      "path": "computed_html_alias.js",
+      "category": "DOM XSS",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "const slot=\"outer\"+\"HTML\";\nconst key=slot;\nview[key]=location.search;",
+      "ground_truth": "Computed HTML sink receives untrusted content.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "computed_text",
+      "path": "computed_text.js",
+      "category": "DOM XSS",
+      "expected": false,
+      "variant": "protected",
+      "source": "const slot=\"text\"+\"Content\";\nview[slot]=location.search;",
+      "ground_truth": "Text insertion is not HTML parsing.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "computed_sanitized",
+      "path": "computed_sanitized.js",
+      "category": "DOM XSS",
+      "expected": false,
+      "variant": "protected",
+      "source": "const slot=\"innerHTML\";\nview[slot]=DOMPurify.sanitize(location.search);",
+      "ground_truth": "Trusted standard DOMPurify default HTML sanitizer.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "computed_reassigned",
+      "path": "computed_reassigned.js",
+      "category": "DOM XSS",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "let slot=\"textContent\";\nslot=\"innerHTML\";\nview[slot]=location.hash;",
+      "ground_truth": "Latest property assignment selects HTML sink.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "http_alias_unverified",
+      "path": "http_alias_unverified.py",
+      "category": "Configuration",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import requests as http\nhttp.post(\"https://service.invalid\",verify=False)",
+      "ground_truth": "Disabled certificate verification on real requests API.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "unrelated_verify",
+      "path": "unrelated_verify.py",
+      "category": "Configuration",
+      "expected": false,
+      "variant": "protected",
+      "source": "class Widget:\n def get(self,verify): pass\nwidget=Widget()\nwidget.get(verify=False)",
+      "ground_truth": "Unrelated method is not a TLS API.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "doc_sentence",
+      "path": "doc_sentence.md",
+      "category": "Secrets",
+      "expected": false,
+      "variant": "protected",
+      "source": "password=\"Enter your account password to continue\"",
+      "ground_truth": "UI explanatory prose, not an authentication credential.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "actual_passphrase",
+      "path": "actual_passphrase.py",
+      "category": "Secrets",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "password=\"glacier violet cedar marble\"",
+      "ground_truth": "Fixture contract: actual hardcoded multiword credential.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "weak_password_sha",
+      "path": "weak_password_sha.py",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "variant": "vulnerable",
+      "source": "import hashlib\ncredential_hash=getattr(hashlib,\"sha1\")(credential.encode())",
+      "ground_truth": "Weak fast digest for authentication material.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    },
+    {
+      "id": "modern_digest",
+      "path": "modern_digest.py",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "variant": "protected",
+      "source": "import hashlib\nchecksum=hashlib.sha256(contents).hexdigest()",
+      "ground_truth": "Modern non-password digest.",
+      "future_improvement": "Evaluate generalization without changing this frozen label."
+    }
+  ]
+}

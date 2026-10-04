@@ -87,7 +87,7 @@ class FindingQualityPageTests(unittest.TestCase):
         soup,html=self.page(f,solution)
         recommendation=soup.select_one('#recommendation')
         self.assertEqual(len(soup.select('#recommendation')),1)
-        self.assertIn('Suggested Source Fix',recommendation.get_text())
+        self.assertIn('Recommended Code',recommendation.get_text())
         self.assertTrue(recommendation.select('pre code'))
         self.assertEqual(len(recommendation.select('.detected-line')),1)
         self.assertNotIn('<script>alert(1)</script>',html)
@@ -95,7 +95,7 @@ class FindingQualityPageTests(unittest.TestCase):
         self.assertNotIn('Code solution',[h.get_text() for h in soup.select('h2')])
         self.assertIn('Fingerprint',soup.select_one('details.technical-details').get_text())
         self.assertIn('Detection Confidence',html);self.assertIn('Fix Confidence: Medium',html)
-        self.assertTrue(soup.select('a[href$="/edit"]'))
+        self.assertFalse(soup.select('a[href$="/edit"]'))
 
     def test_unknown_solution_and_redacted_historical_secret(self):
         soup,html=self.page(finding(),{'examples':[{'language':'Python','code':'credential = "should-not-display"'}],'exact':False,'context':'   2 > password: [REDACTED]'})
@@ -122,3 +122,85 @@ class FindingQualityPageTests(unittest.TestCase):
         self.assertIn('Static validation passed',recommendation.get_text())
         self.assertNotIn('Vulnerability fixed',html)
         self.assertIn('Illustrative Secure Example · JavaScript · option B',recommendation.get_text())
+
+    def test_action_precedes_collapsed_evidence_and_checklist(self):
+        f=finding('Potential unsafe DOM HTML assignment','Injection','app.js')
+        solution=solution_for(f,'function render(value) {\n view.innerHTML = value;\n}')
+        soup,html=self.page(f,solution)
+        self.assertLess(html.index('id="recommendation"'),html.index('id="technical-details"'))
+        self.assertIsNone(soup.select_one('.fix-summary').find_parent('details'))
+        self.assertIsNone(soup.select_one('.fix-checks').find_parent('details'))
+        self.assertFalse(soup.select_one('#technical-details').has_attr('open'))
+        self.assertTrue(soup.select_one('#technical-details .current-source'))
+        self.assertTrue(soup.select_one('.primary-fix.suggested-fix'))
+        checklist=soup.find('h3',string='Validation and follow-up').find_parent('details')
+        self.assertFalse(checklist.has_attr('open'))
+
+    def test_secret_rotation_not_hidden_in_disclosure(self):
+        soup,_=self.page(finding())
+        notes=soup.select_one('#recommendation .solution-notes')
+        self.assertIn('rotate',notes.get_text())
+        self.assertIsNone(notes.find_parent('details'))
+
+    def test_dependency_example_inside_existing_card_for_historical_snapshot(self):
+        f=finding('Vulnerable dependency: sanitize-html','Dependency','package.json')
+        f['evidence']=json.dumps({'package':'sanitize-html','ecosystem':'npm','version':'1.0.0','id':'GHSA-example'})
+        soup,html=self.page(f,{'examples':[],'exact':False,'matched':True,'action':'Upgrade after checking compatibility.'})
+        self.assertEqual(len(soup.select('#recommendation')),1)
+        primary=soup.select_one('#recommendation .primary-fix')
+        self.assertIn('Example Secure Pattern',primary.get_text())
+        self.assertIn('not the repository',primary.get_text())
+        self.assertIn('<verified-safe-version>',primary.get_text())
+        self.assertNotIn('Replace your code',primary.get_text())
+        self.assertIn('&lt;verified-safe-version&gt;',html)
+        self.assertIn('Fix Confidence: Low',soup.select_one('#recommendation').get_text())
+
+    def test_actual_source_and_validated_fix_render_together(self):
+        f=finding('Potential unsafe DOM HTML assignment','Injection','app.js')
+        s=solution_for(f,'function show(value) {\n node.innerHTML = value;\n}')
+        soup,_=self.page(f,s)
+        pair=soup.select_one('#recommendation .code-comparison')
+        self.assertIsNotNone(pair);self.assertIsNone(pair.find_parent('details'))
+        self.assertEqual(pair.select_one('.current-code code').get_text(),s['before'])
+        self.assertIn('textContent',pair.select_one('.primary-fix code').get_text())
+        self.assertIn('Current Code',pair.get_text());self.assertIn('Recommended Code',pair.get_text())
+        self.assertEqual(len(pair.select('[data-copy-solution]')),2)
+        self.assertEqual(len(soup.select('#recommendation')),1)
+        self.assertFalse(soup.select_one('a[href$="/edit"]'))
+
+    def test_dependency_pair_requires_retained_entry_and_supported_fixed_version(self):
+        f=finding('Vulnerable dependency: sanitize-html','Dependency','package.json')
+        f['evidence']=json.dumps({'package':'sanitize-html','ecosystem':'npm','version':'1.10.0','affected':[{'ranges':[{'type':'SEMVER','events':[{'introduced':'0'},{'fixed':'1.11.4'}]}]}]})
+        source='{\n "dependencies": {"sanitize-html": "1.10.0"}\n}'
+        soup,_=self.page(f,solution_for(f,source))
+        self.assertEqual(soup.select_one('.current-code code').get_text(),'"sanitize-html": "1.10.0"')
+        self.assertIn('"sanitize-html": "1.11.4"',soup.select_one('.primary-fix code').get_text())
+        from analysis.recommendation_composer import compose
+        self.assertIsNone(compose(f,solution_for(f))['code_pair'])
+        data=json.loads(f['evidence']);data['affected']=[];f['evidence']=json.dumps(data)
+        result=compose(f,solution_for(f,source))
+        self.assertIsNone(result['code_pair']);self.assertIn('<verified-safe-version>',result['examples'][0]['code'])
+
+    def test_no_pair_for_website_unmatched_source_or_secret(self):
+        from analysis.recommendation_composer import compose
+        f=finding('Potential SQL Injection','SQL Injection','app.py')
+        for source in ('Website','Repository'):
+            row=dict(f,source=source)
+            result=compose(row,solution_for(row))
+            self.assertIsNone(result['code_pair']);self.assertEqual(result['example_type'],'illustrative')
+        secret=finding(file='settings.py')
+        secret['evidence']='password="PrivateFixture987"'
+        soup,html=self.page(secret,solution_for(secret,'password="PrivateFixture987"'))
+        self.assertIsNone(soup.select_one('.code-comparison'));self.assertNotIn('PrivateFixture987',html)
+
+    def test_dependency_pair_reads_retained_line_without_reconstructing_old_code(self):
+        from analysis.recommendation_composer import compose
+        f=finding('Vulnerable dependency: sanitize-html','Dependency','package.json')
+        f['evidence']=json.dumps({'package':'sanitize-html','ecosystem':'npm','version':'1.10.0','affected':[{'ranges':[{'type':'SEMVER','events':[{'introduced':'0'},{'fixed':'1.11.4'}]}]}]})
+        base=solution_for(f)
+        base['context']=' 145 > "sanitize-html": "1.10.0",'
+        result=compose(f,base)
+        self.assertEqual(result['code_pair']['current'],'"sanitize-html": "1.10.0"')
+        self.assertEqual(result['code_pair']['recommended'],'"sanitize-html": "1.11.4"')
+        for context in (' 145 > "sanitize-html": "0.0.1",',' 145 > "sanitize-html": "1.10…',base['context']+'\n'+base['context']):
+            base['context']=context;self.assertIsNone(compose(f,base)['code_pair'])

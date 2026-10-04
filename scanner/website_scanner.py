@@ -36,8 +36,9 @@ def now():
 
 
 class ScanManager:
-    def __init__(self, app):
+    def __init__(self, app, on_complete=None):
         self.app = app
+        self.on_complete = on_complete
         self.executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix='sentinelscan')
         self.slots = threading.BoundedSemaphore(4)
         with app.app_context():
@@ -55,7 +56,9 @@ class ScanManager:
                 result = db.execute("INSERT INTO scans(scan_type,target,status,options_json) VALUES ('Website',?,'Queued',?)", (target.display, json.dumps({'private_lab':target.allow_private,'paths':paths,'authorized':True,'request_limit':60,'response_byte_limit':262144,'scan_seconds':150,'http_concurrency':1,'minimum_request_interval_seconds':.2})))
                 scan_id = result.lastrowid
                 db.executemany("INSERT INTO scan_modules(scan_id,name) VALUES (?,?)", [(scan_id,name) for name,_ in MODULES])
-            self.executor.submit(self.run, scan_id, target, paths)
+            future = self.executor.submit(self.run, scan_id, target, paths)
+            if self.on_complete:
+                future.add_done_callback(lambda _: self.on_complete(scan_id, ()))
             return scan_id
         except Exception:
             self.slots.release()
@@ -124,7 +127,10 @@ class ScanManager:
                     (safe['full_name']+' @ '+scrub(branch),repo_id,json.dumps({'branch':scrub(branch),'commit':sha,'osv_enabled':osv_enabled,'authorized':True}))).lastrowid
                 db.execute('UPDATE repositories SET scan_id=? WHERE id=?',(scan_id,repo_id))
                 db.executemany('INSERT INTO scan_modules(scan_id,name) VALUES (?,?)',[(scan_id,name) for name in MODULE_NAMES])
-            self.executor.submit(self.run_repository,scan_id,github,metadata,branch,sha,osv_enabled)
+            future = self.executor.submit(self.run_repository,scan_id,github,metadata,branch,sha,osv_enabled)
+            if self.on_complete:
+                known = tuple(value for value in (getattr(github, "_token", None),) if value)
+                future.add_done_callback(lambda _: self.on_complete(scan_id, known))
             return scan_id
         except Exception:
             self.slots.release()

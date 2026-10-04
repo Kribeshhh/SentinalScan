@@ -157,6 +157,6 @@ class EvidenceRouteTests(unittest.TestCase):
         with self.app.app_context():prior=get_db().execute('SELECT data_json FROM ai_reviews').fetchone()[0]
         self.app.config['LLM_EVIDENCE_PROVIDER']=Provider(answer(),TimeoutError('private-provider-body'))
         page=self.fixture.submit().get_data(as_text=True)
-        self.assertIn('Deterministic guidance remains',page);self.assertNotIn('private-provider-body',page)
+        self.assertIn('Recommended Fix',page);self.assertNotIn('private-provider-body',page)
         self.assertNotIn('AI-assisted recommendation',page)
         with self.app.app_context():self.assertEqual(prior,get_db().execute('SELECT data_json FROM ai_reviews').fetchone()[0])

@@ -73,7 +73,7 @@ class SolutionIntegrationTests(unittest.TestCase):
 
     def test_historical_finding_page_and_scan_link(self):
         page=self.client.get(f'/findings/{self.id}').get_data(as_text=True)
-        self.assertIn('Suggested Solution',page);self.assertNotIn('SELECT id FROM users',page)
+        self.assertIn('Recommended Fix',page);self.assertNotIn('SELECT id FROM users',page)
         self.assertIn('backend source',page)
         self.assertNotIn('<script>alert(1)</script>',page)
         page=self.client.get(f'/scans/{self.scan}').get_data(as_text=True)
@@ -83,8 +83,8 @@ class SolutionIntegrationTests(unittest.TestCase):
         with self.app.app_context():
             data=report_data(get_db(),self.scan)
             solution=data['findings'][0]['solution']
-            self.assertEqual(solution['examples'],[])
-            self.assertEqual(solution['example_type'],'none')
+            self.assertEqual(solution['example_type'],'illustrative');self.assertIn('Pseudocode',solution['examples'][0]['language']);self.assertFalse(solution['exact'])
+            self.assertEqual(solution['example_type'],'illustrative')
             row=next(row for row in csv.DictReader(io.StringIO(csv_document(data))) if row['record_type']=='finding')
             self.assertEqual(json.loads(row['details_json'])['solution'],solution)
         self.client.get('/')

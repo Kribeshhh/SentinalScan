@@ -40,6 +40,6 @@ def run(ctx):
                     sensitive=sensitive_name(flow.target)
                     report('Weak Java cryptographic algorithm','Cryptography',first,
                         'Use dedicated password hashing for passwords or authenticated encryption for sensitive data. Checksum-only hash use needs contextual review.',
-                        'High' if sensitive else 'Medium' if weak_cipher else 'Low', 'Medium' if sensitive or weak_cipher else 'Low')
+                        'High' if sensitive else 'Medium' if weak_cipher else 'Informational', 'Medium' if sensitive or weak_cipher else 'Low')
         TreeFlow(ctx,inspect,'java').value(root)
     return {'parsed_files':parsed,'unparsed_files':errors[:100],'note':'Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review.'}
