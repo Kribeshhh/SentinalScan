@@ -52,7 +52,7 @@ def prepare_evidence(finding, solution, known=()):
         severity=bounded(finding['severity'],known,30), detection_confidence=bounded(finding['confidence'],known,30),
         language=bounded(analysis.get('language'),known,50), evidence_package=evidence,
         base_recommendation=bounded(solution.get('what_to_change') or finding['recommendation'],known,2000),
-        snippet='',start_line=0,repository_context={'database':bounded(context.get('database'),known,50)},
+        snippet='',start_line=0,repository_context={key:bounded(context.get(key),known,300) for key in ('file','function','framework','database','input_source','sink','protection')},
         scope='One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.')
     # Only a complete numbered affected excerpt can be used as a replacement span.
     # The existing validator still requires exact matching to the local pinned file.
@@ -67,7 +67,11 @@ def prepare_evidence(finding, solution, known=()):
         else:
             if source and len(source)<=21:
                 payload.update(snippet='\n'.join(source),start_line=snippet['start_line'])
+                if not payload['repository_context']['file']:
+                    payload['repository_context']['file']=snippet['file']
         break
+    from analysis.ai_grounding import prompt_statements
+    payload['supported_statements'] = prompt_statements(finding, known)
     # Final bound measures actual redacted JSON; invalid oversized context falls back.
     if len(json.dumps(payload,ensure_ascii=False))>16000:
         raise ValueError('Evidence exceeds review budget')
@@ -101,9 +105,16 @@ def run_review(finding,payload,config,original=None,known=()):
         raise ValueError('AI is disabled')
     provider=provider_for(config)
     analyst=validate_evidence_response(provider.review_finding(deepcopy(payload),config,role='analyst'),known)
+    from analysis.ai_grounding import validate_grounding
+    validate_grounding(finding, payload, analyst)
+    if analyst['false_positive_indicators']:
+        raise ValueError('Unverified false-positive claims')
     # The second pass sees a compact, redacted assessment, not arbitrary analyst code.
     prior={k:analyst[k] for k in ('assessment','reason','evidence_supported','false_positive_indicators')}
     skeptic=validate_evidence_response(provider.review_finding(deepcopy(payload),config,role='skeptic',prior=prior),known)
+    validate_grounding(finding, payload, skeptic)
+    if skeptic['false_positive_indicators']:
+        raise ValueError('Unverified false-positive claims')
     disagreement=analyst['assessment']!=skeptic['assessment'] or analyst['evidence_supported']!=skeptic['evidence_supported']
     answer={key:deepcopy(skeptic[key]) for key in FIELDS}
     ranks={'low':0,'medium':1,'high':2}

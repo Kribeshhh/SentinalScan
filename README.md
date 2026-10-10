@@ -484,26 +484,36 @@ are changed. This improves recovery but cannot guarantee an unavailable network.
 
 SAST and DAST perform finding detection. AI is disabled by default and never
 replaces either scanner. It automatically refines persisted findings after new scans
-when enabled. To allow bounded redacted context to be processed externally, configure:
+when enabled. Ollama is the only supported provider. Configure an installed local model:
 
 ```ini
 SENTINELSCAN_LLM_ENABLED=true
-SENTINELSCAN_LLM_MODEL=<your structured-output-capable model>
-SENTINELSCAN_LLM_API_KEY=<your provider API key>
+SENTINELSCAN_OLLAMA_BASE_URL=http://127.0.0.1:11434
+SENTINELSCAN_OLLAMA_MODEL=<exact installed model name from ollama list>
 ```
 
-Use a secret manager/environment for the real key; do not commit it or use your
-GitHub PAT. Restart Flask and run a new authorized scan. Its completion callback sends
-bounded, redacted context and base recommendation to OpenAI. Repository secrets are redacted before AI
-processing; secret findings send a synthetic redacted assignment only. Unrecognized
-sensitive content can still require manual review, so keep AI disabled for source
-you cannot share externally.
+Start the already-installed service with `ollama serve` if it is not running, then
+use `ollama list` to inspect installed models. No model is selected, installed or
+pulled automatically. The model must support structured output. Restart Flask and
+run a new authorized scan; its completion callback sends bounded, redacted context
+to the local daemon. Only literal loopback HTTP addresses (or localhost pinned to
+127.0.0.1) are accepted; redirects, proxies and cloud model aliases are rejected.
+No provider API key is used. GitHub PAT handling remains separate and unchanged.
+Repository secrets are redacted before processing. Unknown secret patterns remain
+a limitation even with local inference. See [Ollama migration](docs/fixes/PHASE_11_OLLAMA_MIGRATION.md).
 
 AI output may be wrong. Its assessment never changes scanner evidence or triage
 status. Generated fixes need static validation and human review. Without a matched
 pinned local file, source-specific AI code is not promoted; validation is **Not Available**.
 Nothing is automatically applied or merged.
-Missing keys, outages and invalid responses leave deterministic guidance available.
+Missing models, service outages and invalid responses leave deterministic guidance available.
+Phase 12 constrains explanation/action prose to grounded deterministic statement choices;
+unsupported facts, fabricated versions/frameworks and security-weakening additions are
+rejected before storage and when reading older reviews. Website examples use a small
+safe-value subset. Source-specific code must match a supported deterministic replacement
+and pass existing pinned-source validation. This deliberately limits creative advice;
+accepted content is not proof of exploitability or guaranteed remediation. See
+[Phase 12 validation and results](docs/fixes/PHASE_12_OLLAMA_REMEDIATION.md).
 
 Website reviews use recorded HTTP/TLS/CORS/cookie observations and never invent
 source-specific backend fixes. Header/configuration examples are advisory and are
@@ -576,13 +586,19 @@ query packs. No repository build scripts, automatic fixes or new AI analysis run
 To enable an installed engine, set `SENTINELSCAN_SEMGREP_ENABLED=true` or
 `SENTINELSCAN_CODEQL_ENABLED=true` before starting Flask. Use
 `SENTINELSCAN_SEMGREP_BINARY` / `SENTINELSCAN_CODEQL_BINARY` for absolute executable
-paths and `SENTINELSCAN_CODEQL_SEARCH_PATH` for a trusted local pack directory.
+paths and `SENTINELSCAN_CODEQL_SEARCH_PATH` for trusted absolute local pack
+directories separated by the OS path separator (`:` on macOS). The existing
+`run-local.sh` enables both engines and defaults to the verified Python 1.8.12 and
+JavaScript 2.4.7 pack directories under `$HOME/.codeql/packages/codeql/`; override
+this setting when installed versions differ. Engine subprocess HOME remains private.
 
 See [Phase 2 setup, security boundaries, confidence and test results](docs/repository_upgrade_phase_2.md).
 
 Repository Phase 2 verification: **197 tests passed, 0 failed**, including a real
 Semgrep scan of vulnerable/safe fixtures. CodeQL integration was mock-tested;
-live CodeQL execution remains unverified. The earlier phase counts above describe
+live CodeQL execution was unverified at that stage. Phase 14 now verifies Python,
+JavaScript and mixed-language analysis through the launcher configuration; see
+[CodeQL repair and evidence](docs/fixes/PHASE_14_CODEQL.md). The earlier phase counts above describe
 historical verification runs.
 
 ## Repository upgrade: specialized scanners and correlated evidence
@@ -605,8 +621,8 @@ an independent skeptical review through the existing optional automatic refineme
 Static analyzers still detect findings. Disagreement requires manual review; AI
 cannot change severity, risk or triage. Eligible improvements appear in one final
 Recommendation, with existing static code validation and human approval preserved.
-AI remains disabled by default; the shipped provider is selected with
-`SENTINELSCAN_LLM_PROVIDER=openai` alongside the existing LLM key/model settings.
+AI remains disabled by default; Ollama is the sole provider, using the local
+base URL and installed-model settings above.
 Historical findings and DAST retain their bounded single-pass compatibility path.
 See [Phase 4 configuration, decisions and limitations](docs/repository_upgrade_phase_4.md).
 

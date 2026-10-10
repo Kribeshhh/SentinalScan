@@ -1,0 +1,172 @@
+[
+  {
+    "case": "address policy",
+    "address": "127.0.0.1",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "127.0.0.1",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "address policy",
+    "address": "10.1.2.3",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "10.1.2.3",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "address policy",
+    "address": "192.168.1.1",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "192.168.1.1",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "address policy",
+    "address": "[::1]",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[::1]",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "address policy",
+    "address": "[fd12::1]",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[fd12::1]",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "address policy",
+    "address": "169.254.169.254",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "169.254.169.254",
+    "allow_private": true,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "100.100.100.200",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "100.100.100.200",
+    "allow_private": true,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[fd00:ec2::254]",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[fd00:ec2::254]",
+    "allow_private": true,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "0.0.0.0",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "0.0.0.0",
+    "allow_private": true,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "224.0.0.1",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "224.0.0.1",
+    "allow_private": true,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[::ffff:127.0.0.1]",
+    "allow_private": false,
+    "accepted": false
+  },
+  {
+    "case": "address policy",
+    "address": "[::ffff:127.0.0.1]",
+    "allow_private": true,
+    "accepted": true
+  },
+  {
+    "case": "actual queue admission",
+    "accepted": 4,
+    "fifth_rejected": true,
+    "persisted": 4
+  },
+  {
+    "case": "single worker",
+    "maximum_active": 1
+  },
+  {
+    "case": "headers",
+    "headers": {
+      "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "no-referrer",
+      "Cache-Control": "no-store"
+    }
+  },
+  {
+    "case": "CSRF and Host",
+    "missing": 400,
+    "wrong": 400,
+    "host": 400,
+    "cancel": 404
+  },
+  {
+    "case": "fresh directory permissions",
+    "directory": "0o700",
+    "database": "0o644",
+    "key": "0o600"
+  },
+  {
+    "case": "existing directory permissions",
+    "directory": "0o755",
+    "database": "0o644"
+  }
+]

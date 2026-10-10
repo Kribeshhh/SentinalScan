@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-10",
+  "project": "/Users/kribeshthapa/Developer/Vibe code/SentinalScan",
+  "interpreter": "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/.venv/bin/python",
+  "head": "d8f67859470c3ccf844673f2eab8ed03cc725549",
+  "final_suite": {
+    "tests": 310,
+    "passed": 310,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 22.487,
+    "exit_code": 0
+  },
+  "focused": {
+    "tests": 37,
+    "passed": 37,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.327,
+    "exit_code": 0
+  },
+  "commands": {
+    "phase16_reproduce.py": ".venv/bin/python -B /tmp/phase16_reproduce.py",
+    "phase16_repro.py": ".venv/bin/python -B /tmp/phase16_repro.py",
+    "phase16_focused.py": ".venv/bin/python -B /tmp/phase16_focused.py",
+    "phase16_run.py": ".venv/bin/python -B /tmp/phase16_run.py --full",
+    "phase13_bench.py": ".venv/bin/python -B /tmp/phase13_bench.py",
+    "phase09_website.py": ".venv/bin/python -B /tmp/phase09_website.py"
+  },
+  "scripts": {
+    "phase16_reproduce.py": "import os,sys,tempfile,shutil,subprocess,json\nfrom pathlib import Path\nroot=Path.cwd()\nfiles=['analysis/correlation.py','analysis/finding_engine.py','scanner/sast/common.py','scanner/sast/evidence.py','scanner/sast/html_scanner.py','scanner/sast/security_context.py','scanner/sast/secret_scanner.py','scanner/header_scanner.py','scanner/xss_scanner.py','scanner/sqli_scanner.py','scanner/disclosure_scanner.py','scanner/directory_scanner.py']\nwith tempfile.TemporaryDirectory(prefix='phase16-original-') as td:\n overlay=Path(td)/'code';overlay.mkdir()\n for package in ('scanner','analysis'):\n  shutil.copytree(root/package,overlay/package,ignore=shutil.ignore_patterns('__pycache__'))\n # Only Phase16-modified files revert in this disposable import overlay; all\n # other code (including approved Phase13 identity fixes) stays current.\n for file in files:\n  (overlay/file).write_bytes(subprocess.check_output(['git','show','HEAD:'+file],cwd=root))\n for mode in ('BEFORE','AFTER'):\n  env=os.environ.copy();env['SENTINELSCAN_DATA_DIR']=str(Path(td)/('data-'+mode));env['SENTINELSCAN_LLM_ENABLED']='false';env.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n  env['PYTHONPATH']=os.pathsep.join(([str(overlay)] if mode=='BEFORE' else [])+[str(root)])\n  r=subprocess.run([str(root/'.venv/bin/python'),'-B','/tmp/phase16_repro.py'],env=env,cwd=root,capture_output=True,text=True)\n  if r.returncode:raise RuntimeError(r.stderr)\n  (root/('docs/fixes/PHASE_16_REPRO_'+mode+'.json')).write_text(r.stdout)\n  print(mode,{k:v['count'] for k,v in json.loads(r.stdout).items()})\n",
+    "phase16_repro.py": "import json,tempfile\nfrom pathlib import Path\nfrom unittest.mock import Mock\nfrom scanner.source_scanner import analyze_directory\nfrom scanner.sast import python_scanner,html_scanner,secret_scanner\nfrom scanner import directory_scanner\nfrom scanner.http_scanner import Response\nfrom scanner.target import validate_target\nfrom analysis.correlation import review,persist_candidates\nfrom app import create_app\nfrom database import get_db\nrows={}\nwith tempfile.TemporaryDirectory(prefix='phase16-repro-') as td:\n root=Path(td)\n for name,source,path,module in [('D06','eval(request.args.get(\"x\")); eval(request.args.get(\"y\"))\\n','a.py',python_scanner),('D07','<p>hi</p>\\n<!-- disable authentication -->','index.html',html_scanner),('D08-doc','The UI renders this phrase:\\npassword=\"Choose a memorable passphrase for your account\"','guide.md',secret_scanner),('D09','connection_material=\"OrionService-884932-Auth\"','custom.py',secret_scanner)]:\n  (root/path).write_text(source);ctx=analyze_directory(root,[path],'audit/fixture');module.run(ctx)\n  rows[name]={'count':len(ctx['findings']),'findings':[{'title':f.title,'location':f.location,'severity':f.severity,'confidence':f.confidence,'evidence':f.evidence,'fingerprint':f.fingerprint} for f in ctx['findings']]}\n  if name=='D06':\n   app=create_app({'TESTING':True,'DATABASE':str(root/'data.sqlite3'),'REPORTS_DIR':str(root/'reports'),'LLM_ENABLED':False})\n   try:\n    with app.app_context():\n     db=get_db();sid=db.execute(\"INSERT INTO scans(scan_type,target,status) VALUES ('Repository','audit/fixture','Completed')\").lastrowid\n     persist_candidates(db,sid,ctx,ctx['findings']);rows[name]['saved_count']=db.execute('SELECT count(*) FROM findings').fetchone()[0]\n   finally:app.extensions['scan_manager'].shutdown()\n def response(text):return Response('https://localhost/uploads',200,[('Content-Type','text/html')],text.encode(),False,[])\n client=Mock();client.get.side_effect=[response('x'*45),response('<title>Index of /uploads</title>')]\n ctx=dict(target=validate_target('https://localhost/',True),response=response('base'),client=client,findings=[],paths=['/uploads'])\n observation=directory_scanner.run(ctx)\n rows['D12']={'count':len(ctx['findings']),'titles':[f.title for f in ctx['findings']],'observations':observation}\n print(json.dumps(rows,indent=2))\n",
+    "phase16_focused.py": "import sys,os,tempfile,unittest\nfrom pathlib import Path\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nwith tempfile.TemporaryDirectory(prefix='phase16-focused-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ('test_phase16_accuracy','test_repository_phase3','test_website_scanner','test_accuracy_refinement'))\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n sys.exit(not result.wasSuccessful())\n",
+    "phase16_run.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase12-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n os.environ.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n os.environ['SENTINELSCAN_TEST_SEMGREP']='/opt/homebrew/bin/semgrep'\n suite=unittest.defaultTestLoader.discover('tests') if '--full' in sys.argv else unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName('tests.'+n) for n in ['test_llm_review','test_llm_sast_dast','test_repository_phase4','test_unified_recommendation','test_final_validation','test_ollama','test_ai_grounding'])\n start=time.monotonic()\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n print(json.dumps(dict(tests=result.testsRun,passed=result.testsRun-len(result.failures)-len(result.errors)-len(result.skipped),failed=len(result.failures),errors=len(result.errors),skipped=len(result.skipped),seconds=round(time.monotonic()-start,3))))\n sys.exit(not result.wasSuccessful())\n",
+    "phase13_bench.py": "import os,sys,tempfile\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase13-data-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n from evaluation.run import main\n main()\n",
+    "phase09_website.py": "import sys,json,time\nfrom pathlib import Path\nfrom unittest.mock import Mock\nfrom urllib.parse import urlsplit,parse_qs\nsys.path.insert(0,str(Path.cwd()))\nfrom scanner.http_scanner import Response\nfrom scanner.target import validate_target\nfrom scanner import header_scanner as h,xss_scanner as x,sqli_scanner as s,disclosure_scanner as d\nfrom evaluation.run import metrics\nrows=[]\ndef response(body,headers=None,url='https://localhost/?q=fixture'):\n return Response(url,200,headers or [('Content-Type','text/html')],body.encode(),False,[])\ndef run(name,category,expected,rationale,module,base,reply=None,title=None):\n client=Mock();client.get.side_effect=reply if callable(reply) else None;client.get.return_value=reply\n ctx=dict(target=validate_target('https://localhost/?q=fixture',True),response=base,client=client,findings=[])\n module.run(ctx);titles=[f.title for f in ctx['findings']];detected=title in titles if title else bool(titles)\n rows.append(dict(name=name,category=category,expected=expected,detected=detected,ground_truth=rationale,findings=titles,outcome='TP' if expected and detected else 'FN' if expected else 'FP' if detected else 'TN'))\nsecure=[('Content-Type','text/html'),('Content-Security-Policy',\"default-src 'self'; frame-ancestors 'none'\"),('X-Content-Type-Options','nosniff'),('Referrer-Policy','no-referrer'),('Permissions-Policy','camera=()'),('Strict-Transport-Security','max-age=31536000')]\nfor name,policy,expected in [('missing framing',\"default-src 'self'\",True),('restricted framing',\"default-src 'self'; frame-ancestors 'none'\",False),('wildcard framing',\"default-src 'self'; frame-ancestors *\",True)]:\n run(name,'Framing protection',expected,'No X-Frame-Options; CSP '+policy,h,response('<p>fixture</p>',[(k,policy if k=='Content-Security-Policy' else v) for k,v in secure]),title='Missing or invalid framing protection')\nfor kind,expected in [('script',True),('text',False),('json',False)]:\n def reply(url,kind=kind):\n  marker=parse_qs(urlsplit(url).query)['q'][0]\n  body={'script':'<script>let a=\"'+marker+'\";</script>','text':'<p>'+marker+'</p>','json':'<script type=\"application/json\">'+json.dumps(marker)+'</script>'}[kind]\n  return response(body,url=url)\n run('reflection '+kind,'XSS indicators',expected,'Executable script reflection is indicator-positive; HTML text/inert JSON are indicator-negative, not exploit tests.',x,response('<p>baseline</p>'),reply)\nfor name,body,expected,why in [('new error','sqlite3.OperationalError: fixture',True,'Fixture represents a new database exception after a probe.'),('neutral','generic response',False,'No database error signature.'),('documentation','Documentation: sqlite3.OperationalError is a Python exception.',False,'Authored documentation, not a runtime exception.')]:\n run('SQL '+name,'SQL indicators',expected,why,s,response('baseline'),response(body))\nfor name,body,expected,why in [('runtime','Traceback (most recent call last)',True,'Authored response represents a runtime stack trace.'),('neutral','generic error',False,'No trace disclosure.'),('tutorial','Tutorial: Traceback (most recent call last)',False,'Authored tutorial text, not runtime disclosure.')]:\n run('disclosure '+name,'Disclosure',expected,why,d,response(body))\nresult={'unit':'One targeted category/indicator presence decision per controlled response case; not exploitability','sample_size':len(rows),'overall':metrics([(r['expected'],r['detected']) for r in rows]),'categories':{c:metrics([(r['expected'],r['detected']) for r in rows if r['category']==c]) for c in sorted({r['category'] for r in rows})},'cases':rows}\nPath('/tmp/phase09_website.json').write_text(json.dumps(result,indent=2));print(json.dumps(result['overall']))\n"
+  },
+  "sha256": {
+    "analysis/correlation.py": "cc0653c9f69a49ec64c8d4b3853092fce55b2d22abbcde3c464e76607189295b",
+    "analysis/finding_engine.py": "4ce2c2f131a35996faa21aabd36a72fa7e71267db954d70ce393dd4cac26b31d",
+    "scanner/sast/common.py": "d0359539ae0aa43196d1e8c3f19f69120938e6546d398c17d273b644d6385d42",
+    "scanner/sast/evidence.py": "551b8fa027430ac729380b6eb857220386168fa3bebd151d947e96d7c40cf21a",
+    "scanner/sast/html_scanner.py": "451a6f13da40651f352fac6c62c1c69e059a0e5fe1e821cb4d86fcbf4558343a",
+    "scanner/sast/security_context.py": "4d7bb003c1f560c5660607283e3154045e7d0e01a06ae2df0fb6a81c0d3bf3ce",
+    "scanner/sast/secret_scanner.py": "4c9a7039818549618a7dd90f8c2971870f996af3e18c46746ababaea89638dcb",
+    "scanner/header_scanner.py": "dce9113301749f953c9668bad0c52e7091ec8b90ebe3de7066586cc73f722805",
+    "scanner/xss_scanner.py": "ebb25dbf7442395e17f606bfe512a567304870f0fba576b540a1ee0cb4438d50",
+    "scanner/sqli_scanner.py": "33cfd8daab6ba610ac278f89acf1ebf4656dd101f2668abf68811dcbaf9593e0",
+    "scanner/disclosure_scanner.py": "a3207836d44669763025c10686299461ce32381365d06d6235ffad62cb61049f",
+    "scanner/directory_scanner.py": "0f9c418c311c971c781b2ac01e3b51c46abf700bd2ef584bd9adb5b493711ad4",
+    "tests/test_phase16_accuracy.py": "976ac5c3b1120d34be582856d1ce1e4ea4b1208e42f15ba0138087c0aab8e981",
+    "tests/test_repository_phase3.py": "a298bd4563d9738ccd8d50086372cb87a1021f4ff3791fc9d6d7a9817067d24f",
+    "evaluation/fixtures.json": "73c72c4db254ac9f52071915f5e8a56d111c7d0933ebc1e6ad363c4e25b3a2d1"
+  },
+  "benchmark_commands": [
+    ".venv/bin/python -B /tmp/phase13_bench.py --output docs/fixes/PHASE_16_BENCHMARK_BEFORE.json --semgrep /opt/homebrew/bin/semgrep",
+    ".venv/bin/python -B /tmp/phase13_bench.py --output docs/fixes/PHASE_16_BENCHMARK_AFTER.json --semgrep /opt/homebrew/bin/semgrep"
+  ],
+  "limitations": [
+    "D08 partial: checksum, bare POSIX echo and Semgrep allowlist cases remain.",
+    "D09 arbitrary custom credential remains a measured FN.",
+    "No real provider/CodeQL accuracy benchmark this phase."
+  ]
+}

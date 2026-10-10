@@ -1,0 +1,42 @@
+{
+  "phase": 13,
+  "date": "2026-10-09",
+  "scripts": {
+    "phase13_repro.py": "import json,tempfile,sys,ast\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nfrom scanner.source_scanner import analyze_directory\nfrom scanner.sast.python_scanner import run\nbundle=json.load(open('docs/audit/PHASE_04_REPOSITORY_SCANNER.evidence.json'))\ntree=ast.parse(bundle['scripts']['phase04_cases.py'])\ncases=next(n.value for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='cases' for t in n.targets))\nrows=[]\nfor item in cases.elts:\n name=ast.literal_eval(item.elts[0])\n if not name.startswith('unrelated'):continue\n source=ast.literal_eval(item.elts[2])\n with tempfile.TemporaryDirectory() as td:\n  p=Path(td);(p/'a.py').write_text(source);ctx=analyze_directory(p,['a.py'],'audit/fixture');run(ctx)\n  rows.append(dict(case=name,source=source,findings=[dict(title=f.title,confidence=f.confidence,evidence=f.evidence) for f in ctx['findings']]))\nPath(sys.argv[1]).write_text(json.dumps(rows,indent=2)+'\\n');print(json.dumps(rows,indent=2))\n",
+    "phase13_bench.py": "import os,sys,tempfile\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase13-data-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n from evaluation.run import main\n main()\n",
+    "phase13_targeted.py": "import json,sys,tempfile,subprocess,types\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nfrom scanner.source_scanner import analyze_directory\nfrom scanner.sast import python_scanner\nfrom evaluation.run import metrics\noriginal=types.ModuleType('baseline_python_scanner')\nexec(compile(subprocess.check_output(['git','show','HEAD:scanner/sast/python_scanner.py'],text=True),'baseline_python_scanner','exec'),original.__dict__)\ndisplay='class Display:\\n def execute(self,value):\\n  print(value)\\ndisplay=Display()\\ndisplay.execute(\"SELECT \"+request.args.get(\"q\"))'\nprefix='from flask import request\\nimport sqlite3\\ncursor=sqlite3.connect(\":memory:\").cursor()\\n'\ncases=[('D05 original display',False,display),('Display with real Flask input',False,'from flask import request\\n'+display),('Real sqlite SQL construction',True,prefix+'cursor.execute(\"SELECT \"+request.args.get(\"q\"))'),('Parameterized sqlite query',False,prefix+'cursor.execute(\"SELECT ?\",(request.args.get(\"q\"),))')]\nrows=[]\nfor name,expected,source in cases:\n row=dict(name=name,expected=expected,source=source)\n for tag,engine in [('before',original),('after',python_scanner)]:\n  with tempfile.TemporaryDirectory() as td:\n   root=Path(td);(root/'fixture.py').write_text(source)\n   ctx=analyze_directory(root,['fixture.py'],'lab/d05');engine.run(ctx)\n   row[tag]=[dict(title=f.title,confidence=f.confidence,evidence=f.evidence) for f in ctx['findings'] if f.title=='Potential SQL injection in constructed query']\n rows.append(row)\noutput=dict(scope='Supplemental four-fixture SQL identity regression set, not the frozen benchmark',cases=rows,metrics={tag:metrics([(r['expected'],bool(r[tag])) for r in rows]) for tag in ('before','after')})\nPath('docs/fixes/PHASE_13_TARGETED.json').write_text(json.dumps(output,indent=2)+'\\n')\nprint(json.dumps(output['metrics']))\n",
+    "phase13_run.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase12-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n os.environ.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n os.environ['SENTINELSCAN_TEST_SEMGREP']='/opt/homebrew/bin/semgrep'\n suite=unittest.defaultTestLoader.discover('tests') if '--full' in sys.argv else unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName('tests.'+n) for n in ['test_llm_review','test_llm_sast_dast','test_repository_phase4','test_unified_recommendation','test_final_validation','test_ollama','test_ai_grounding'])\n start=time.monotonic()\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n print(json.dumps(dict(tests=result.testsRun,passed=result.testsRun-len(result.failures)-len(result.errors)-len(result.skipped),failed=len(result.failures),errors=len(result.errors),skipped=len(result.skipped),seconds=round(time.monotonic()-start,3))))\n sys.exit(not result.wasSuccessful())\n"
+  },
+  "full_suite": {
+    "tests": 280,
+    "passed": 280,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 23.324,
+    "exit_code": 0
+  },
+  "focused_suite": {
+    "tests": 41,
+    "passed": 41,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 2.833,
+    "exit_code": 0
+  },
+  "commands": [
+    ".venv/bin/python -B /tmp/phase13_run.py --full",
+    "SENTINELSCAN_TEST_SEMGREP=/opt/homebrew/bin/semgrep .venv/bin/python -B -m unittest tests.test_python_identity tests.test_detection_accuracy tests.test_repository_phase2 -v",
+    ".venv/bin/python -B /tmp/phase13_bench.py --output docs/fixes/PHASE_13_BENCHMARK_AFTER.json --semgrep /opt/homebrew/bin/semgrep",
+    ".venv/bin/python -B /tmp/phase13_targeted.py",
+    "git diff --check"
+  ],
+  "files_sha256": {
+    "scanner/sast/flow.py": "d70a670828ccaad72b5d66eefeb03bb92d62a3e10851eaa5b5ea106168faa61d",
+    "scanner/sast/python_scanner.py": "a5d3b3c78f3b3a931bfdd03f71392875528d0015f1d283659cea800a4f5b2272",
+    "tests/test_python_identity.py": "540b802fb583f4daab8e00588c5b4ae2ed93d7d71c744b02fbe3d16084b4c56f",
+    "evaluation/fixtures.json": "73c72c4db254ac9f52071915f5e8a56d111c7d0933ebc1e6ad363c4e25b3a2d1"
+  },
+  "safety": "Temporary SQLite/data directories; fixtures never executed; mocked providers; no user history changes, paid services, installs or public scanning."
+}

@@ -13,6 +13,7 @@ class Value:
     html_safe: bool = False
     sensitive: bool = False
     callable_name: str | None = None
+    identity: str | None = None
     uncertain: bool = False
     calls: tuple = ()
     protections: tuple = ()

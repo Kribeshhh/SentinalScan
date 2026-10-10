@@ -3,6 +3,7 @@ import json
 from flask import request,render_template,redirect,url_for,abort,send_file,flash
 from database import get_db
 from analysis.validation import record_id
+from analysis.stored_data import StoredDataError
 from analysis.management import compare_scans,risk_trend
 from reports.report_generator import FORMATS,generate_report,open_report
 
@@ -22,6 +23,8 @@ def register_management(app):
                     comparison_id=db.execute('SELECT id FROM scan_comparisons WHERE baseline_scan_id=? AND current_scan_id=?',(previous,current)).fetchone()[0]
                 flash('Scan comparison saved.')
                 return redirect(url_for('comparison_detail',comparison_id=comparison_id),code=303)
+            except StoredDataError:
+                error='Comparison unavailable: stored scan observations or finding evidence are malformed. No comparison was saved or refreshed. Existing records are unchanged.'
             except ValueError as exc:
                 error=str(exc) if str(exc).startswith(('Select','Only','Scans','The baseline')) else 'Select valid scan IDs.'
         db=get_db()

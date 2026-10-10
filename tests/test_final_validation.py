@@ -1,3 +1,4 @@
+from tests.ollama_fixtures import transport, envelope
 """Final controlled checks: no live AI, external target, or fixture execution."""
 import io
 import json
@@ -62,8 +63,8 @@ class FinalValidationTests(unittest.TestCase):
         f=dict(test_llm_review.finding(),source='Website',category='Security Headers',location='https://lab.invalid/',evidence='Header absent')
         solution={'finding_context':{'response_headers':{'Server':injection,'Authorization':'Bearer RawAuth987','Set-Cookie':'sid=RawSession987'},'response_snippet':'<p>'+injection+'</p>'}}
         payload=prepare(f,None,('ProviderCredential987','GitHubCredential987'),solution)
-        raw=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps(test_llm_review.response())}}]}).encode()
-        with patch('integrations.llm.request',return_value=(200,{},raw)) as send:review(payload,dict(LLM_API_KEY='ProviderCredential987',LLM_MODEL='fixture'))
+        raw=envelope(json.dumps(test_llm_review.response()))
+        with patch('integrations.llm.request',side_effect=transport(200,raw)) as send:review(payload,dict(LLM_ENABLED=True,OLLAMA_MODEL='fixture'))
         body=json.loads(send.call_args.kwargs['body']);wire=json.dumps(body)
         self.assertIn(injection,body['messages'][1]['content']);self.assertNotIn(injection,body['messages'][0]['content'])
         self.assertIn('UNTRUSTED DATA',INSTRUCTIONS)
@@ -105,7 +106,7 @@ class FinalValidationTests(unittest.TestCase):
 
 class FinalFailureAndPrivacyTests(unittest.TestCase):
     def setUp(self):
-        self.tmp=tempfile.TemporaryDirectory();self.app=create_app(dict(TESTING=True,DATABASE=str(Path(self.tmp.name)/'test.db'),LLM_ENABLED=True,LLM_API_KEY='fixture-key',LLM_MODEL='fixture-model'))
+        self.tmp=tempfile.TemporaryDirectory();self.app=create_app(dict(TESTING=True,DATABASE=str(Path(self.tmp.name)/'test.db'),LLM_ENABLED=True,OLLAMA_MODEL='fixture-model'))
         self.client=self.app.test_client();self.client.get('/')
         with self.client.session_transaction() as session:self.csrf=session['csrf_token']
         with self.app.app_context():
@@ -125,12 +126,12 @@ class FinalFailureAndPrivacyTests(unittest.TestCase):
         try:
             self.app.config['LLM_ENABLED']=False
             with patch('integrations.llm.request') as send:self.assertEqual(self.submit().status_code,200);send.assert_not_called()
-            self.app.config['LLM_ENABLED']=True;self.app.config['LLM_API_KEY']=''
+            self.app.config['LLM_ENABLED']=True;self.app.config['OLLAMA_MODEL']=''
             with patch('integrations.llm.request') as send:self.assertEqual(self.submit().status_code,200);send.assert_not_called()
-            self.app.config['LLM_API_KEY']='fixture-key'
-            malformed=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':'{"assessment":"wrong"}'}}]}).encode()
+            self.app.config['OLLAMA_MODEL']='fixture-model'
+            malformed=envelope('{"assessment":"wrong"}')
             for status,body in [(401,b'private-provider-error'),(429,b'private-provider-error'),(500,b'private-provider-error'),(200,b'not JSON'),(200,malformed)]:
-                with patch('integrations.llm.request',return_value=(status,{},body)):
+                with patch('integrations.llm.request',side_effect=transport(status,body)):
                     page=self.submit();self.assertEqual(page.status_code,200)
                     soup=BeautifulSoup(page.data,'html.parser');self.assertEqual(len(soup.select('#recommendation')),1)
                     self.assertNotIn('AI-assisted recommendation',soup.select_one('#recommendation').get_text())
@@ -142,7 +143,11 @@ class FinalFailureAndPrivacyTests(unittest.TestCase):
 
     def test_secret_stays_redacted_in_model_page_reports_database_and_logs(self):
         secret='CredentialFixture-883-Private';calls=[];stream=io.StringIO();handler=logging.StreamHandler(stream);self.app.logger.addHandler(handler)
-        def provider(payload,config):calls.append(payload);return test_llm_review.response(remediation='Remove and rotate the hardcoded credential.')
+        def provider(payload,config):
+            calls.append(payload);policy=payload['supported_statements']
+            reply=test_llm_review.response(reason=policy['reason'][0])
+            reply['recommendation'].update(what_to_change=policy['what_to_change'][0],why=policy['why'][0])
+            return reply
         self.app.config['LLM_REVIEW_PROVIDER']=provider
         try:
             with self.app.app_context():

@@ -1,0 +1,68 @@
+{
+  "workflow_cases": [
+    {
+      "case": "website",
+      "seconds": 16.33,
+      "requests": [
+        {
+          "path": "/api/tags",
+          "status": 200,
+          "seconds": 0.09
+        },
+        {
+          "path": "/api/show",
+          "status": 200,
+          "seconds": 0.03
+        },
+        {
+          "path": "/api/chat",
+          "status": 200,
+          "seconds": 16.18
+        }
+      ],
+      "review_saved": false,
+      "finding_unchanged": true,
+      "scan_unchanged": true,
+      "ai_assisted": false,
+      "action": "Add this header at the response-producing layer, or update the existing header. Do not replace the whole application or overwrite unrelated CSP directives.",
+      "validation": "Not Available",
+      "http": 200,
+      "one_recommendation": true
+    },
+    {
+      "case": "repository",
+      "seconds": 13.54,
+      "requests": [
+        {
+          "path": "/api/tags",
+          "status": 200,
+          "seconds": 0.01
+        },
+        {
+          "path": "/api/show",
+          "status": 200,
+          "seconds": 0.01
+        },
+        {
+          "path": "/api/chat",
+          "status": 200,
+          "seconds": 13.51
+        }
+      ],
+      "review_saved": false,
+      "finding_unchanged": true,
+      "scan_unchanged": true,
+      "ai_assisted": false,
+      "action": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+      "validation": "Not Available",
+      "http": 200,
+      "one_recommendation": true
+    }
+  ],
+  "secret_case": {
+    "redacted_before_request": true,
+    "validated": false,
+    "error_type": "ValueError",
+    "seconds": 10.76
+  }
+}

@@ -17,6 +17,8 @@ def compose(finding, base, review=None, enabled=False):
     if enabled and isinstance(review,dict) and f.get('status')!='False Positive':
         try:
             from analysis.llm_review import validate_response,clean,website_example
+            if review.get('contribution_allowed') is False:
+                raise ValueError('Unsupported AI contribution')
             rec=review.get('recommendation')
             if rec is None:
                 # Read old stored reviews; never relax the live provider schema.
@@ -24,6 +26,13 @@ def compose(finding, base, review=None, enabled=False):
                 rec=dict(what_to_change=review['remediation'],suggested_code_or_config=code,
                     example_type='source_specific' if code else 'none',why=review['reason'],additional_actions=[])
             answer=validate_response({key:review[key] for key in ('assessment','reason','original_code','fix_confidence')} | {'recommendation':rec})
+            from analysis.ai_grounding import validate_grounding, statements
+            validate_grounding(f, {}, answer)
+            if evidence_review:
+                support = statements(f)
+                for role in ('analyst', 'skeptic'):
+                    if evidence_review[role]['reason'].strip() not in support['reason'] or evidence_review[role]['false_positive_indicators']:
+                        raise ValueError('Unsupported saved evidence review')
             validated_answer=answer
             rec=answer['recommendation'];code=rec['suggested_code_or_config'];kind=rec['example_type']
             if evidence_review and evidence_review['assessment']!='likely_valid':
@@ -60,10 +69,12 @@ def compose(finding, base, review=None, enabled=False):
             result['notes']=list(dict.fromkeys(list(result.get('notes',[]))+rec['additional_actions']))
         except (ValueError,KeyError,TypeError,AttributeError):
             result=deepcopy(base);result.update(ai_assisted=False,recommendation_source='Deterministic')
+            if validated_answer is None:
+                evidence_review=None
     if validated_answer is not None:
         result['ai_review_details']={'assessment':validated_answer['assessment'],
             'reason':clean(validated_answer['reason']),
-            'note':clean(review.get('note','')) if isinstance(review.get('note',''),str) else ''}
+            'note':'AI-assisted selection of deterministic guidance. Review and test before implementation.'}
     if failed_candidate:
         result['validation_notice']='Suggested code failed static validation and requires manual review.'
         result['rejected_suggestion_status']='Failed'

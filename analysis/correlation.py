@@ -35,7 +35,7 @@ def review(ctx,finding):
         analysis['logical_fingerprint']=digest(json.dumps(identity))
         # Include exact occurrence for within-scan correlation. Identical calls in
         # distinct locations are not merged just because their code is identical.
-        key=(analysis['logical_fingerprint'],anchor['start'],anchor['end'])
+        key=(analysis['logical_fingerprint'],anchor['start'],anchor.get('column'),anchor['end'])
         analysis['correlation_basis']='Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone.'
     else:
         analysis['correlation_basis']='No unambiguous semantic anchor; retained as a separate candidate.'

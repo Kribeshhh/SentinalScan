@@ -1,3 +1,8 @@
+> Historical provider implementation/configuration: superseded on 2026-10-09 by
+> [Phase 11 Ollama migration](fixes/PHASE_11_OLLAMA_MIGRATION.md). Cloud credentials,
+> endpoints and alternative adapters below are archival, not current setup instructions.
+> Shared evidence, validation and recommendation contracts remain applicable.
+
 # Repository scanner upgrade — Phase 4: LLM evidence review
 
 > Current activation/UI policy: the 2026-10-04 final simplification supersedes

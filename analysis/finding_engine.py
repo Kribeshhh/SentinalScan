@@ -38,6 +38,10 @@ class Finding:
     @property
     def fingerprint(self):
         identity = [self.source, self.category, self.title, self.location]
+        analysis = json.loads(self.context_json).get('analysis', {})
+        column = analysis.get('occurrence_column') if isinstance(analysis, dict) else None
+        if type(column) is int and column >= 0:
+            identity.append(column)
         return hashlib.sha256(json.dumps(identity, ensure_ascii=False).encode()).hexdigest()
 
 

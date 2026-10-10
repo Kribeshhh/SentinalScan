@@ -18,7 +18,7 @@ def credential_assignment(path,key,value):
     # Only recognizable instructional prose in documentation is suppressed;
     # spaced passphrases in source/configuration remain credential candidates.
     if PurePosixPath(path).suffix.lower() in ('.md', '.rst') and re.fullmatch(
-        r'(?i)(?:enter|type|choose) (?:your |the |an? )?(?:account )?(?:password|passphrase)(?: to [a-z ]+)?[.!]?', value.strip()):
+        r'(?i)(?:enter|type|choose) (?:your |the |an? )?(?:account )?(?:memorable |strong |secure )?(?:password|passphrase)(?: for your account| to [a-z ]+)?[.!]?', value.strip()):
         return False
     return plausible(value)
 

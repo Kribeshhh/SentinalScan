@@ -1,0 +1,35 @@
+{
+  "method": "Actual run-local.sh with temporary Flask.run port=0 wrapper; all serving behavior retained",
+  "production_code_changed": false,
+  "http": 200,
+  "brand": true,
+  "headers": {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff"
+  },
+  "alive": true,
+  "log": " * Serving Flask app 'app'\n * Debug mode: off\n\u001b[31m\u001b[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.\u001b[0m\n * Running on http://127.0.0.1:49505\n\u001b[33mPress CTRL+C to quit\u001b[0m\n127.0.0.1 - - [10/Oct/2026 13:19:17] Request completed: 200\n",
+  "database": {
+    "tables": [
+      "repositories",
+      "scans",
+      "findings",
+      "scan_comparisons",
+      "ai_reviews",
+      "finding_solutions",
+      "finding_context",
+      "scan_files",
+      "draft_checks",
+      "pull_request_tracking",
+      "remediation_verifications",
+      "remediation_drafts",
+      "scan_modules",
+      "reports"
+    ],
+    "version": 4,
+    "integrity": "ok",
+    "scans": 0
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,230 @@
+{
+  "summary": {
+    "tests": 43,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 9.286,
+    "modules": [
+      "test_foundation",
+      "test_management",
+      "test_restart",
+      "test_end_to_end",
+      "test_unified_recommendation",
+      "test_llm_review"
+    ]
+  },
+  "cases": [
+    {
+      "case": "schema",
+      "expected": "14 tables, version4, foreign keys ON, WAL",
+      "actual": [
+        14,
+        4,
+        1,
+        "wal"
+      ],
+      "status": "PASS"
+    },
+    {
+      "case": "connection reuse",
+      "expected": "same object in app context",
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "case": "rollback",
+      "expected": "zero uncommitted rows",
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "severity distribution",
+      "expected": "one each, count5, risk31",
+      "actual": {
+        "counts": {
+          "Critical": 1,
+          "High": 1,
+          "Medium": 1,
+          "Low": 1,
+          "Informational": 1
+        },
+        "count": 5,
+        "risk": 31
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "empty Completed HTML",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "empty Completed JSON",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "empty Completed CSV",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "empty Failed HTML",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "empty Failed JSON",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "empty Failed CSV",
+      "expected": "200 nonempty report",
+      "actual": 200,
+      "status": "PASS"
+    },
+    {
+      "case": "populated HTML",
+      "expected": "5 saved findings, masked secret, format-safe output",
+      "actual": {
+        "status": 200,
+        "redacted": true
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "populated JSON",
+      "expected": "5 saved findings, masked secret, format-safe output",
+      "actual": {
+        "status": 200,
+        "redacted": true
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "populated CSV",
+      "expected": "5 saved findings, masked secret, format-safe output",
+      "actual": {
+        "status": 200,
+        "redacted": true
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "WAL snapshot",
+      "expected": "reader stable until commit then sees writer",
+      "actual": [
+        3,
+        3,
+        4
+      ],
+      "status": "PASS"
+    },
+    {
+      "case": "writer contention",
+      "expected": "second writer bounded lock failure",
+      "actual": {
+        "locked": true,
+        "seconds": 0.059
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "report metadata failure cleanup",
+      "expected": "exception and no orphan new file",
+      "actual": {
+        "failed": true,
+        "no_new_file": true
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "malformed module report",
+      "expected": "controlled rejection, no output file",
+      "actual": {
+        "http": 400,
+        "no_new_file": true
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "malformed module scan display",
+      "expected": "graceful record-level display",
+      "actual": 500,
+      "status": "FAIL"
+    },
+    {
+      "case": "absent findings comparison",
+      "expected": "5 resolved groups with no-proof warning",
+      "actual": {
+        "resolved": 5,
+        "warning": "RESOLVED means absent from the later scan, not proof of remediation. All triage statuses participate in detection matching."
+      },
+      "status": "PASS"
+    },
+    {
+      "case": "malformed solution comparison",
+      "expected": "controlled validation response (400)",
+      "actual": 500,
+      "status": "FAIL"
+    },
+    {
+      "case": "integrity",
+      "expected": "ok, no foreign key violations",
+      "actual": [
+        "ok",
+        0
+      ],
+      "status": "PASS"
+    },
+    {
+      "case": "connection teardown",
+      "expected": "connection closed",
+      "actual": true,
+      "status": "PASS"
+    },
+    {
+      "case": "risk empty",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "risk all severities",
+      "expected": 31,
+      "actual": 31,
+      "status": "PASS"
+    },
+    {
+      "case": "risk ignored",
+      "expected": 0,
+      "actual": 0,
+      "status": "PASS"
+    },
+    {
+      "case": "risk rounding tie",
+      "expected": 38,
+      "actual": 38,
+      "status": "PASS"
+    },
+    {
+      "case": "risk large",
+      "expected": 100,
+      "actual": 100,
+      "status": "PASS"
+    }
+  ],
+  "test_log": "test_csrf_status_update_and_validation (test_foundation.FoundationTests.test_csrf_status_update_and_validation) ... ok\ntest_navigation_empty_database_and_headers (test_foundation.FoundationTests.test_navigation_empty_database_and_headers) ... ok\ntest_pagination_and_report_records (test_foundation.FoundationTests.test_pagination_and_report_records) ... ok\ntest_persistence_new_app_instance (test_foundation.FoundationTests.test_persistence_new_app_instance) ... ok\ntest_real_data_escaping_filter_and_risk (test_foundation.FoundationTests.test_real_data_escaping_filter_and_risk) ... ok\ntest_risk_weights_and_bounds (test_foundation.FoundationTests.test_risk_weights_and_bounds) ... ok\ntest_schema_constraints_and_fingerprint (test_foundation.FoundationTests.test_schema_constraints_and_fingerprint) ... ok\ntest_comparison_rejects_wrong_target_running_and_reverse (test_management.ManagementTests.test_comparison_rejects_wrong_target_running_and_reverse) ... ok\ntest_csv_formula_html_escaping_and_legacy_secret_masking (test_management.ManagementTests.test_csv_formula_html_escaping_and_legacy_secret_masking) ... ok\ntest_filtering_search_and_history_counts (test_management.ManagementTests.test_filtering_search_and_history_counts) ... ok\ntest_real_scans_comparison_status_and_trends (test_management.ManagementTests.test_real_scans_comparison_status_and_trends) ... ok\ntest_report_snapshot_persistence_and_path_security (test_management.ManagementTests.test_report_snapshot_persistence_and_path_security) ... ok\ntest_source_fingerprint_ignores_ids_and_line_shifts (test_management.ManagementTests.test_source_fingerprint_ignores_ids_and_line_shifts) ... ok\ntest_website_repository_reports_redaction_and_downloads (test_management.ManagementTests.test_website_repository_reports_redaction_and_downloads) ... ok\ntest_restart_retains_records (test_restart.ProcessRestartTests.test_restart_retains_records) ... ok\ntest_full_http_workflow_and_process_restart (test_end_to_end.EndToEndTests.test_full_http_workflow_and_process_restart) ... ok\ntest_failed_unvalidated_and_malformed_review_fall_back (test_unified_recommendation.ComposerTests.test_failed_unvalidated_and_malformed_review_fall_back) ... ok\ntest_secret_yaml_and_false_positive_keep_safe_policy (test_unified_recommendation.ComposerTests.test_secret_yaml_and_false_positive_keep_safe_policy) ... ok\ntest_source_fix_off_on_and_dedup (test_unified_recommendation.ComposerTests.test_source_fix_off_on_and_dedup) ... ok\ntest_website_backend_code_never_composes (test_unified_recommendation.ComposerTests.test_website_backend_code_never_composes) ... ok\ntest_dependency_recorded_fixed_release_and_unknown_placeholder (test_unified_recommendation.ExamplePatternTests.test_dependency_recorded_fixed_release_and_unknown_placeholder) ... ok\ntest_overlapping_ranges_do_not_claim_fixed_release (test_unified_recommendation.ExamplePatternTests.test_overlapping_ranges_do_not_claim_fixed_release) ... ok\ntest_unknown_source_gets_example_not_replacement (test_unified_recommendation.ExamplePatternTests.test_unknown_source_gets_example_not_replacement) ... ok\ntest_website_generic_secret_redaction_and_operational_fallback (test_unified_recommendation.ExamplePatternTests.test_website_generic_secret_redaction_and_operational_fallback) ... ok\ntest_composed_text_escaped_and_does_not_change_detection (test_unified_recommendation.UnifiedPageTests.test_composed_text_escaped_and_does_not_change_detection) ... ok\ntest_failed_refresh_uses_base_without_deleting_previous_review (test_unified_recommendation.UnifiedPageTests.test_failed_refresh_uses_base_without_deleting_previous_review) ... ok\ntest_five_required_display_states (test_unified_recommendation.UnifiedPageTests.test_five_required_display_states) ... ok\ntest_reports_export_final_only_and_respect_disabled (test_unified_recommendation.UnifiedPageTests.test_reports_export_final_only_and_respect_disabled) ... ok\ntest_completed_repository_automatically_refines_without_changing_detection (test_llm_review.LLMPipelineTests.test_completed_repository_automatically_refines_without_changing_detection) ... ok\ntest_refinement_budget_failure_and_saved_reviews_are_bounded (test_llm_review.LLMPipelineTests.test_refinement_budget_failure_and_saved_reviews_are_bounded) ... ok\ntest_removing_another_occurrence_cannot_validate_original (test_llm_review.LLMPipelineTests.test_removing_another_occurrence_cannot_validate_original) ... ok\ntest_repository_pipeline_never_depends_on_provider (test_llm_review.LLMPipelineTests.test_repository_pipeline_never_depends_on_provider) ... ok\ntest_disabled_and_removed_route_preserve_csrf (test_llm_review.LLMRouteTests.test_disabled_and_removed_route_preserve_csrf) ... ok\ntest_enabled_persists_separate_review_and_escapes_inside_recommendation (test_llm_review.LLMRouteTests.test_enabled_persists_separate_review_and_escapes_inside_recommendation) ... ok\ntest_likely_false_positive_never_triages (test_llm_review.LLMRouteTests.test_likely_false_positive_never_triages) ... ok\ntest_outage_and_invalid_output_keep_finding (test_llm_review.LLMRouteTests.test_outage_and_invalid_output_keep_finding) ... ok\ntest_bad_generated_code_and_source_mismatch (test_llm_review.LLMUnitTests.test_bad_generated_code_and_source_mismatch) ... ok\ntest_good_patch_requires_full_source_and_recheck (test_llm_review.LLMUnitTests.test_good_patch_requires_full_source_and_recheck) ... ok\ntest_request_redacted_before_provider_and_bounded (test_llm_review.LLMUnitTests.test_request_redacted_before_provider_and_bounded) ... ok\ntest_secret_finding_payload_is_synthetic_only (test_llm_review.LLMUnitTests.test_secret_finding_payload_is_synthetic_only) ... ok\ntest_strict_schema_and_limits (test_llm_review.LLMUnitTests.test_strict_schema_and_limits) ... ok\ntest_transport_schema_refusal_timeout_and_missing_key (test_llm_review.LLMUnitTests.test_transport_schema_refusal_timeout_and_missing_key) ... ok\ntest_migration_preserves_existing_related_records (test_website_scanner.WebsiteTests.test_migration_preserves_existing_related_records) ... ok\n\n----------------------------------------------------------------------\nRan 43 tests in 9.285s\n\nOK\n",
+  "matrix_log": "[2026-10-08 22:33:36,085] ERROR in app: Request failed (JSONDecodeError)\n[2026-10-08 22:33:36,085] ERROR in app: Request failed (JSONDecodeError)\n[2026-10-08 22:33:36,089] ERROR in app: Request failed (AttributeError)\n[\n  {\n    \"case\": \"schema\",\n    \"expected\": \"14 tables, version4, foreign keys ON, WAL\",\n    \"actual\": [\n      14,\n      4,\n      1,\n      \"wal\"\n    ],\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"connection reuse\",\n    \"expected\": \"same object in app context\",\n    \"actual\": true,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"rollback\",\n    \"expected\": \"zero uncommitted rows\",\n    \"actual\": 0,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"severity distribution\",\n    \"expected\": \"one each, count5, risk31\",\n    \"actual\": {\n      \"counts\": {\n        \"Critical\": 1,\n        \"High\": 1,\n        \"Medium\": 1,\n        \"Low\": 1,\n        \"Informational\": 1\n      },\n      \"count\": 5,\n      \"risk\": 31\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Completed HTML\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Completed JSON\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Completed CSV\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Failed HTML\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Failed JSON\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"empty Failed CSV\",\n    \"expected\": \"200 nonempty report\",\n    \"actual\": 200,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"populated HTML\",\n    \"expected\": \"5 saved findings, masked secret, format-safe output\",\n    \"actual\": {\n      \"status\": 200,\n      \"redacted\": true\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"populated JSON\",\n    \"expected\": \"5 saved findings, masked secret, format-safe output\",\n    \"actual\": {\n      \"status\": 200,\n      \"redacted\": true\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"populated CSV\",\n    \"expected\": \"5 saved findings, masked secret, format-safe output\",\n    \"actual\": {\n      \"status\": 200,\n      \"redacted\": true\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"WAL snapshot\",\n    \"expected\": \"reader stable until commit then sees writer\",\n    \"actual\": [\n      3,\n      3,\n      4\n    ],\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"writer contention\",\n    \"expected\": \"second writer bounded lock failure\",\n    \"actual\": {\n      \"locked\": true,\n      \"seconds\": 0.059\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"report metadata failure cleanup\",\n    \"expected\": \"exception and no orphan new file\",\n    \"actual\": {\n      \"failed\": true,\n      \"no_new_file\": true\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"malformed module report\",\n    \"expected\": \"controlled rejection, no output file\",\n    \"actual\": {\n      \"http\": 400,\n      \"no_new_file\": true\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"malformed module scan display\",\n    \"expected\": \"graceful record-level display\",\n    \"actual\": 500,\n    \"status\": \"FAIL\"\n  },\n  {\n    \"case\": \"absent findings comparison\",\n    \"expected\": \"5 resolved groups with no-proof warning\",\n    \"actual\": {\n      \"resolved\": 5,\n      \"warning\": \"RESOLVED means absent from the later scan, not proof of remediation. All triage statuses participate in detection matching.\"\n    },\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"malformed solution comparison\",\n    \"expected\": \"controlled validation response (400)\",\n    \"actual\": 500,\n    \"status\": \"FAIL\"\n  },\n  {\n    \"case\": \"integrity\",\n    \"expected\": \"ok, no foreign key violations\",\n    \"actual\": [\n      \"ok\",\n      0\n    ],\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"connection teardown\",\n    \"expected\": \"connection closed\",\n    \"actual\": true,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"risk empty\",\n    \"expected\": 0,\n    \"actual\": 0,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"risk all severities\",\n    \"expected\": 31,\n    \"actual\": 31,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"risk ignored\",\n    \"expected\": 0,\n    \"actual\": 0,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"risk rounding tie\",\n    \"expected\": 38,\n    \"actual\": 38,\n    \"status\": \"PASS\"\n  },\n  {\n    \"case\": \"risk large\",\n    \"expected\": 100,\n    \"actual\": 100,\n    \"status\": \"PASS\"\n  }\n]\n",
+  "scripts": {
+    "phase07_tests.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nwith tempfile.TemporaryDirectory(prefix='phase07-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false',SENTINELSCAN_SEMGREP_ENABLED='false',SENTINELSCAN_CODEQL_ENABLED='false')\n for k in ('SENTINELSCAN_LLM_API_KEY','SENTINELSCAN_GITHUB_TOKEN'):os.environ.pop(k,None)\n from unittest.mock import patch\n names=['test_foundation','test_management','test_restart','test_end_to_end','test_unified_recommendation','test_llm_review']\n suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in names)\n suite.addTest(unittest.defaultTestLoader.loadTestsFromName('test_website_scanner.WebsiteTests.test_migration_preserves_existing_related_records'))\n start=time.monotonic()\n with patch('integrations.network._request_once',side_effect=AssertionError('External transport blocked by audit')):\n  r=unittest.TextTestRunner(verbosity=2).run(suite)\n Path('/tmp/phase07_tests_summary.json').write_text(json.dumps(dict(tests=r.testsRun,failures=len(r.failures),errors=len(r.errors),skipped=len(r.skipped),seconds=round(time.monotonic()-start,3),modules=names)))\n sys.exit(not r.wasSuccessful())\n",
+    "phase07_matrix.py": "import os,sys,tempfile,json,sqlite3,threading,time,csv,io\nfrom pathlib import Path\nfrom unittest.mock import patch\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nresults=[]\ndef record(name,expected,actual,passed):results.append(dict(case=name,expected=expected,actual=actual,status='PASS' if passed else 'FAIL'))\nwith tempfile.TemporaryDirectory(prefix='phase07-matrix-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false')\n from app import create_app\n from database import get_db\n from analysis.finding_engine import Finding,save_finding\n from analysis.risk_engine import calculate_risk\n from analysis.management import compare_scans,scan_metrics\n from reports.report_generator import generate_report,report_data\n app=create_app(dict(TESTING=True,REPORTS_DIR=str(Path(td)/'reports')));client=app.test_client();client.get('/')\n with client.session_transaction() as session:csrf=session['csrf_token']\n with app.app_context():\n  db=get_db();tables=[r[0] for r in db.execute(\"select name from sqlite_master where type='table'\")]\n  record('schema','14 tables, version4, foreign keys ON, WAL',[len(tables),db.execute('pragma user_version').fetchone()[0],db.execute('pragma foreign_keys').fetchone()[0],db.execute('pragma journal_mode').fetchone()[0]],len(tables)==14)\n  record('connection reuse','same object in app context',get_db() is db,get_db() is db)\n  try:\n   with db:\n    db.execute(\"insert into scans(scan_type,target) values ('Website','rollback-fixture')\")\n    raise RuntimeError()\n  except RuntimeError:pass\n  count=db.execute(\"select count(*) from scans where target='rollback-fixture'\").fetchone()[0];record('rollback','zero uncommitted rows',count,count==0)\n  with db:\n   sid=db.execute(\"insert into scans(scan_type,target,status,assessment_risk) values ('Website','https://audit.invalid/','Completed',31)\").lastrowid\n  for i,severity in enumerate(('Critical','High','Medium','Low','Informational')):\n   save_finding(db,sid,Finding(title=f'Fixture {severity} <script>x</script>',severity=severity,confidence='High',category='Audit',source='Website',location=f'https://audit.invalid/{i}',description='Unicode caf\u00e9 \u0928\u092e\u0938\u094d\u0924\u0947',evidence='password=\"SyntheticCredential-93283\"',impact='Review',recommendation='Use reviewed guidance'))\n  metrics=scan_metrics(db,db.execute('select * from scans where id=?',(sid,)).fetchone());record('severity distribution','one each, count5, risk31',dict(counts=metrics['counts'],count=metrics['finding_count'],risk=metrics['risk_score']),metrics['finding_count']==5 and metrics['risk_score']==31 and all(x==1 for x in metrics['counts'].values()))\n  for status in ('Completed','Failed'):\n   with db:empty=db.execute('insert into scans(scan_type,target,status) values (?,?,?)',('Website','https://empty.invalid/'+status,status)).lastrowid\n   for fmt in ('HTML','JSON','CSV'):\n    rid=generate_report(empty,fmt);r=client.get(f'/reports/{rid}/download');record('empty '+status+' '+fmt,'200 nonempty report',r.status_code,r.status_code==200 and bool(r.data));r.close()\n  for fmt in ('HTML','JSON','CSV'):\n   rid=generate_report(sid,fmt);r=client.get(f'/reports/{rid}/download');content=r.get_data(as_text=True);ok='SyntheticCredential-93283' not in content\n   if fmt=='JSON':ok=ok and len(json.loads(content)['findings'])==5 and json.loads(content)['scan']['risk_score']==31\n   if fmt=='HTML':ok=ok and '<script>x</script>' not in content and '&lt;script&gt;' in content\n   if fmt=='CSV':ok=ok and len([x for x in csv.DictReader(io.StringIO(content)) if x['record_type']=='finding'])==5\n   record('populated '+fmt,'5 saved findings, masked secret, format-safe output',dict(status=r.status_code,redacted='SyntheticCredential-93283' not in content),ok);r.close()\n  # Two connections: stable WAL read snapshot while another writer commits.\n  other=sqlite3.connect(app.config['DATABASE'],timeout=1);other.execute('pragma foreign_keys=ON')\n  db.execute('BEGIN');before=db.execute('select count(*) from scans').fetchone()[0]\n  with other:other.execute(\"insert into scans(scan_type,target,status) values ('Repository','audit/concurrent','Completed')\")\n  during=db.execute('select count(*) from scans').fetchone()[0];db.commit();after=db.execute('select count(*) from scans').fetchone()[0]\n  record('WAL snapshot','reader stable until commit then sees writer',[before,during,after],before==during and after==before+1)\n  db.execute('BEGIN IMMEDIATE');other.execute('pragma busy_timeout=50');start=time.monotonic()\n  try:\n   other.execute(\"insert into scans(scan_type,target) values ('Website','locked')\");locked=False\n  except sqlite3.OperationalError:locked=True\n  elapsed=time.monotonic()-start;db.rollback();other.rollback();other.close();record('writer contention','second writer bounded lock failure',dict(locked=locked,seconds=round(elapsed,3)),locked)\n  # Report file cleanup when metadata registration fails (temporary trigger only).\n  directory=Path(td)/'reports';before=set(directory.iterdir())\n  db.execute(\"CREATE TEMP TRIGGER reject_report BEFORE INSERT ON reports BEGIN SELECT RAISE(ABORT,'audit failure'); END;\")\n  try:generate_report(sid,'JSON');failed=False\n  except sqlite3.IntegrityError:failed=True\n  db.execute('DROP TRIGGER reject_report');db.commit()\n  record('report metadata failure cleanup','exception and no orphan new file',dict(failed=failed,no_new_file=set(directory.iterdir())==before),failed and set(directory.iterdir())==before)\n  # Invalid persisted JSON does not come from a normal successful serializer.\n  with db:mid=db.execute(\"insert into scan_modules(scan_id,name,status,data_json) values (?,'Malformed','Completed','{bad')\",(sid,)).lastrowid\n  before=set(directory.iterdir());r=client.post('/reports/generate',data=dict(csrf_token=csrf,scan_id=sid,format='JSON'))\n  record('malformed module report','controlled rejection, no output file',dict(http=r.status_code,no_new_file=set(directory.iterdir())==before),r.status_code==400 and set(directory.iterdir())==before)\n  record('malformed module scan display','graceful record-level display',client.get(f'/scans/{sid}').status_code,client.get(f'/scans/{sid}').status_code==200)\n  with db:db.execute('delete from scan_modules where id=?',(mid,));later=db.execute(\"insert into scans(scan_type,target,status) values ('Website','https://audit.invalid/','Completed')\").lastrowid\n  comparison=compare_scans(db,sid,later);record('absent findings comparison','5 resolved groups with no-proof warning',dict(resolved=len(comparison['resolved']),warning=comparison['limitations'][0]),len(comparison['resolved'])==5 and 'not proof' in comparison['limitations'][0])\n  fid=db.execute('select id from findings where scan_id=? limit 1',(sid,)).fetchone()[0]\n  with db:db.execute('insert or replace into finding_solutions values (?,?)',(fid,'[]'))\n  r=client.post('/comparisons',data=dict(csrf_token=csrf,baseline=sid,current=later));record('malformed solution comparison','controlled validation response (400)',r.status_code,r.status_code==400)\n  with db:db.execute('delete from finding_solutions where finding_id=?',(fid,))\n  record('integrity','ok, no foreign key violations',[db.execute('pragma integrity_check').fetchone()[0],len(db.execute('pragma foreign_key_check').fetchall())],db.execute('pragma integrity_check').fetchone()[0]=='ok' and not db.execute('pragma foreign_key_check').fetchall())\n # Closed request connection is not reusable.\n try:db.execute('select 1');closed=False\n except sqlite3.ProgrammingError:closed=True\n record('connection teardown','connection closed',closed,closed)\n for name,rows,expected in [('empty',[],0),('all severities',[dict(severity=x,status='Open') for x in ('Critical','High','Medium','Low','Informational')],31),('ignored',[dict(severity='Critical',status=x) for x in ('Resolved','Ignored','False Positive')],0),('rounding tie',[dict(severity='Low',status='Open')]*30,38),('large',[dict(severity='Critical',status='Open')]*10000,100)]:\n  actual=calculate_risk(rows);record('risk '+name,expected,actual,actual==expected)\n app.extensions['scan_manager'].shutdown()\nPath('/tmp/phase07_matrix.json').write_text(json.dumps(results,indent=2));print(json.dumps(results,indent=2))\n"
+  }
+}

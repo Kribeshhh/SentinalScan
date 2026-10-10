@@ -1,12 +1,13 @@
 import re
 from scanner.common import baseline, issue
-from scanner.sqli_scanner import matches
+from scanner.sqli_scanner import matches, error_text, error_signature_present
 
 
 def run(ctx):
     response = baseline(ctx)
     signatures = {'Python traceback':r'Traceback \(most recent call last\)', 'Java stack trace':r'(?m)^\s*at [\w.$]+\([\w.]+\.java:\d+\)', 'PHP verbose error':r'(?:Fatal error|Warning):.*(?:on line \d+)', 'ASP.NET exception':r'(?:Stack Trace:|Server Error in .*/.*Application)'}
-    detected = [name for name,pattern in signatures.items() if re.search(pattern,response.text)]
+    text = error_text(response.text)
+    detected = [name for name,pattern in signatures.items() if error_signature_present(pattern,text)]
     detected += sorted(matches(response.text))
     if detected:
         issue(ctx,'Verbose application error disclosure','Low','Information Disclosure','Observed error signatures: ' + ', '.join(detected) + '. Raw errors are not stored.','Disable debug output and return generic client-facing errors while logging details securely.','High')

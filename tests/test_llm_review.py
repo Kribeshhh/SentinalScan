@@ -1,3 +1,4 @@
+from tests.ollama_fixtures import transport, envelope
 """Provider boundary fixtures only: no paid requests or repository execution."""
 import json
 from pathlib import Path
@@ -9,15 +10,16 @@ from app import create_app
 from database import get_db
 from analysis.finding_engine import Finding,save_finding
 from analysis.llm_review import prepare,process,validate_response
+from analysis.ai_grounding import EXPLANATION, IMPACT, ACTION, FOLLOWUP
 from integrations.llm import review
 
 
 def response(**changes):
     original=changes.pop('original_code','');code=changes.pop('suggested_code','')
-    remediation=changes.pop('remediation','Review text-only rendering.')
-    result=dict(assessment='likely_valid',reason='Dynamic input reaches HTML.',
+    remediation=changes.pop('remediation',ACTION)
+    result=dict(assessment='likely_valid',reason=EXPLANATION,
         recommendation=dict(what_to_change=remediation,suggested_code_or_config=code,
-                            example_type='source_specific' if code else 'none',why='Avoid interpreting input as markup.',additional_actions=['Test intended rendering.']),
+                            example_type='source_specific' if code else 'none',why=IMPACT,additional_actions=[FOLLOWUP]),
         original_code=original,fix_confidence='medium')
     result.update(changes);return result
 
@@ -40,7 +42,11 @@ class LLMUnitTests(unittest.TestCase):
     def test_secret_finding_payload_is_synthetic_only(self):
         payload=prepare(finding(category='Secret Exposure',evidence='SuperSecret',title='SuperSecret'),dict(excerpt='custom="SuperSecret"',start_line=1,detected_line=1))
         self.assertNotIn('SuperSecret',json.dumps(payload));self.assertEqual(payload['snippet'],'password = "[REDACTED]"')
-        result=process(finding(category='Secret Exposure'),payload,response(original_code=payload['snippet'],suggested_code='password="fake"'))
+        from analysis.ai_grounding import statements
+        policy=statements(finding(category='Secret Exposure'))
+        reply=response(original_code=payload['snippet'],suggested_code='password="fake"',reason=policy['reason'][0])
+        reply['recommendation'].update(what_to_change=policy['what_to_change'][0],why=policy['why'][0])
+        result=process(finding(category='Secret Exposure'),payload,reply)
         self.assertEqual(result['suggested_code'],'')
 
     def test_strict_schema_and_limits(self):
@@ -66,25 +72,25 @@ class LLMUnitTests(unittest.TestCase):
         result=process(finding(),payload,response(original_code='unrelated',suggested_code='safe'))
         self.assertEqual(result['validation']['status'],'Failed');self.assertEqual(result['suggested_code'],'')
 
-    def test_transport_schema_refusal_timeout_and_missing_key(self):
-        config={'LLM_API_KEY':'test-provider-key','LLM_MODEL':'test-model'}
-        raw=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps(response())}}]}).encode()
-        with patch('integrations.llm.request',return_value=(200,{},raw)) as send:
+    def test_transport_schema_refusal_timeout_and_missing_model(self):
+        config={'LLM_ENABLED':True,'OLLAMA_MODEL':'test-model'}
+        raw=envelope(json.dumps(response()))
+        with patch('integrations.llm.request',side_effect=transport(200,raw)) as send:
             self.assertEqual(review({'snippet':'safe'},config),response())
             body=json.loads(send.call_args.kwargs['body'])
-            self.assertFalse(body['store']);self.assertTrue(body['response_format']['json_schema']['strict'])
-            self.assertNotIn(config['LLM_API_KEY'],json.dumps(body));self.assertNotIn('tools',body)
-        for raw in (b'bad',json.dumps({'choices':[{'finish_reason':'length','message':{}}]}).encode(),json.dumps({'choices':[{'finish_reason':'stop','message':{'refusal':'no'}}]}).encode()):
-            with patch('integrations.llm.request',return_value=(200,{},raw)),self.assertRaises((ValueError,KeyError)):review({},config)
+            self.assertFalse(body['stream']);self.assertFalse(body['format']['additionalProperties'])
+            self.assertNotIn('Authorization',json.dumps(body));self.assertNotIn('tools',body)
+        for raw in (b'bad',json.dumps({'done':True,'done_reason':'length','message':{}}).encode(),json.dumps({'done':True,'done_reason':'stop','message':{'role':'assistant','content':''}}).encode()):
+            with patch('integrations.llm.request',side_effect=transport(200,raw)),self.assertRaises((ValueError,KeyError)):review({},config)
         with patch('integrations.llm.request',side_effect=TimeoutError()),self.assertRaises(TimeoutError):review({},config)
-        with patch('integrations.llm.request') as send,self.assertRaises(ValueError):review({},dict(config,LLM_API_KEY=''))
+        with patch('integrations.llm.request') as send,self.assertRaises(ValueError):review({},dict(config,OLLAMA_MODEL=''))
         send.assert_not_called()
 
 
 class LLMRouteTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.calls=[]
-        def provider(payload,config):self.calls.append(payload);return response(reason='<script>bad()</script>')
+        def provider(payload,config):self.calls.append(payload);return response()
         self.app=create_app({'TESTING':True,'DATABASE':str(Path(self.tmp.name)/'test.db'),'LLM_ENABLED':True,'LLM_REVIEW_PROVIDER':provider})
         self.client=self.app.test_client()
         with self.app.app_context():
@@ -166,11 +172,21 @@ class LLMPipelineTests(unittest.TestCase):
         from tests.test_repository_phase4 import Provider, answer
         for enabled in (False, True):
             with self.subTest(enabled=enabled), tempfile.TemporaryDirectory() as directory:
-                provider=Provider(*[answer() for _ in range(40)])
+                class GroundedProvider(Provider):
+                    def review_finding(self,payload,config,**kwargs):
+                        value=super().review_finding(payload,config,**kwargs)
+                        policy=payload['supported_statements']
+                        value['reason']=policy['reason'][0]
+                        value['recommendation'].update(what_to_change=policy['what_to_change'][0],why=policy['why'][0])
+                        return value
+                provider=GroundedProvider(*[answer() for _ in range(40)])
                 calls=[]
                 def legacy(payload,config):
                     calls.append(payload)
-                    return response(remediation='Review this affected operation using its recorded context.')
+                    value=response();policy=payload['supported_statements']
+                    value['reason']=policy['reason'][0]
+                    value['recommendation'].update(what_to_change=policy['what_to_change'][0],why=policy['why'][0])
+                    return value
                 app=create_app(dict(TESTING=True,DATABASE=str(Path(directory)/'scan.db'),GITHUB_CLIENT_FACTORY=FixtureGitHub,
                     LLM_ENABLED=enabled,LLM_EVIDENCE_PROVIDER=provider,LLM_REVIEW_PROVIDER=legacy))
                 client=app.test_client();client.get('/')

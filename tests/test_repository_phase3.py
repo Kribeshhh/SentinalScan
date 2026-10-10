@@ -79,8 +79,8 @@ class Phase3Tests(unittest.TestCase):
         import_results(json.dumps(doc).encode(),ctx,engine)
 
     def test_three_engines_one_finding_provenance_report_and_escaping(self):
-        ctx=self.candidates('from flask import request\nq="SELECT "+request.args.get("q")\ncursor.execute(q)')
-        self.external(ctx);self.external(ctx,engine='CodeQL')
+        ctx=self.candidates('from flask import request\nimport sqlite3\ncursor=sqlite3.connect(":memory:").cursor()\nq="SELECT "+request.args.get("q")\ncursor.execute(q)')
+        self.external(ctx,line=5);self.external(ctx,line=5,engine='CodeQL')
         app=self.app()
         with app.app_context():
             db=get_db();sid=db.execute("INSERT INTO scans(scan_type,target,status) VALUES ('Repository','lab/evidence','Completed')").lastrowid
@@ -106,7 +106,16 @@ class Phase3Tests(unittest.TestCase):
             persist_candidates(db,sid,ctx,ctx['findings'])
             self.assertEqual(db.execute('SELECT count(*) FROM findings').fetchone()[0],2)
         ambiguous=self.candidates('q="SELECT "+request.args.get("q")\ncursor.execute(q); other.execute(q)')
-        _,key=review(ambiguous,ambiguous['findings'][0]);self.assertIsNone(key)
+        keys=[review(ambiguous,f)[1] for f in ambiguous['findings']]
+        self.assertEqual(len(keys),2)
+        self.assertNotIn(None,keys)
+        self.assertNotEqual(keys[0],keys[1])
+        # Without a precise column, same-line external evidence stays ambiguous.
+        finding=ambiguous['findings'][0]
+        context=json.loads(finding.context_json)
+        context['analysis'].pop('start_column')
+        _,key=review(ambiguous,replace(finding,context_json=json.dumps(context)))
+        self.assertIsNone(key)
 
     def test_line_movement_and_function_identity(self):
         source='def route():\n q="SELECT "+request.args.get("q")\n cursor.execute(q)'
@@ -154,7 +163,7 @@ def route():
         self.assertFalse(ContextRetriever(ctx).retrieve({'file':'a.py','start_line':1})['available'])
 
     def test_missing_evidence_downgrades_high_and_manual_rejection(self):
-        ctx=self.candidates('cursor.execute("SELECT "+request.args.get("q"))')
+        ctx=self.candidates('from flask import request\nimport sqlite3\ncursor=sqlite3.connect(":memory:").cursor()\ncursor.execute("SELECT "+request.args.get("q"))')
         ctx['paths']=[]
         f,_=review(ctx,ctx['findings'][0]);a=json.loads(f.context_json)['analysis']
         self.assertEqual(f.confidence,'Medium');self.assertEqual(a['verification_status'],'Needs Review')

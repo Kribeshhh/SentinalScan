@@ -1,0 +1,18 @@
+[
+  {
+    "case": "unrelated execute method FP",
+    "source": "class Display:\n def execute(self,value):\n  print(value)\ndisplay=Display()\ndisplay.execute(\"SELECT \"+request.args.get(\"q\"))",
+    "findings": []
+  },
+  {
+    "case": "unrelated request object source FP",
+    "source": "class Local:\n args={\"q\":\"1\"}\nrequest=Local()\neval(request.args.get(\"q\"))",
+    "findings": [
+      {
+        "title": "Dynamic Python code execution",
+        "confidence": "Medium",
+        "evidence": "Dynamic value; original input source unknown \u2192 request \u2192 local:1.args.get() transformation \u2192 eval. No protection recognized for this operation; static analysis does not prove exploitability."
+      }
+    ]
+  }
+]

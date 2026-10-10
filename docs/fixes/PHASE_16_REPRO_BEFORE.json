@@ -1,0 +1,64 @@
+{
+  "D06": {
+    "count": 1,
+    "findings": [
+      {
+        "title": "Dynamic Python code execution",
+        "location": "audit/fixture/a.py:1",
+        "severity": "Medium",
+        "confidence": "Medium",
+        "evidence": "Dynamic value; original input source unknown \u2192 request.args.get() transformation \u2192 eval. No protection recognized for this operation; static analysis does not prove exploitability.",
+        "fingerprint": "900dcd56d1a27e0d186a5f507c85ec2572399b0dd762b0f9edb8fb8dcbfa50c2"
+      }
+    ],
+    "saved_count": 1
+  },
+  "D07": {
+    "count": 1,
+    "findings": [
+      {
+        "title": "Potential sensitive HTML comment",
+        "location": "audit/fixture/index.html:1",
+        "severity": "Low",
+        "confidence": "Low",
+        "evidence": "An HTML comment mentions credentials or an authentication bypass. Comment contents are omitted.",
+        "fingerprint": "10b3aa233a54eb7c9e9abbe5a76a3f003bb75a72da77417f509ed6e26baf54df"
+      }
+    ]
+  },
+  "D08-doc": {
+    "count": 1,
+    "findings": [
+      {
+        "title": "Potential embedded credential",
+        "location": "audit/fixture/guide.md:2",
+        "severity": "High",
+        "confidence": "Low",
+        "evidence": "Potential embedded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+        "fingerprint": "1c7d342474c6d7c4b7427bdd1ac700e96f22ab2cee54a2f73938cbc38e35d093"
+      }
+    ]
+  },
+  "D09": {
+    "count": 0,
+    "findings": []
+  },
+  "D12": {
+    "count": 0,
+    "titles": [],
+    "observations": {
+      "resources": [
+        {
+          "path": "/uploads",
+          "status": 200,
+          "bytes": 32,
+          "truncated": false,
+          "possible_soft_404": true,
+          "content_type": "text/html"
+        }
+      ],
+      "soft_404_baseline_status": 200,
+      "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+    }
+  }
+}

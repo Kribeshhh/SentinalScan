@@ -1,0 +1,385 @@
+{
+  "summary": {
+    "tests": 89,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 10.521,
+    "modules": [
+      "test_foundation",
+      "test_management",
+      "test_end_to_end",
+      "test_read_only_product",
+      "test_website_scanner",
+      "test_source_scanner",
+      "test_browser_github",
+      "test_repository_url",
+      "test_unified_recommendation",
+      "test_finding_quality",
+      "test_hardening"
+    ]
+  },
+  "matrix": {
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/website-scan",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/repository-scan",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/findings",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/comparisons",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/risk-trends",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/static/js/app.js",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/static/css/style.css",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/99999",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/99999/status",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/findings/99999",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/comparisons/99999",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/99999/download",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/missing",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/findings/1/edit",
+        "expected": 404,
+        "actual": 404,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans?page=bad",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/findings?severity=Wrong",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports?scan_id=bad",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/risk-trends?scan_id=bad",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "POST",
+        "path": "/website-scan",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "POST",
+        "path": "/repository-scan",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "POST",
+        "path": "/comparisons",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "POST",
+        "path": "/reports/generate",
+        "expected": 400,
+        "actual": 400,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/1",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/1/status",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/2",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/2/status",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/3",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/3/status",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/4",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/scans/4/status",
+        "expected": 200,
+        "actual": 200,
+        "passed": true
+      },
+      {
+        "method": "GET",
+        "path": "/",
+        "expected": 500,
+        "actual": 500,
+        "passed": true
+      }
+    ],
+    "states": [
+      {
+        "status": "Queued",
+        "api": {
+          "modules": [
+            {
+              "error": "Fixture coverage incomplete",
+              "name": "Fixture module",
+              "status": "Partial"
+            }
+          ],
+          "progress": 0,
+          "status": "Queued"
+        },
+        "polling_markup": true,
+        "progress_element": true,
+        "coverage_warning": true,
+        "failed_warning": false
+      },
+      {
+        "status": "Running",
+        "api": {
+          "modules": [
+            {
+              "error": "Fixture coverage incomplete",
+              "name": "Fixture module",
+              "status": "Partial"
+            }
+          ],
+          "progress": 42,
+          "status": "Running"
+        },
+        "polling_markup": true,
+        "progress_element": true,
+        "coverage_warning": true,
+        "failed_warning": false
+      },
+      {
+        "status": "Completed",
+        "api": {
+          "modules": [
+            {
+              "error": "Fixture coverage incomplete",
+              "name": "Fixture module",
+              "status": "Partial"
+            }
+          ],
+          "progress": 100,
+          "status": "Completed"
+        },
+        "polling_markup": false,
+        "progress_element": true,
+        "coverage_warning": true,
+        "failed_warning": false
+      },
+      {
+        "status": "Failed",
+        "api": {
+          "modules": [
+            {
+              "error": "Fixture coverage incomplete",
+              "name": "Fixture module",
+              "status": "Partial"
+            }
+          ],
+          "progress": 100,
+          "status": "Failed"
+        },
+        "polling_markup": false,
+        "progress_element": false,
+        "coverage_warning": true,
+        "failed_warning": true
+      }
+    ],
+    "navigation": [
+      {
+        "path": "/",
+        "status": 200
+      },
+      {
+        "path": "/website-scan",
+        "status": 200
+      },
+      {
+        "path": "/repository-scan",
+        "status": 200
+      },
+      {
+        "path": "/findings",
+        "status": 200
+      },
+      {
+        "path": "/scans",
+        "status": 200
+      },
+      {
+        "path": "/comparisons",
+        "status": 200
+      },
+      {
+        "path": "/risk-trends",
+        "status": 200
+      },
+      {
+        "path": "/reports",
+        "status": 200
+      }
+    ],
+    "empty_state": true,
+    "dashboard_rows": 4,
+    "dashboard_metrics": [
+      "Total scans \u25eb 4 All recorded assessments",
+      "Website scans \u25ce 0 Web application assessments",
+      "Repository scans \u2318 4 Source code assessments",
+      "Unresolved findings \u25c7 0 Findings with Open status"
+    ]
+  },
+  "log": "test_csrf_status_update_and_validation (test_foundation.FoundationTests.test_csrf_status_update_and_validation) ... ok\ntest_navigation_empty_database_and_headers (test_foundation.FoundationTests.test_navigation_empty_database_and_headers) ... ok\ntest_pagination_and_report_records (test_foundation.FoundationTests.test_pagination_and_report_records) ... ok\ntest_persistence_new_app_instance (test_foundation.FoundationTests.test_persistence_new_app_instance) ... ok\ntest_real_data_escaping_filter_and_risk (test_foundation.FoundationTests.test_real_data_escaping_filter_and_risk) ... ok\ntest_risk_weights_and_bounds (test_foundation.FoundationTests.test_risk_weights_and_bounds) ... ok\ntest_schema_constraints_and_fingerprint (test_foundation.FoundationTests.test_schema_constraints_and_fingerprint) ... ok\ntest_comparison_rejects_wrong_target_running_and_reverse (test_management.ManagementTests.test_comparison_rejects_wrong_target_running_and_reverse) ... ok\ntest_csv_formula_html_escaping_and_legacy_secret_masking (test_management.ManagementTests.test_csv_formula_html_escaping_and_legacy_secret_masking) ... ok\ntest_filtering_search_and_history_counts (test_management.ManagementTests.test_filtering_search_and_history_counts) ... ok\ntest_real_scans_comparison_status_and_trends (test_management.ManagementTests.test_real_scans_comparison_status_and_trends) ... ok\ntest_report_snapshot_persistence_and_path_security (test_management.ManagementTests.test_report_snapshot_persistence_and_path_security) ... ok\ntest_source_fingerprint_ignores_ids_and_line_shifts (test_management.ManagementTests.test_source_fingerprint_ignores_ids_and_line_shifts) ... ok\ntest_website_repository_reports_redaction_and_downloads (test_management.ManagementTests.test_website_repository_reports_redaction_and_downloads) ... ok\ntest_full_http_workflow_and_process_restart (test_end_to_end.EndToEndTests.test_full_http_workflow_and_process_restart) ... ok\ntest_github_client_is_read_only (test_read_only_product.ReadOnlyProductTests.test_github_client_is_read_only) ... ok\ntest_removed_routes_and_preserved_historical_tables (test_read_only_product.ReadOnlyProductTests.test_removed_routes_and_preserved_historical_tables) ... ok\ntest_https_valid_and_untrusted_certificate (test_website_scanner.WebsiteTests.test_https_valid_and_untrusted_certificate) ... ok\ntest_localhost_real_assessment_pipeline (test_website_scanner.WebsiteTests.test_localhost_real_assessment_pipeline) ... ok\ntest_migration_preserves_existing_related_records (test_website_scanner.WebsiteTests.test_migration_preserves_existing_related_records) ... ok\ntest_mixed_dns_answers_rejected_before_connection (test_website_scanner.WebsiteTests.test_mixed_dns_answers_rejected_before_connection) ... ok\ntest_one_module_failure_does_not_abort_scan (test_website_scanner.WebsiteTests.test_one_module_failure_does_not_abort_scan) ... ok\ntest_pinning_redirect_and_limits (test_website_scanner.WebsiteTests.test_pinning_redirect_and_limits) ... ok\ntest_plain_text_reflection_is_not_xss_or_sqli (test_website_scanner.WebsiteTests.test_plain_text_reflection_is_not_xss_or_sqli) ... ok\ntest_restart_marks_interrupted_jobs_failed (test_website_scanner.WebsiteTests.test_restart_marks_interrupted_jobs_failed) ... ok\ntest_validation_and_authorization (test_website_scanner.WebsiteTests.test_validation_and_authorization) ... ok\ntest_reject_duplicate_paths_and_zip_bomb (test_source_scanner.ArchiveSafetyTests.test_reject_duplicate_paths_and_zip_bomb) ... ok\ntest_reject_malicious_archives_and_skip_exclusions (test_source_scanner.ArchiveSafetyTests.test_reject_malicious_archives_and_skip_exclusions) ... ok\ntest_access_errors_distinguish_sso_and_rate_limits_without_leaking (test_source_scanner.GitHubTransportTests.test_access_errors_distinguish_sso_and_rate_limits_without_leaking) ... ok\ntest_authenticated_owner_listing_includes_private_and_preserves_pagination (test_source_scanner.GitHubTransportTests.test_authenticated_owner_listing_includes_private_and_preserves_pagination) ... ok\ntest_authentication_errors_are_fixed_messages (test_source_scanner.GitHubTransportTests.test_authentication_errors_are_fixed_messages) ... ok\ntest_bad_redirects_and_errors_do_not_leak (test_source_scanner.GitHubTransportTests.test_bad_redirects_and_errors_do_not_leak) ... ok\ntest_token_never_forwarded_to_archive_host (test_source_scanner.GitHubTransportTests.test_token_never_forwarded_to_archive_host) ... ok\ntest_build_hooks_are_only_read_as_text (test_source_scanner.NonExecutionTests.test_build_hooks_are_only_read_as_text) ... ok\ntest_context_reduces_code_false_positives (test_source_scanner.SourceScannerTests.test_context_reduces_code_false_positives) ... ok\ntest_dependency_vulnerability_and_outage (test_source_scanner.SourceScannerTests.test_dependency_vulnerability_and_outage) ... ok\ntest_github_connection_keeps_token_server_side (test_source_scanner.SourceScannerTests.test_github_connection_keeps_token_server_side) ... ok\ntest_optional_tool_failure_preserves_custom_scan (test_source_scanner.SourceScannerTests.test_optional_tool_failure_preserves_custom_scan) ... ok\ntest_osv_failure_does_not_fail_repository (test_source_scanner.SourceScannerTests.test_osv_failure_does_not_fail_repository) ... ok\ntest_repository_pipeline_and_secret_redaction (test_source_scanner.SourceScannerTests.test_repository_pipeline_and_secret_redaction) ... ok\ntest_secret_placeholders_and_export_redaction (test_source_scanner.SourceScannerTests.test_secret_placeholders_and_export_redaction) ... ok\ntest_submission_validation_and_csrf (test_source_scanner.SourceScannerTests.test_submission_validation_and_csrf) ... ok\ntest_access_diagnostics_preserve_specific_errors (test_browser_github.BrowserGitHubTests.test_access_diagnostics_preserve_specific_errors) ... ok\ntest_browser_connect_scan_disconnect_without_environment (test_browser_github.BrowserGitHubTests.test_browser_connect_scan_disconnect_without_environment) ... ok\ntest_csrf_remote_http_and_browser_isolation (test_browser_github.BrowserGitHubTests.test_csrf_remote_http_and_browser_isolation) ... ok\ntest_filtered_empty_page_keeps_next_navigation (test_browser_github.BrowserGitHubTests.test_filtered_empty_page_keeps_next_navigation) ... ok\ntest_invalid_or_rejected_token_is_not_retained_or_echoed (test_browser_github.BrowserGitHubTests.test_invalid_or_rejected_token_is_not_retained_or_echoed) ... ok\ntest_reconnect_preserves_repository_and_distinguishes_access_stages (test_browser_github.BrowserGitHubTests.test_reconnect_preserves_repository_and_distinguishes_access_stages) ... ok\ntest_restart_expires_connection_even_with_signed_session_cookie (test_browser_github.BrowserGitHubTests.test_restart_expires_connection_even_with_signed_session_cookie) ... ok\ntest_store_is_bounded_and_reconnect_rotates_handle (test_browser_github.BrowserGitHubTests.test_store_is_bounded_and_reconnect_rotates_handle) ... ok\ntest_open_url_and_scan_with_existing_authorization (test_repository_url.RepositoryURLTests.test_open_url_and_scan_with_existing_authorization) ... ok\ntest_url_validation (test_repository_url.RepositoryURLTests.test_url_validation) ... ok\ntest_failed_unvalidated_and_malformed_review_fall_back (test_unified_recommendation.ComposerTests.test_failed_unvalidated_and_malformed_review_fall_back) ... ok\ntest_secret_yaml_and_false_positive_keep_safe_policy (test_unified_recommendation.ComposerTests.test_secret_yaml_and_false_positive_keep_safe_policy) ... ok\ntest_source_fix_off_on_and_dedup (test_unified_recommendation.ComposerTests.test_source_fix_off_on_and_dedup) ... ok\ntest_website_backend_code_never_composes (test_unified_recommendation.ComposerTests.test_website_backend_code_never_composes) ... ok\ntest_dependency_recorded_fixed_release_and_unknown_placeholder (test_unified_recommendation.ExamplePatternTests.test_dependency_recorded_fixed_release_and_unknown_placeholder) ... ok\ntest_overlapping_ranges_do_not_claim_fixed_release (test_unified_recommendation.ExamplePatternTests.test_overlapping_ranges_do_not_claim_fixed_release) ... ok\ntest_unknown_source_gets_example_not_replacement (test_unified_recommendation.ExamplePatternTests.test_unknown_source_gets_example_not_replacement) ... ok\ntest_website_generic_secret_redaction_and_operational_fallback (test_unified_recommendation.ExamplePatternTests.test_website_generic_secret_redaction_and_operational_fallback) ... ok\ntest_composed_text_escaped_and_does_not_change_detection (test_unified_recommendation.UnifiedPageTests.test_composed_text_escaped_and_does_not_change_detection) ... ok\ntest_failed_refresh_uses_base_without_deleting_previous_review (test_unified_recommendation.UnifiedPageTests.test_failed_refresh_uses_base_without_deleting_previous_review) ... ok\ntest_five_required_display_states (test_unified_recommendation.UnifiedPageTests.test_five_required_display_states) ... ok\ntest_reports_export_final_only_and_respect_disabled (test_unified_recommendation.UnifiedPageTests.test_reports_export_final_only_and_respect_disabled) ... ok\ntest_action_precedes_collapsed_evidence_and_checklist (test_finding_quality.FindingQualityPageTests.test_action_precedes_collapsed_evidence_and_checklist) ... ok\ntest_actual_source_and_validated_fix_render_together (test_finding_quality.FindingQualityPageTests.test_actual_source_and_validated_fix_render_together) ... ok\ntest_dependency_example_inside_existing_card_for_historical_snapshot (test_finding_quality.FindingQualityPageTests.test_dependency_example_inside_existing_card_for_historical_snapshot) ... ok\ntest_dependency_pair_reads_retained_line_without_reconstructing_old_code (test_finding_quality.FindingQualityPageTests.test_dependency_pair_reads_retained_line_without_reconstructing_old_code) ... ok\ntest_dependency_pair_requires_retained_entry_and_supported_fixed_version (test_finding_quality.FindingQualityPageTests.test_dependency_pair_requires_retained_entry_and_supported_fixed_version) ... ok\ntest_no_pair_for_website_unmatched_source_or_secret (test_finding_quality.FindingQualityPageTests.test_no_pair_for_website_unmatched_source_or_secret) ... ok\ntest_secret_rotation_not_hidden_in_disclosure (test_finding_quality.FindingQualityPageTests.test_secret_rotation_not_hidden_in_disclosure) ... ok\ntest_solution_is_inside_recommendation_once_and_escaped (test_finding_quality.FindingQualityPageTests.test_solution_is_inside_recommendation_once_and_escaped) ... ok\ntest_static_validation_label_is_inside_recommendation (test_finding_quality.FindingQualityPageTests.test_static_validation_label_is_inside_recommendation) ... ok\ntest_structured_flow_and_unknown_source_are_honest (test_finding_quality.FindingQualityPageTests.test_structured_flow_and_unknown_source_are_honest) ... ok\ntest_unknown_solution_and_redacted_historical_secret (test_finding_quality.FindingQualityPageTests.test_unknown_solution_and_redacted_historical_secret) ... ok\ntest_checksum_does_not_get_password_recipe (test_finding_quality.RecommendationPolicyTests.test_checksum_does_not_get_password_recipe) ... ok\ntest_old_snapshot_policy_and_unknown_rule (test_finding_quality.RecommendationPolicyTests.test_old_snapshot_policy_and_unknown_rule) ... ok\ntest_secret_language_and_runtime_uncertainty (test_finding_quality.RecommendationPolicyTests.test_secret_language_and_runtime_uncertainty) ... ok\ntest_source_match_and_context_metadata (test_finding_quality.RecommendationPolicyTests.test_source_match_and_context_metadata) ... ok\ntest_unknown_database_and_command_do_not_invent_replacement (test_finding_quality.RecommendationPolicyTests.test_unknown_database_and_command_do_not_invent_replacement) ... ok\ntest_archive_rejects_preexisting_destination (test_hardening.HardeningTests.test_archive_rejects_preexisting_destination) ... ok\ntest_dashboard_trend_and_report_selection (test_hardening.HardeningTests.test_dashboard_trend_and_report_selection) ... ok\ntest_dast_persistence_masks_credentials_and_form_errors (test_hardening.HardeningTests.test_dast_persistence_masks_credentials_and_form_errors) ... ok\ntest_id_bounds_upload_rejection_and_request_limits (test_hardening.HardeningTests.test_id_bounds_upload_rejection_and_request_limits) ... ok\ntest_malformed_nmap_falls_back_without_shell (test_hardening.HardeningTests.test_malformed_nmap_falls_back_without_shell) ... ok\ntest_repository_module_failure_cleanup_and_queue_limit (test_hardening.HardeningTests.test_repository_module_failure_cleanup_and_queue_limit) ... ok\ntest_retrieval_failure_cleans_temporary_files (test_hardening.HardeningTests.test_retrieval_failure_cleans_temporary_files) ... ok\ntest_safe_error_response_and_logs (test_hardening.HardeningTests.test_safe_error_response_and_logs) ... ok\ntest_session_key_symlink_short_key_and_permissions (test_hardening.HardeningTests.test_session_key_symlink_short_key_and_permissions) ... ok\n\n----------------------------------------------------------------------\nRan 89 tests in 10.521s\n\nOK\n",
+  "scripts": {
+    "phase06_tests.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nwith tempfile.TemporaryDirectory(prefix='phase06-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false',SENTINELSCAN_SEMGREP_ENABLED='false',SENTINELSCAN_CODEQL_ENABLED='false')\n for k in ('SENTINELSCAN_LLM_API_KEY','SENTINELSCAN_GITHUB_TOKEN'):os.environ.pop(k,None)\n from unittest.mock import patch\n names=['test_foundation','test_management','test_end_to_end','test_read_only_product','test_website_scanner','test_source_scanner','test_browser_github','test_repository_url','test_unified_recommendation','test_finding_quality','test_hardening']\n suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in names);start=time.monotonic()\n with patch('integrations.network._request_once',side_effect=AssertionError('External transport blocked by audit')):\n  result=unittest.TextTestRunner(verbosity=2).run(suite)\n Path('/tmp/phase06_tests_summary.json').write_text(json.dumps(dict(tests=result.testsRun,failures=len(result.failures),errors=len(result.errors),skipped=len(result.skipped),seconds=round(time.monotonic()-start,3),modules=names)))\n sys.exit(not result.wasSuccessful())\n",
+    "phase06_matrix.py": "import os,sys,tempfile,json\nfrom pathlib import Path\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nfrom unittest.mock import patch\nfrom bs4 import BeautifulSoup\nrows=[]\nwith tempfile.TemporaryDirectory(prefix='phase06-matrix-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false')\n from app import create_app\n from database import get_db\n app=create_app(dict(TESTING=True,REPORTS_DIR=str(Path(td)/'reports')));c=app.test_client()\n def check(path,expected=200,**kw):\n  r=c.get(path,**kw);rows.append(dict(method='GET',path=path,expected=expected,actual=r.status_code,passed=r.status_code==expected));return r\n for p in ('/','/website-scan','/repository-scan','/scans','/findings','/reports','/comparisons','/risk-trends','/static/js/app.js','/static/css/style.css'):check(p)\n empty=BeautifulSoup(c.get('/').data,'html.parser');assert 'No scans recorded' in empty.get_text();assert not empty.select('.chart-point')\n nav=[]\n for a in empty.select('nav a[href]'):\n  p=a['href'];nav.append(dict(path=p,status=c.get(p).status_code))\n with c.session_transaction() as s:csrf=s['csrf_token']\n for p in ('/scans/99999','/scans/99999/status','/findings/99999','/comparisons/99999','/reports/99999/download','/missing','/findings/1/edit'):check(p,404)\n for p in ('/scans?page=bad','/findings?severity=Wrong','/reports?scan_id=bad','/risk-trends?scan_id=bad'):check(p,400)\n for p,data in [('/website-scan',dict(action='start',url='file:///tmp/test',authorized='yes')),('/repository-scan',dict(action='start',repository='not a repo',authorized='yes')),('/comparisons',dict(baseline='bad',current='1')),('/reports/generate',dict(scan_id='1',format='PDF'))]:\n  r=c.post(p,data=dict(data,csrf_token=csrf));rows.append(dict(method='POST',path=p,expected=400,actual=r.status_code,passed=r.status_code==400))\n states=[]\n with app.app_context():\n  db=get_db()\n  for status,progress in [('Queued',0),('Running',42),('Completed',100),('Failed',100)]:\n   with db:\n    sid=db.execute('insert into scans(scan_type,target,status,progress,error) values (?,?,?,?,?)',('Repository','audit/fixture @ main',status,progress,'Fixture failure' if status=='Failed' else None)).lastrowid\n    db.execute('insert into scan_modules(scan_id,name,status,error) values (?,?,?,?)',(sid,'Fixture module','Partial','Fixture coverage incomplete'))\n   page=check('/scans/'+str(sid));soup=BeautifulSoup(page.data,'html.parser');api=check('/scans/'+str(sid)+'/status').get_json()\n   states.append(dict(status=status,api=api,polling_markup=bool(soup.select('[data-scan-status-url]')),progress_element=bool(soup.select('#scan-progress')),coverage_warning='module(s) failed' in soup.get_text(),failed_warning='Zero findings do not indicate a clean assessment' in soup.get_text()))\n  # Dashboard must reflect actual persisted rows, including the state fixtures.\n  soup=BeautifulSoup(c.get('/').data,'html.parser')\n  metrics=[x.get_text(' ',strip=True) for x in soup.select('.metric')]\n  dashboard_count=db.execute('select count(*) from scans').fetchone()[0]\n with patch('app.risk_trend',side_effect=RuntimeError('PRIVATE_AUDIT_ERROR')):\n  r=check('/',500);assert b'PRIVATE_AUDIT_ERROR' not in r.data\n app.extensions['scan_manager'].shutdown()\nPath('/tmp/phase06_matrix.json').write_text(json.dumps(dict(routes=rows,states=states,navigation=nav,empty_state=True,dashboard_rows=dashboard_count,dashboard_metrics=metrics),indent=2))\nprint(json.dumps(dict(route_checks=len(rows),failed=[x for x in rows if not x['passed']],states=states,navigation=nav,dashboard_metrics=metrics),indent=2))\n"
+  }
+}

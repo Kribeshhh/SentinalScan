@@ -7,6 +7,7 @@ import re
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 from analysis.risk_engine import calculate_risk,SEVERITY_WEIGHTS
 from analysis.redaction import scrub
+from analysis.stored_data import object_json, logical_fingerprint
 
 
 def duration(scan):
@@ -73,7 +74,7 @@ def compare_scans(db,baseline_id,current_id):
         for row in db.execute('SELECT * FROM findings WHERE scan_id=? ORDER BY id',(scan_id,)):
             finding=dict(row)
             saved=db.execute('SELECT data_json FROM finding_solutions WHERE finding_id=?',(finding['id'],)).fetchone()
-            logical=json.loads(saved[0]).get('finding_context',{}).get('analysis',{}).get('logical_fingerprint') if saved else None
+            logical=logical_fingerprint(saved[0]) if saved else None
             loaded[scan_id].append((finding,logical))
     # Preserve legacy matching for any rule/file family with missing new evidence.
     legacy_families={comparison_fingerprint(f) for rows in loaded.values() for f,logical in rows if not logical}
@@ -92,7 +93,8 @@ def compare_scans(db,baseline_id,current_id):
               'New supported repository findings use semantic operation/scope identities without line numbers. Families missing that evidence use legacy title/file grouping; repeated identical operations may remain one comparison group.',
               'Website query values are redacted; target identity compares scheme, host, port, path and query parameter names.']
     for scan in (previous,current):
-        modules=db.execute('SELECT name,status FROM scan_modules WHERE scan_id=?',(scan['id'],)).fetchall()
+        modules=db.execute('SELECT name,status,data_json FROM scan_modules WHERE scan_id=?',(scan['id'],)).fetchall()
+        for module in modules:object_json(module['data_json'])
         if not modules or any(row['status']!='Completed' for row in modules):
             warnings.append(f"Scan {scan['id']} has missing, failed, partial or skipped module coverage. Absence can reflect incomplete coverage.")
     if previous['options_json']!=current['options_json']:

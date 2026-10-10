@@ -18,6 +18,7 @@ from analysis.management import scan_metrics, risk_trend
 from analysis.validation import record_id
 from analysis.redaction import redact_text
 from analysis.solution_engine import solution_for
+from analysis.stored_data import object_json, StoredDataError
 
 
 def create_app(test_config=None):
@@ -121,10 +122,14 @@ def create_app(test_config=None):
         db = get_db()
         modules = [dict(row) for row in db.execute("SELECT * FROM scan_modules WHERE scan_id=? ORDER BY id", (scan_id,))]
         for module in modules:
-            module["formatted_data"] = json.dumps(json.loads(module["data_json"]), indent=2, ensure_ascii=False)
+            try:
+                module["formatted_data"] = json.dumps(object_json(module["data_json"]), indent=2, ensure_ascii=False)
+            except StoredDataError:
+                module["data_unavailable"] = True
+                module["formatted_data"] = None
         rows = db.execute("SELECT * FROM findings WHERE scan_id=? ORDER BY CASE severity WHEN 'Critical' THEN 0 WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END, id", (scan_id,)).fetchall()
         return render_template("scan_detail.html", title="Scan summary", scan=scan, modules=modules, findings=rows,
-                               risk=calculate_risk(rows), warnings=sum(m["status"] in ("Failed", "Skipped", "Partial") for m in modules))
+                               risk=calculate_risk(rows), warnings=sum(m.get("data_unavailable",False) or m["status"] in ("Failed", "Skipped", "Partial") for m in modules))
 
     @app.get("/scans/<int:scan_id>/status")
     def scan_status(scan_id):

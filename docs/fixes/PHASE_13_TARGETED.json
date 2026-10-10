@@ -1,0 +1,77 @@
+{
+  "scope": "Supplemental four-fixture SQL identity regression set, not the frozen benchmark",
+  "cases": [
+    {
+      "name": "D05 original display",
+      "expected": false,
+      "source": "class Display:\n def execute(self,value):\n  print(value)\ndisplay=Display()\ndisplay.execute(\"SELECT \"+request.args.get(\"q\"))",
+      "before": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "confidence": "High",
+          "evidence": "Recognized input request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability."
+        }
+      ],
+      "after": []
+    },
+    {
+      "name": "Display with real Flask input",
+      "expected": false,
+      "source": "from flask import request\nclass Display:\n def execute(self,value):\n  print(value)\ndisplay=Display()\ndisplay.execute(\"SELECT \"+request.args.get(\"q\"))",
+      "before": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "confidence": "High",
+          "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability."
+        }
+      ],
+      "after": []
+    },
+    {
+      "name": "Real sqlite SQL construction",
+      "expected": true,
+      "source": "from flask import request\nimport sqlite3\ncursor=sqlite3.connect(\":memory:\").cursor()\ncursor.execute(\"SELECT \"+request.args.get(\"q\"))",
+      "before": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "confidence": "High",
+          "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability."
+        }
+      ],
+      "after": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "confidence": "High",
+          "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability."
+        }
+      ]
+    },
+    {
+      "name": "Parameterized sqlite query",
+      "expected": false,
+      "source": "from flask import request\nimport sqlite3\ncursor=sqlite3.connect(\":memory:\").cursor()\ncursor.execute(\"SELECT ?\",(request.args.get(\"q\"),))",
+      "before": [],
+      "after": []
+    }
+  ],
+  "metrics": {
+    "before": {
+      "TP": 1,
+      "FP": 2,
+      "TN": 1,
+      "FN": 0,
+      "precision": 0.3333333333333333,
+      "recall": 1.0,
+      "f1": 0.5
+    },
+    "after": {
+      "TP": 1,
+      "FP": 0,
+      "TN": 3,
+      "FN": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  }
+}

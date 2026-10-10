@@ -1,4 +1,24 @@
+import re
 from scanner.common import baseline, issue
+
+
+def framing_protected(csp, frame):
+    policies = []
+    for policy in csp.split(','):
+        for directive in policy.split(';'):
+            tokens = directive.strip().lower().split()
+            if not tokens or tokens[0] != 'frame-ancestors':
+                continue
+            sources = tokens[1:]
+            # The first occurrence of a directive wins. An enforced CSP framing
+            # directive supersedes XFO; bare wildcards/schemes do not constrain it.
+            restrictive = bool(sources) and all(
+                source in ("'self'", "'none'") or re.fullmatch(
+                    r'(?:https?://)?(?:\*\.)?[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?(?::(?:[0-9]+|\*))?(?:/[^\s;]*)?', source)
+                for source in sources)
+            policies.append(restrictive)
+            break
+    return any(policies) if policies else frame in ('DENY', 'SAMEORIGIN')
 
 
 def run(ctx):
@@ -23,8 +43,9 @@ def run(ctx):
     if response.header('X-Content-Type-Options') and response.header('X-Content-Type-Options').lower().strip() != 'nosniff':
         issue(ctx,'Invalid MIME sniffing protection','Low','Security Headers','X-Content-Type-Options is not nosniff.','Set X-Content-Type-Options: nosniff.','High')
     frame = response.header('X-Frame-Options').upper().strip()
-    if frame not in ('DENY','SAMEORIGIN') and 'frame-ancestors' not in csp:
-        issue(ctx,'Missing or invalid framing protection','Low','Security Headers','Neither a valid X-Frame-Options value nor CSP frame-ancestors was observed.','Set CSP frame-ancestors and optionally X-Frame-Options to restrict embedding.','High')
+    protected = framing_protected(csp, frame)
+    if not protected:
+        issue(ctx,'Missing or invalid framing protection','Low','Security Headers','No restrictive framing policy was observed; an enforced CSP frame-ancestors directive takes precedence over X-Frame-Options.','Set CSP frame-ancestors and optionally X-Frame-Options to restrict embedding.','High')
     if response.header('Referrer-Policy').lower().strip() == 'unsafe-url':
         issue(ctx,'Permissive Referrer-Policy','Low','Security Headers','Referrer-Policy uses unsafe-url.','Use strict-origin-when-cross-origin or no-referrer.','High')
     if response.url.startswith('https:'):
@@ -33,4 +54,4 @@ def run(ctx):
         match = re.search(r'(?i)max-age\s*=\s*(\d+)', hsts)
         if not match or int(match.group(1)) == 0:
             issue(ctx,'Missing or disabled HSTS','Low','Security Headers','HTTPS response lacks an active HSTS max-age.','Enable HSTS after confirming HTTPS works for the intended scope.','High')
-    return {'headers_present':checked, 'framing_protection':frame in ('DENY','SAMEORIGIN') or 'frame-ancestors' in csp, 'hsts_applicable':response.url.startswith('https:')}
+    return {'headers_present':checked, 'framing_protection':protected, 'hsts_applicable':response.url.startswith('https:')}

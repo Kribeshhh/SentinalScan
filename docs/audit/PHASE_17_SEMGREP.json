@@ -1,0 +1,95 @@
+{
+  "version": "1.179.0",
+  "runs": [
+    {
+      "language": "python",
+      "seconds": 1.986,
+      "result": {
+        "candidates": 1,
+        "rejected_results": 0,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "title": "Semgrep candidate: sentinelscan.python.flask-sql-flow",
+          "location": "audit/python/positive.py:7",
+          "severity": "High",
+          "confidence": "Low",
+          "evidence": "Semgrep rule sentinelscan.python.flask-sql-flow reported a static candidate at line 7. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability."
+        }
+      ],
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Cellar/semgrep/1.179.0/libexec/bin/semgrep",
+            "scan",
+            "--config",
+            "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/scanner/engines/semgrep_rules.yml",
+            "--sarif",
+            "--output",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-l_08_ipf/result.sarif",
+            "--dataflow-traces",
+            "--metrics=off",
+            "--disable-version-check",
+            "--no-rewrite-rule-ids",
+            "--disable-nosem",
+            "--no-git-ignore",
+            "--jobs=1",
+            "--max-memory=512",
+            "--timeout=5",
+            "--max-target-bytes=524288",
+            "/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase17-semgrep-tzlruph1"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-l_08_ipf",
+          "seconds_limit": 30
+        }
+      ],
+      "cleaned": true
+    },
+    {
+      "language": "javascript",
+      "seconds": 1.254,
+      "result": {
+        "candidates": 1,
+        "rejected_results": 0,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "title": "Semgrep candidate: sentinelscan.javascript.dom-flow",
+          "location": "audit/javascript/positive.js:2",
+          "severity": "Medium",
+          "confidence": "Low",
+          "evidence": "Semgrep rule sentinelscan.javascript.dom-flow reported a static candidate at line 2. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability."
+        }
+      ],
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Cellar/semgrep/1.179.0/libexec/bin/semgrep",
+            "scan",
+            "--config",
+            "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/scanner/engines/semgrep_rules.yml",
+            "--sarif",
+            "--output",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-w_ryzcsk/result.sarif",
+            "--dataflow-traces",
+            "--metrics=off",
+            "--disable-version-check",
+            "--no-rewrite-rule-ids",
+            "--disable-nosem",
+            "--no-git-ignore",
+            "--jobs=1",
+            "--max-memory=512",
+            "--timeout=5",
+            "--max-target-bytes=524288",
+            "/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase17-semgrep-1oje5vmq"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-w_ryzcsk",
+          "seconds_limit": 30
+        }
+      ],
+      "cleaned": true
+    }
+  ]
+}

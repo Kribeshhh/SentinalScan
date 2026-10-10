@@ -1,0 +1,175 @@
+{
+  "unit": "One targeted category/indicator presence decision per controlled response case; not exploitability",
+  "sample_size": 12,
+  "overall": {
+    "TP": 4,
+    "FP": 3,
+    "TN": 4,
+    "FN": 1,
+    "precision": 0.5714285714285714,
+    "recall": 0.8,
+    "f1": 0.6666666666666666
+  },
+  "categories": {
+    "Disclosure": {
+      "TP": 1,
+      "FP": 1,
+      "TN": 1,
+      "FN": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666
+    },
+    "Framing protection": {
+      "TP": 1,
+      "FP": 0,
+      "TN": 1,
+      "FN": 1,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "SQL indicators": {
+      "TP": 1,
+      "FP": 1,
+      "TN": 1,
+      "FN": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666
+    },
+    "XSS indicators": {
+      "TP": 1,
+      "FP": 1,
+      "TN": 1,
+      "FN": 0,
+      "precision": 0.5,
+      "recall": 1.0,
+      "f1": 0.6666666666666666
+    }
+  },
+  "cases": [
+    {
+      "name": "missing framing",
+      "category": "Framing protection",
+      "expected": true,
+      "detected": true,
+      "ground_truth": "No X-Frame-Options; CSP default-src 'self'",
+      "findings": [
+        "Missing or invalid framing protection"
+      ],
+      "outcome": "TP"
+    },
+    {
+      "name": "restricted framing",
+      "category": "Framing protection",
+      "expected": false,
+      "detected": false,
+      "ground_truth": "No X-Frame-Options; CSP default-src 'self'; frame-ancestors 'none'",
+      "findings": [],
+      "outcome": "TN"
+    },
+    {
+      "name": "wildcard framing",
+      "category": "Framing protection",
+      "expected": true,
+      "detected": false,
+      "ground_truth": "No X-Frame-Options; CSP default-src 'self'; frame-ancestors *",
+      "findings": [],
+      "outcome": "FN"
+    },
+    {
+      "name": "reflection script",
+      "category": "XSS indicators",
+      "expected": true,
+      "detected": true,
+      "ground_truth": "Executable script reflection is indicator-positive; HTML text/inert JSON are indicator-negative, not exploit tests.",
+      "findings": [
+        "Potential Reflected XSS"
+      ],
+      "outcome": "TP"
+    },
+    {
+      "name": "reflection text",
+      "category": "XSS indicators",
+      "expected": false,
+      "detected": false,
+      "ground_truth": "Executable script reflection is indicator-positive; HTML text/inert JSON are indicator-negative, not exploit tests.",
+      "findings": [],
+      "outcome": "TN"
+    },
+    {
+      "name": "reflection json",
+      "category": "XSS indicators",
+      "expected": false,
+      "detected": true,
+      "ground_truth": "Executable script reflection is indicator-positive; HTML text/inert JSON are indicator-negative, not exploit tests.",
+      "findings": [
+        "Potential Reflected XSS"
+      ],
+      "outcome": "FP"
+    },
+    {
+      "name": "SQL new error",
+      "category": "SQL indicators",
+      "expected": true,
+      "detected": true,
+      "ground_truth": "Fixture represents a new database exception after a probe.",
+      "findings": [
+        "Potential SQL Injection"
+      ],
+      "outcome": "TP"
+    },
+    {
+      "name": "SQL neutral",
+      "category": "SQL indicators",
+      "expected": false,
+      "detected": false,
+      "ground_truth": "No database error signature.",
+      "findings": [],
+      "outcome": "TN"
+    },
+    {
+      "name": "SQL documentation",
+      "category": "SQL indicators",
+      "expected": false,
+      "detected": true,
+      "ground_truth": "Authored documentation, not a runtime exception.",
+      "findings": [
+        "Potential SQL Injection"
+      ],
+      "outcome": "FP"
+    },
+    {
+      "name": "disclosure runtime",
+      "category": "Disclosure",
+      "expected": true,
+      "detected": true,
+      "ground_truth": "Authored response represents a runtime stack trace.",
+      "findings": [
+        "Verbose application error disclosure"
+      ],
+      "outcome": "TP"
+    },
+    {
+      "name": "disclosure neutral",
+      "category": "Disclosure",
+      "expected": false,
+      "detected": false,
+      "ground_truth": "No trace disclosure.",
+      "findings": [],
+      "outcome": "TN"
+    },
+    {
+      "name": "disclosure tutorial",
+      "category": "Disclosure",
+      "expected": false,
+      "detected": true,
+      "ground_truth": "Authored tutorial text, not runtime disclosure.",
+      "findings": [
+        "Verbose application error disclosure"
+      ],
+      "outcome": "FP"
+    }
+  ]
+}

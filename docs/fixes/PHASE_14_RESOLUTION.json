@@ -1,0 +1,135 @@
+[
+  {
+    "returncode": 2,
+    "stderr": "A fatal error occurred: Query pack codeql/python-queries cannot be found. Check the spelling of the pack.\n",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "PYTHONNOUSERSITE",
+      "SEMGREP_ENABLE_VERSION_CHECK",
+      "SEMGREP_SEND_METRICS",
+      "TMPDIR",
+      "__CF_USER_TEXT_ENCODING"
+    ],
+    "language": "python",
+    "search": "",
+    "args": [
+      "/opt/homebrew/bin/codeql",
+      "resolve",
+      "queries",
+      "codeql/python-queries"
+    ],
+    "query_count": 0,
+    "seconds": 0.48,
+    "private_home": true,
+    "cleaned": true
+  },
+  {
+    "returncode": 2,
+    "stderr": "A fatal error occurred: Query pack codeql/javascript-queries cannot be found. Check the spelling of the pack.\n",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "PYTHONNOUSERSITE",
+      "SEMGREP_ENABLE_VERSION_CHECK",
+      "SEMGREP_SEND_METRICS",
+      "TMPDIR",
+      "__CF_USER_TEXT_ENCODING"
+    ],
+    "language": "javascript",
+    "search": "",
+    "args": [
+      "/opt/homebrew/bin/codeql",
+      "resolve",
+      "queries",
+      "codeql/javascript-queries"
+    ],
+    "query_count": 0,
+    "seconds": 0.519,
+    "private_home": true,
+    "cleaned": true
+  },
+  {
+    "returncode": 0,
+    "stderr": "Recording pack reference codeql/python-queries at /Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12.\nRecording pack reference codeql/suite-helpers at /Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12/.codeql/libraries/codeql/suite-helpers/1.0.59.\n",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "PYTHONNOUSERSITE",
+      "SEMGREP_ENABLE_VERSION_CHECK",
+      "SEMGREP_SEND_METRICS",
+      "TMPDIR",
+      "__CF_USER_TEXT_ENCODING"
+    ],
+    "language": "python",
+    "search": "/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7",
+    "args": [
+      "/opt/homebrew/bin/codeql",
+      "resolve",
+      "queries",
+      "codeql/python-queries",
+      "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+    ],
+    "query_count": 45,
+    "seconds": 0.673,
+    "private_home": true,
+    "cleaned": true
+  },
+  {
+    "returncode": 0,
+    "stderr": "Recording pack reference codeql/javascript-queries at /Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7.\nRecording pack reference codeql/suite-helpers at /Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7/.codeql/libraries/codeql/suite-helpers/1.0.59.\n",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "PYTHONNOUSERSITE",
+      "SEMGREP_ENABLE_VERSION_CHECK",
+      "SEMGREP_SEND_METRICS",
+      "TMPDIR",
+      "__CF_USER_TEXT_ENCODING"
+    ],
+    "language": "javascript",
+    "search": "/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7",
+    "args": [
+      "/opt/homebrew/bin/codeql",
+      "resolve",
+      "queries",
+      "codeql/javascript-queries",
+      "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+    ],
+    "query_count": 89,
+    "seconds": 0.614,
+    "private_home": true,
+    "cleaned": true
+  },
+  {
+    "returncode": 2,
+    "stderr": "A fatal error occurred: Query pack codeql/python-queries cannot be found. Check the spelling of the pack.\n",
+    "environment_keys": [
+      "HOME",
+      "LANG",
+      "PATH",
+      "PYTHONNOUSERSITE",
+      "SEMGREP_ENABLE_VERSION_CHECK",
+      "SEMGREP_SEND_METRICS",
+      "TMPDIR",
+      "__CF_USER_TEXT_ENCODING"
+    ],
+    "language": "python",
+    "search": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase14-resolve-zuyv0nkr/empty",
+    "args": [
+      "/opt/homebrew/bin/codeql",
+      "resolve",
+      "queries",
+      "codeql/python-queries",
+      "--search-path=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase14-resolve-zuyv0nkr/empty"
+    ],
+    "query_count": 0,
+    "seconds": 0.476,
+    "private_home": true,
+    "cleaned": true
+  }
+]

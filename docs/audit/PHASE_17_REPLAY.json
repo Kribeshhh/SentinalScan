@@ -1,0 +1,27 @@
+{
+  "original_helper_probes": [
+    [
+      "q",
+      "http://127.0.0.1/?action=fixture-noop&q=AUDITMARKER",
+      "AUDITMARKER"
+    ]
+  ],
+  "original_action_preserved": true,
+  "real_network_requests": 0,
+  "modules": [
+    {
+      "module": "scanner.xss_scanner",
+      "mock_requests": [
+        "http://127.0.0.1/?action=fixture-noop&q=ssprobe53131cc23112aa05606b"
+      ],
+      "action_replayed": true
+    },
+    {
+      "module": "scanner.sqli_scanner",
+      "mock_requests": [
+        "http://127.0.0.1/?action=fixture-noop&q=hello%27"
+      ],
+      "action_replayed": true
+    }
+  ]
+}

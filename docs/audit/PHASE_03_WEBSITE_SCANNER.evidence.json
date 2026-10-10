@@ -1,0 +1,2370 @@
+{
+  "matrix": [
+    {
+      "case": "headers missing",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [
+        "Missing Content-Security-Policy",
+        "Missing X-Content-Type-Options",
+        "Missing Referrer-Policy",
+        "Missing Permissions-Policy",
+        "Missing or invalid framing protection",
+        "Missing or disabled HSTS"
+      ],
+      "error": null,
+      "observations": {
+        "headers_present": {
+          "Content-Security-Policy": false,
+          "X-Content-Type-Options": false,
+          "Referrer-Policy": false,
+          "Permissions-Policy": false
+        },
+        "framing_protection": false,
+        "hsts_applicable": true
+      },
+      "seconds": 0.002,
+      "findings": [
+        {
+          "title": "Missing Content-Security-Policy",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Content-Security-Policy was absent on the HTML response.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Content-Security-Policy was absent on the HTML response."
+          }
+        },
+        {
+          "title": "Missing X-Content-Type-Options",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "X-Content-Type-Options was absent on the HTML response.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "X-Content-Type-Options was absent on the HTML response."
+          }
+        },
+        {
+          "title": "Missing Referrer-Policy",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Referrer-Policy was absent on the HTML response.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Referrer-Policy was absent on the HTML response."
+          }
+        },
+        {
+          "title": "Missing Permissions-Policy",
+          "severity": "Informational",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Permissions-Policy was absent on the HTML response.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Permissions-Policy was absent on the HTML response."
+          }
+        },
+        {
+          "title": "Missing or invalid framing protection",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Neither a valid X-Frame-Options value nor CSP frame-ancestors was observed.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Neither a valid X-Frame-Options value nor CSP frame-ancestors was observed."
+          }
+        },
+        {
+          "title": "Missing or disabled HSTS",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "HTTPS response lacks an active HSTS max-age.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "HTTPS response lacks an active HSTS max-age."
+          }
+        }
+      ]
+    },
+    {
+      "case": "headers secure",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "headers_present": {
+          "Content-Security-Policy": true,
+          "X-Content-Type-Options": true,
+          "Referrer-Policy": true,
+          "Permissions-Policy": true
+        },
+        "framing_protection": true,
+        "hsts_applicable": true
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "headers invalid values",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [
+        "Permissive Content-Security-Policy",
+        "Invalid MIME sniffing protection",
+        "Missing or invalid framing protection",
+        "Permissive Referrer-Policy",
+        "Missing or disabled HSTS"
+      ],
+      "error": null,
+      "observations": {
+        "headers_present": {
+          "Content-Security-Policy": true,
+          "X-Content-Type-Options": true,
+          "Referrer-Policy": true,
+          "Permissions-Policy": true
+        },
+        "framing_protection": false,
+        "hsts_applicable": true
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Permissive Content-Security-Policy",
+          "severity": "Low",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "CSP contains unsafe-inline or unsafe-eval; effective policy requires manual review.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html",
+              "content-security-policy": "script-src 'unsafe-eval'",
+              "x-content-type-options": "bad",
+              "referrer-policy": "unsafe-url",
+              "permissions-policy": "camera=()",
+              "strict-transport-security": "max-age=0"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "CSP contains unsafe-inline or unsafe-eval; effective policy requires manual review."
+          }
+        },
+        {
+          "title": "Invalid MIME sniffing protection",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "X-Content-Type-Options is not nosniff.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html",
+              "content-security-policy": "script-src 'unsafe-eval'",
+              "x-content-type-options": "bad",
+              "referrer-policy": "unsafe-url",
+              "permissions-policy": "camera=()",
+              "strict-transport-security": "max-age=0"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "X-Content-Type-Options is not nosniff."
+          }
+        },
+        {
+          "title": "Missing or invalid framing protection",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Neither a valid X-Frame-Options value nor CSP frame-ancestors was observed.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html",
+              "content-security-policy": "script-src 'unsafe-eval'",
+              "x-content-type-options": "bad",
+              "referrer-policy": "unsafe-url",
+              "permissions-policy": "camera=()",
+              "strict-transport-security": "max-age=0"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Neither a valid X-Frame-Options value nor CSP frame-ancestors was observed."
+          }
+        },
+        {
+          "title": "Permissive Referrer-Policy",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Referrer-Policy uses unsafe-url.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html",
+              "content-security-policy": "script-src 'unsafe-eval'",
+              "x-content-type-options": "bad",
+              "referrer-policy": "unsafe-url",
+              "permissions-policy": "camera=()",
+              "strict-transport-security": "max-age=0"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Referrer-Policy uses unsafe-url."
+          }
+        },
+        {
+          "title": "Missing or disabled HSTS",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "HTTPS response lacks an active HSTS max-age.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html",
+              "content-security-policy": "script-src 'unsafe-eval'",
+              "x-content-type-options": "bad",
+              "referrer-policy": "unsafe-url",
+              "permissions-policy": "camera=()",
+              "strict-transport-security": "max-age=0"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "HTTPS response lacks an active HSTS max-age."
+          }
+        }
+      ]
+    },
+    {
+      "case": "headers non HTML",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "note": "HTML-specific headers not assessed for non-HTML content."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "headers wildcard framing FN",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "headers_present": {
+          "Content-Security-Policy": true,
+          "X-Content-Type-Options": true,
+          "Referrer-Policy": true,
+          "Permissions-Policy": true
+        },
+        "framing_protection": true,
+        "hsts_applicable": true
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "cookie sid=FixtureValue",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [
+        "Cookie missing Secure: sid",
+        "Cookie missing HttpOnly: sid",
+        "Cookie missing SameSite: sid"
+      ],
+      "error": null,
+      "observations": {
+        "cookies": [
+          {
+            "name": "sid",
+            "secure": false,
+            "httponly": false,
+            "samesite": "Missing/invalid"
+          }
+        ],
+        "unparsed_headers": 0,
+        "note": "Only cookies on the final baseline response are assessed. Cookie values are never stored."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Cookie missing Secure: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Cookie name: sid; missing or invalid Secure. Value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "Missing/invalid"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Cookie name: sid; missing or invalid Secure. Value omitted."
+          }
+        },
+        {
+          "title": "Cookie missing HttpOnly: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Cookie name: sid; missing or invalid HttpOnly. Value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "Missing/invalid"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Cookie name: sid; missing or invalid HttpOnly. Value omitted."
+          }
+        },
+        {
+          "title": "Cookie missing SameSite: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Cookie name: sid; missing or invalid SameSite. Value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "Missing/invalid"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Cookie name: sid; missing or invalid SameSite. Value omitted."
+          }
+        }
+      ]
+    },
+    {
+      "case": "cookie sid=FixtureValue; Secure; HttpOnly; SameSite=Lax",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [],
+      "error": null,
+      "observations": {
+        "cookies": [
+          {
+            "name": "sid",
+            "secure": true,
+            "httponly": true,
+            "samesite": "Lax"
+          }
+        ],
+        "unparsed_headers": 0,
+        "note": "Only cookies on the final baseline response are assessed. Cookie values are never stored."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "cookie sid=FixtureValue; SameSite=None",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [
+        "Cookie missing Secure: sid",
+        "Cookie missing HttpOnly: sid",
+        "SameSite=None cookie without Secure: sid"
+      ],
+      "error": null,
+      "observations": {
+        "cookies": [
+          {
+            "name": "sid",
+            "secure": false,
+            "httponly": false,
+            "samesite": "None"
+          }
+        ],
+        "unparsed_headers": 0,
+        "note": "Only cookies on the final baseline response are assessed. Cookie values are never stored."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Cookie missing Secure: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Cookie name: sid; missing or invalid Secure. Value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "None"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Cookie name: sid; missing or invalid Secure. Value omitted."
+          }
+        },
+        {
+          "title": "Cookie missing HttpOnly: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Cookie name: sid; missing or invalid HttpOnly. Value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "None"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Cookie name: sid; missing or invalid HttpOnly. Value omitted."
+          }
+        },
+        {
+          "title": "SameSite=None cookie without Secure: sid",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "SameSite=None requires Secure; cookie value omitted.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {},
+            "observations": {
+              "cookie_attributes": {
+                "name": "sid",
+                "secure": false,
+                "httponly": false,
+                "samesite": "None"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "SameSite=None requires Secure; cookie value omitted."
+          }
+        }
+      ]
+    },
+    {
+      "case": "cookie not a valid cookie",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [],
+      "error": null,
+      "observations": {
+        "cookies": [],
+        "unparsed_headers": 1,
+        "note": "Only cookies on the final baseline response are assessed. Cookie values are never stored."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "CORS https://sentinelscan-probe.invalid true",
+      "status": "PASS",
+      "expected": [
+        "Potential unsafe credentialed CORS"
+      ],
+      "actual": [
+        "Potential unsafe credentialed CORS"
+      ],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "https://sentinelscan-probe.invalid",
+        "allow_credentials": "true",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential unsafe credentialed CORS",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "The response allowed the untrusted test Origin and credentials. No authenticated data was requested.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "access-control-allow-origin": "https://sentinelscan-probe.invalid",
+              "access-control-allow-credentials": "true"
+            },
+            "observations": {
+              "cors": {
+                "request_origin": "https://sentinelscan-probe.invalid",
+                "allow_origin": "https://sentinelscan-probe.invalid",
+                "allow_credentials": "true"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The response allowed the untrusted test Origin and credentials. No authenticated data was requested."
+          }
+        }
+      ]
+    },
+    {
+      "case": "CORS https://sentinelscan-probe.invalid ",
+      "status": "PASS",
+      "expected": [
+        "Potential arbitrary CORS origin reflection"
+      ],
+      "actual": [
+        "Potential arbitrary CORS origin reflection"
+      ],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "https://sentinelscan-probe.invalid",
+        "allow_credentials": "",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential arbitrary CORS origin reflection",
+          "severity": "Low",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "The response reflected the untrusted test Origin without credentials.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "access-control-allow-origin": "https://sentinelscan-probe.invalid",
+              "access-control-allow-credentials": ""
+            },
+            "observations": {
+              "cors": {
+                "request_origin": "https://sentinelscan-probe.invalid",
+                "allow_origin": "https://sentinelscan-probe.invalid",
+                "allow_credentials": ""
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The response reflected the untrusted test Origin without credentials."
+          }
+        }
+      ]
+    },
+    {
+      "case": "CORS * true",
+      "status": "PASS",
+      "expected": [
+        "Incompatible wildcard credentialed CORS"
+      ],
+      "actual": [
+        "Incompatible wildcard credentialed CORS"
+      ],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "*",
+        "allow_credentials": "true",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Incompatible wildcard credentialed CORS",
+          "severity": "Informational",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "ACAO is * and ACAC is true. Browsers reject this combination for credentialed reads.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "access-control-allow-origin": "*",
+              "access-control-allow-credentials": "true"
+            },
+            "observations": {
+              "cors": {
+                "request_origin": "https://sentinelscan-probe.invalid",
+                "allow_origin": "*",
+                "allow_credentials": "true"
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "ACAO is * and ACAC is true. Browsers reject this combination for credentialed reads."
+          }
+        }
+      ]
+    },
+    {
+      "case": "CORS https://trusted.invalid true",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "https://trusted.invalid",
+        "allow_credentials": "true",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "CORS * ",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "*",
+        "allow_credentials": "",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "CORS not-an-origin bad",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "test_origin": "https://sentinelscan-probe.invalid",
+        "allow_origin": "not-an-origin",
+        "allow_credentials": "bad",
+        "allow_methods": "",
+        "allow_headers": "",
+        "note": "GET response inspection only; no authentication or preflight enumeration."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "XSS script",
+      "status": "PASS",
+      "expected": [
+        "Potential Reflected XSS"
+      ],
+      "actual": [
+        "Potential Reflected XSS"
+      ],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": true,
+            "contexts": [
+              "script text"
+            ]
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential Reflected XSS",
+          "severity": "Low",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D [parameter: q]",
+          "evidence": "A harmless alphanumeric marker for parameter q appeared in: script text. No script execution or escaping bypass was demonstrated.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "parameter": "q",
+              "reflection_contexts": [
+                "script text"
+              ]
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "A harmless alphanumeric marker for parameter q appeared in: script text. No script execution or escaping bypass was demonstrated."
+          }
+        }
+      ]
+    },
+    {
+      "case": "XSS event",
+      "status": "PASS",
+      "expected": [
+        "Potential Reflected XSS"
+      ],
+      "actual": [
+        "Potential Reflected XSS"
+      ],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": true,
+            "contexts": [
+              "event-handler attribute"
+            ]
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential Reflected XSS",
+          "severity": "Low",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D [parameter: q]",
+          "evidence": "A harmless alphanumeric marker for parameter q appeared in: event-handler attribute. No script execution or escaping bypass was demonstrated.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "parameter": "q",
+              "reflection_contexts": [
+                "event-handler attribute"
+              ]
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "A harmless alphanumeric marker for parameter q appeared in: event-handler attribute. No script execution or escaping bypass was demonstrated."
+          }
+        }
+      ]
+    },
+    {
+      "case": "XSS text",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": true,
+            "contexts": [
+              "HTML text"
+            ]
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "XSS attribute",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": true,
+            "contexts": [
+              "HTML attribute"
+            ]
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "XSS none",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": false
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "XSS serialized",
+      "status": "PASS",
+      "expected": [
+        "Potential Reflected XSS"
+      ],
+      "actual": [
+        "Potential Reflected XSS"
+      ],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "reflected": true,
+            "contexts": [
+              "script text"
+            ]
+          }
+        ],
+        "note": "Harmless markers only. Reflection in ordinary text/attributes is recorded without a vulnerability claim. JavaScript is not executed."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential Reflected XSS",
+          "severity": "Low",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D [parameter: q]",
+          "evidence": "A harmless alphanumeric marker for parameter q appeared in: script text. No script execution or escaping bypass was demonstrated.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "parameter": "q",
+              "reflection_contexts": [
+                "script text"
+              ]
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "A harmless alphanumeric marker for parameter q appeared in: script text. No script execution or escaping bypass was demonstrated."
+          }
+        }
+      ]
+    },
+    {
+      "case": "SQL new SQLite",
+      "status": "PASS",
+      "expected": [
+        "Potential SQL Injection"
+      ],
+      "actual": [
+        "Potential SQL Injection"
+      ],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "baseline_status": 200,
+            "probe_status": 500,
+            "length_delta": 28,
+            "new_database_error_signatures": [
+              "SQLite query error"
+            ]
+          }
+        ],
+        "note": "One quote probe per eligible parameter. Status/length differences alone do not create findings. No boolean, time-delay, UNION or data extraction payloads."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Potential SQL Injection",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "location": "https://localhost/?q=%5Bredacted%5D [parameter: q]",
+          "evidence": "Appending one quote to parameter q introduced database-specific error signatures: SQLite query error. Response bodies are not retained.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 500,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "parameter": "q",
+              "new_database_error_signatures": [
+                "SQLite query error"
+              ],
+              "baseline_status": 200
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Appending one quote to parameter q introduced database-specific error signatures: SQLite query error. Response bodies are not retained."
+          }
+        }
+      ]
+    },
+    {
+      "case": "SQL baseline SQLite",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "baseline_status": 200,
+            "probe_status": 500,
+            "length_delta": 0,
+            "new_database_error_signatures": []
+          }
+        ],
+        "note": "One quote probe per eligible parameter. Status/length differences alone do not create findings. No boolean, time-delay, UNION or data extraction payloads."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "SQL status only",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "baseline_status": 200,
+            "probe_status": 500,
+            "length_delta": 11,
+            "new_database_error_signatures": []
+          }
+        ],
+        "note": "One quote probe per eligible parameter. Status/length differences alone do not create findings. No boolean, time-delay, UNION or data extraction payloads."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "SQL documentation FP",
+      "status": "PASS",
+      "expected": [
+        "Potential SQL Injection"
+      ],
+      "actual": [
+        "Potential SQL Injection"
+      ],
+      "error": null,
+      "observations": {
+        "parameters": [
+          {
+            "parameter": "q",
+            "baseline_status": 200,
+            "probe_status": 500,
+            "length_delta": 60,
+            "new_database_error_signatures": [
+              "SQLite query error"
+            ]
+          }
+        ],
+        "note": "One quote probe per eligible parameter. Status/length differences alone do not create findings. No boolean, time-delay, UNION or data extraction payloads."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Potential SQL Injection",
+          "severity": "Medium",
+          "confidence": "Medium",
+          "location": "https://localhost/?q=%5Bredacted%5D [parameter: q]",
+          "evidence": "Appending one quote to parameter q introduced database-specific error signatures: SQLite query error. Response bodies are not retained.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 500,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "parameter": "q",
+              "new_database_error_signatures": [
+                "SQLite query error"
+              ],
+              "baseline_status": 200
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Appending one quote to parameter q introduced database-specific error signatures: SQLite query error. Response bodies are not retained."
+          }
+        }
+      ]
+    },
+    {
+      "case": "disclosure trace",
+      "status": "PASS",
+      "expected": [
+        "Verbose application error disclosure"
+      ],
+      "actual": [
+        "Verbose application error disclosure"
+      ],
+      "error": null,
+      "observations": {
+        "error_signatures": [
+          "Python traceback"
+        ],
+        "version_indicators": [],
+        "source_map_references": 0
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Verbose application error disclosure",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Observed error signatures: Python traceback. Raw errors are not stored.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Observed error signatures: Python traceback. Raw errors are not stored."
+          }
+        }
+      ]
+    },
+    {
+      "case": "disclosure safe",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "error_signatures": [],
+        "version_indicators": [],
+        "source_map_references": 0
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "disclosure documentation FP",
+      "status": "PASS",
+      "expected": [
+        "Verbose application error disclosure"
+      ],
+      "actual": [
+        "Verbose application error disclosure"
+      ],
+      "error": null,
+      "observations": {
+        "error_signatures": [
+          "Python traceback"
+        ],
+        "version_indicators": [],
+        "source_map_references": 0
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Verbose application error disclosure",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Observed error signatures: Python traceback. Raw errors are not stored.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Observed error signatures: Python traceback. Raw errors are not stored."
+          }
+        }
+      ]
+    },
+    {
+      "case": "disclosure malformed",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "error_signatures": [],
+        "version_indicators": [],
+        "source_map_references": 0
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "version and sourcemap",
+      "status": "PASS",
+      "expected": [
+        "Server or framework version disclosed",
+        "Source map reference disclosed"
+      ],
+      "actual": [
+        "Server or framework version disclosed",
+        "Source map reference disclosed"
+      ],
+      "error": null,
+      "observations": {
+        "error_signatures": [],
+        "version_indicators": [
+          "nginx/1.2.3"
+        ],
+        "source_map_references": 1
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Server or framework version disclosed",
+          "severity": "Informational",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Version indicators: nginx/1.2.3",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "server": "nginx/1.2.3"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Version indicators: nginx/1.2.3"
+          }
+        },
+        {
+          "title": "Source map reference disclosed",
+          "severity": "Informational",
+          "confidence": "Low",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "The baseline response contains 1 source map references. Referenced files were not downloaded.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "server": "nginx/1.2.3"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The baseline response contains 1 source map references. Referenced files were not downloaded."
+          }
+        }
+      ]
+    },
+    {
+      "case": "technology indicators",
+      "status": "PASS",
+      "expected": "predicate",
+      "actual": [],
+      "error": null,
+      "observations": {
+        "technologies": [
+          {
+            "name": "Nginx",
+            "indicator": "Server header"
+          },
+          {
+            "name": "WordPress",
+            "indicator": "Asset reference or generator"
+          },
+          {
+            "name": "jQuery",
+            "indicator": "Script reference"
+          }
+        ],
+        "note": "Passive indicators are observations, not vulnerabilities; heuristic framework matches may be wrong."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "technology secure neutral",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "technologies": [],
+        "note": "Passive indicators are observations, not vulnerabilities; heuristic framework matches may be wrong."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "technology malformed html",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "technologies": [],
+        "note": "Passive indicators are observations, not vulnerabilities; heuristic framework matches may be wrong."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "resources positive",
+      "status": "PASS",
+      "expected": [
+        "Potential exposed environment configuration",
+        "Exposed Git metadata",
+        "Directory listing enabled"
+      ],
+      "actual": [
+        "Potential exposed environment configuration",
+        "Exposed Git metadata",
+        "Directory listing enabled"
+      ],
+      "error": null,
+      "observations": {
+        "resources": [
+          {
+            "path": "/.env",
+            "status": 200,
+            "bytes": 35,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/plain"
+          },
+          {
+            "path": "/.git/HEAD",
+            "status": 200,
+            "bytes": 24,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/plain"
+          },
+          {
+            "path": "/uploads",
+            "status": 200,
+            "bytes": 32,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/html"
+          }
+        ],
+        "soft_404_baseline_status": 404,
+        "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Potential exposed environment configuration",
+          "severity": "High",
+          "confidence": "Medium",
+          "location": "https://localhost/.env",
+          "evidence": "The /.env resource contains multiple environment-style assignments. Keys and values are not retained.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/.env",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/plain"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The /.env resource contains multiple environment-style assignments. Keys and values are not retained."
+          }
+        },
+        {
+          "title": "Exposed Git metadata",
+          "severity": "Medium",
+          "confidence": "High",
+          "location": "https://localhost/.git/HEAD",
+          "evidence": "The Git HEAD resource contains a branch reference; no repository contents were downloaded.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/.git/HEAD",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/plain"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The Git HEAD resource contains a branch reference; no repository contents were downloaded."
+          }
+        },
+        {
+          "title": "Directory listing enabled",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/uploads",
+          "evidence": "An HTML directory-index title was observed. Entry names are not retained.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/uploads",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "An HTML directory-index title was observed. Entry names are not retained."
+          }
+        }
+      ]
+    },
+    {
+      "case": "resources secure",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "resources": [
+          {
+            "path": "/.env",
+            "status": 403,
+            "bytes": 6,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/html"
+          },
+          {
+            "path": "/.git/HEAD",
+            "status": 403,
+            "bytes": 6,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/html"
+          },
+          {
+            "path": "/uploads",
+            "status": 403,
+            "bytes": 6,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/html"
+          }
+        ],
+        "soft_404_baseline_status": 404,
+        "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "resources soft",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "resources": [
+          {
+            "path": "/.env",
+            "status": 404,
+            "bytes": 7,
+            "truncated": false,
+            "possible_soft_404": true,
+            "content_type": "text/html"
+          },
+          {
+            "path": "/.git/HEAD",
+            "status": 404,
+            "bytes": 7,
+            "truncated": false,
+            "possible_soft_404": true,
+            "content_type": "text/html"
+          },
+          {
+            "path": "/uploads",
+            "status": 404,
+            "bytes": 7,
+            "truncated": false,
+            "possible_soft_404": true,
+            "content_type": "text/html"
+          }
+        ],
+        "soft_404_baseline_status": 404,
+        "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "resources timeout",
+      "status": "PASS",
+      "expected": [
+        "Exposed Git metadata",
+        "Directory listing enabled"
+      ],
+      "actual": [
+        "Exposed Git metadata",
+        "Directory listing enabled"
+      ],
+      "error": null,
+      "observations": {
+        "resources": [
+          {
+            "path": "/.env",
+            "error": "Request unavailable"
+          },
+          {
+            "path": "/.git/HEAD",
+            "status": 200,
+            "bytes": 24,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/plain"
+          },
+          {
+            "path": "/uploads",
+            "status": 200,
+            "bytes": 32,
+            "truncated": false,
+            "possible_soft_404": false,
+            "content_type": "text/html"
+          }
+        ],
+        "soft_404_baseline_status": 404,
+        "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+      },
+      "seconds": 0.0,
+      "findings": [
+        {
+          "title": "Exposed Git metadata",
+          "severity": "Medium",
+          "confidence": "High",
+          "location": "https://localhost/.git/HEAD",
+          "evidence": "The Git HEAD resource contains a branch reference; no repository contents were downloaded.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/.git/HEAD",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/plain"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "The Git HEAD resource contains a branch reference; no repository contents were downloaded."
+          }
+        },
+        {
+          "title": "Directory listing enabled",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/uploads",
+          "evidence": "An HTML directory-index title was observed. Entry names are not retained.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/uploads",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {},
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "An HTML directory-index title was observed. Entry names are not retained."
+          }
+        }
+      ]
+    },
+    {
+      "case": "resources similar length FN",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "resources": [
+          {
+            "path": "/uploads",
+            "status": 200,
+            "bytes": 32,
+            "truncated": false,
+            "possible_soft_404": true,
+            "content_type": "text/html"
+          }
+        ],
+        "soft_404_baseline_status": 200,
+        "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.header_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.cookie_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.cors_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.xss_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.sqli_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.disclosure_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.directory_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.technology_scanner baseline unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "SkipModule: No usable HTTP response; prerequisite request failed.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.cors_scanner timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "RequestFailure: fixture timeout",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.xss_scanner timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "RequestFailure: fixture timeout",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.sqli_scanner timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "RequestFailure: fixture timeout",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "scanner.directory_scanner timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "RequestFailure: fixture timeout",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "DNS pinned",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "A": [
+          "127.0.0.1"
+        ],
+        "AAAA": [],
+        "CNAME": [
+          "local.test"
+        ],
+        "errors": [],
+        "pinned_addresses": [
+          "127.0.0.1"
+        ]
+      },
+      "seconds": 0.001,
+      "findings": []
+    },
+    {
+      "case": "DNS timeout fallback",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "A": [
+          "127.0.0.1"
+        ],
+        "AAAA": [],
+        "CNAME": [],
+        "errors": [
+          "A lookup unavailable",
+          "AAAA lookup unavailable",
+          "CNAME lookup unavailable"
+        ],
+        "note": "Using the system resolver because direct DNS returned no addresses; all returned addresses are validated and pinned.",
+        "pinned_addresses": [
+          "127.0.0.1"
+        ]
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "DNS unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "TargetError: Both direct DNS and the system resolver failed. Check this Mac\u2019s network/VPN/DNS connection and retry.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "DNS empty fallback",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "A": [],
+        "AAAA": [],
+        "CNAME": [],
+        "errors": [
+          "A lookup unavailable",
+          "AAAA lookup unavailable",
+          "CNAME lookup unavailable"
+        ],
+        "note": "Using the system resolver because direct DNS returned no addresses; all returned addresses are validated and pinned.",
+        "pinned_addresses": []
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "DNS unsafe mixed",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "TargetError: Link-local, metadata, multicast, unspecified and reserved addresses are blocked.",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "Nmap open",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "method": "Nmap TCP connect/version-light",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443
+        ],
+        "open_ports": [
+          {
+            "port": 443,
+            "protocol": "tcp",
+            "service": "https",
+            "version": "fixture 1"
+          }
+        ]
+      },
+      "seconds": 0.001,
+      "findings": []
+    },
+    {
+      "case": "Nmap closed",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "method": "Nmap TCP connect/version-light",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443
+        ],
+        "open_ports": []
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "Nmap malformed",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "method": "TCP connect fallback",
+        "warning": "Nmap failed or timed out; using TCP fallback.",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443
+        ],
+        "open_ports": []
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "Nmap timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "method": "TCP connect fallback",
+        "warning": "Nmap failed or timed out; using TCP fallback.",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443
+        ],
+        "open_ports": []
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "Nmap unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "method": "TCP connect fallback",
+        "warning": "Nmap failed or timed out; using TCP fallback.",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443
+        ],
+        "open_ports": []
+      },
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "TLS secure",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "port": 443,
+        "https_target": true,
+        "verified": true,
+        "available": true,
+        "protocol": "TLSv1.3",
+        "cipher": "fixture",
+        "subject": "CN=localhost",
+        "issuer": "CN=localhost",
+        "not_before": "2026-10-07T09:41:34+00:00",
+        "expires": "2026-12-07T09:41:34+00:00",
+        "dns_names": [],
+        "days_remaining": 59,
+        "coverage": "One modern handshake; does not enumerate all supported protocols/ciphers."
+      },
+      "seconds": 0.009,
+      "findings": []
+    },
+    {
+      "case": "TLS expiry",
+      "status": "PASS",
+      "expected": [
+        "TLS certificate expires soon"
+      ],
+      "actual": [
+        "TLS certificate expires soon"
+      ],
+      "error": null,
+      "observations": {
+        "port": 443,
+        "https_target": true,
+        "verified": true,
+        "available": true,
+        "protocol": "TLSv1.3",
+        "cipher": "fixture",
+        "subject": "CN=localhost",
+        "issuer": "CN=localhost",
+        "not_before": "2026-10-07T09:41:34+00:00",
+        "expires": "2026-10-18T09:41:34+00:00",
+        "dns_names": [],
+        "days_remaining": 9,
+        "coverage": "One modern handshake; does not enumerate all supported protocols/ciphers."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "TLS certificate expires soon",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Certificate expires in 9 days.",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "tls": {
+                "port": 443,
+                "https_target": true,
+                "verified": true,
+                "available": true,
+                "protocol": "TLSv1.3",
+                "cipher": "fixture",
+                "subject": "CN=localhost",
+                "issuer": "CN=localhost",
+                "not_before": "2026-10-07T09:41:34+00:00",
+                "expires": "2026-10-18T09:41:34+00:00",
+                "dns_names": [],
+                "days_remaining": 9
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Certificate expires in 9 days."
+          }
+        }
+      ]
+    },
+    {
+      "case": "TLS weak",
+      "status": "PASS",
+      "expected": [
+        "Weak negotiated TLS configuration"
+      ],
+      "actual": [
+        "Weak negotiated TLS configuration"
+      ],
+      "error": null,
+      "observations": {
+        "port": 443,
+        "https_target": true,
+        "verified": true,
+        "available": true,
+        "protocol": "TLSv1",
+        "cipher": "fixture",
+        "subject": "CN=localhost",
+        "issuer": "CN=localhost",
+        "not_before": "2026-10-07T09:41:34+00:00",
+        "expires": "2026-12-07T09:41:34+00:00",
+        "dns_names": [],
+        "days_remaining": 59,
+        "coverage": "One modern handshake; does not enumerate all supported protocols/ciphers."
+      },
+      "seconds": 0.001,
+      "findings": [
+        {
+          "title": "Weak negotiated TLS configuration",
+          "severity": "Medium",
+          "confidence": "High",
+          "location": "https://localhost/?q=%5Bredacted%5D",
+          "evidence": "Negotiated protocol: TLSv1; cipher: fixture",
+          "context": {
+            "kind": "dast",
+            "affected_url": "https://localhost/?q=%5Bredacted%5D",
+            "http_method": "GET",
+            "http_status": 200,
+            "response_headers": {
+              "content-type": "text/html"
+            },
+            "observations": {
+              "tls": {
+                "port": 443,
+                "https_target": true,
+                "verified": true,
+                "available": true,
+                "protocol": "TLSv1",
+                "cipher": "fixture",
+                "subject": "CN=localhost",
+                "issuer": "CN=localhost",
+                "not_before": "2026-10-07T09:41:34+00:00",
+                "expires": "2026-12-07T09:41:34+00:00",
+                "dns_names": [],
+                "days_remaining": 59
+              }
+            },
+            "response_snippet": null,
+            "body_policy": "Response bodies and cookie values are not retained in finding context.",
+            "scanner_evidence": "Negotiated protocol: TLSv1; cipher: fixture"
+          }
+        }
+      ]
+    },
+    {
+      "case": "TLS malformed",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": "ValueError: error parsing asn1 value: ParseError { kind: ShortData { needed: 96 } }",
+      "observations": null,
+      "seconds": 0.0,
+      "findings": []
+    },
+    {
+      "case": "TLS timeout",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "port": 443,
+        "https_target": true,
+        "available": false,
+        "note": "TLS endpoint unavailable or handshake failed. HTTP targets are probed on port 443 only."
+      },
+      "seconds": 0.013,
+      "findings": []
+    },
+    {
+      "case": "TLS unavailable",
+      "status": "PASS",
+      "expected": [],
+      "actual": [],
+      "error": null,
+      "observations": {
+        "port": 443,
+        "https_target": true,
+        "available": false,
+        "note": "TLS endpoint unavailable or handshake failed. HTTP targets are probed on port 443 only."
+      },
+      "seconds": 0.005,
+      "findings": []
+    }
+  ],
+  "network": [
+    {
+      "case": "HTTP same-origin redirect GET only no cookie replay",
+      "status": "PASS",
+      "seconds": 0.003,
+      "actual": {
+        "redirects": [
+          {
+            "status": 302,
+            "from": "http://127.0.0.1:53960/redirect",
+            "to": "http://127.0.0.1:53960/",
+            "followed": true
+          }
+        ],
+        "no_cookie_replay": true
+      }
+    },
+    {
+      "case": "HTTP /bad",
+      "status": "PASS",
+      "seconds": 0.0,
+      "actual": {
+        "expected": "RequestFailure",
+        "error": "HTTP request failed or timed out"
+      }
+    },
+    {
+      "case": "HTTP /slow",
+      "status": "PASS",
+      "seconds": 0.101,
+      "actual": {
+        "expected": "RequestFailure",
+        "error": "HTTP connection or response timed out within the scan budget"
+      }
+    },
+    {
+      "case": "HTTP /loop",
+      "status": "PASS",
+      "seconds": 0.003,
+      "actual": {
+        "expected": "RequestFailure",
+        "error": "Redirect limit reached"
+      }
+    },
+    {
+      "case": "HTTP external redirect blocked",
+      "status": "PASS",
+      "seconds": 0.001,
+      "actual": [
+        {
+          "status": 302,
+          "from": "http://127.0.0.1:53960/external",
+          "to": "[out-of-scope redirect blocked]",
+          "followed": false
+        }
+      ]
+    },
+    {
+      "case": "HTTP bytes/request limits",
+      "status": "PASS",
+      "seconds": 0.001,
+      "actual": {
+        "captured_bytes": 32,
+        "truncated": true,
+        "request_limit": true
+      }
+    },
+    {
+      "case": "HTTP deadline",
+      "status": "PASS",
+      "seconds": 0.0,
+      "actual": "Scan time budget reached before request"
+    },
+    {
+      "case": "HTTP rate limit",
+      "status": "PASS",
+      "seconds": 0.107,
+      "actual": {
+        "configured_interval": 0.1,
+        "observed_gap": 0.10611858405172825
+      }
+    },
+    {
+      "case": "Nmap real loopback inventory",
+      "status": "PASS",
+      "seconds": 6.289,
+      "actual": {
+        "commands": [
+          [
+            "/opt/homebrew/bin/nmap",
+            "-sT",
+            "-sV",
+            "--version-light",
+            "-Pn",
+            "-n",
+            "--max-retries",
+            "1",
+            "--host-timeout",
+            "15s",
+            "-p",
+            "80,443,8000,8080,8443,53960",
+            "-oX",
+            "-",
+            "127.0.0.1"
+          ]
+        ],
+        "result": {
+          "method": "Nmap TCP connect/version-light",
+          "address": "127.0.0.1",
+          "tested_ports": [
+            80,
+            443,
+            8000,
+            8080,
+            8443,
+            53960
+          ],
+          "open_ports": [
+            {
+              "port": 53960,
+              "protocol": "tcp",
+              "service": "http",
+              "version": "BaseHTTPServer 0.6"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": "TCP fallback real loopback inventory",
+      "status": "PASS",
+      "seconds": 0.001,
+      "actual": {
+        "method": "TCP connect fallback",
+        "warning": "Nmap is not installed. Bounded TCP connect inventory used; versions are unavailable.",
+        "address": "127.0.0.1",
+        "tested_ports": [
+          80,
+          443,
+          8000,
+          8080,
+          8443,
+          53960
+        ],
+        "open_ports": [
+          {
+            "port": 53960,
+            "protocol": "tcp",
+            "service": "unknown (port convention; unverified)",
+            "version": ""
+          }
+        ]
+      }
+    },
+    {
+      "case": "HTTP unavailable service",
+      "status": "PASS",
+      "seconds": 0.0,
+      "actual": {
+        "expected": "RequestFailure",
+        "error": "Connection unavailable"
+      }
+    },
+    {
+      "case": "parameter probe exclusions and first-five cap",
+      "status": "PASS",
+      "seconds": 0.0,
+      "actual": {
+        "eligible_names": [
+          "q",
+          "other"
+        ],
+        "note": "Sensitive parameters not mutated, but original URL query pairs remain in requests."
+      }
+    },
+    {
+      "case": "resource path limits",
+      "status": "PASS",
+      "seconds": 0.0,
+      "actual": "invalid/traversal/over-limit paths rejected"
+    }
+  ],
+  "existing_tests": "test_https_valid_and_untrusted_certificate (test_website_scanner.WebsiteTests.test_https_valid_and_untrusted_certificate) ... ok\ntest_localhost_real_assessment_pipeline (test_website_scanner.WebsiteTests.test_localhost_real_assessment_pipeline) ... ok\ntest_migration_preserves_existing_related_records (test_website_scanner.WebsiteTests.test_migration_preserves_existing_related_records) ... ok\ntest_mixed_dns_answers_rejected_before_connection (test_website_scanner.WebsiteTests.test_mixed_dns_answers_rejected_before_connection) ... ok\ntest_one_module_failure_does_not_abort_scan (test_website_scanner.WebsiteTests.test_one_module_failure_does_not_abort_scan) ... ok\ntest_pinning_redirect_and_limits (test_website_scanner.WebsiteTests.test_pinning_redirect_and_limits) ... ok\ntest_plain_text_reflection_is_not_xss_or_sqli (test_website_scanner.WebsiteTests.test_plain_text_reflection_is_not_xss_or_sqli) ... ok\ntest_restart_marks_interrupted_jobs_failed (test_website_scanner.WebsiteTests.test_restart_marks_interrupted_jobs_failed) ... ok\ntest_validation_and_authorization (test_website_scanner.WebsiteTests.test_validation_and_authorization) ... ok\ntest_cookie_and_cors_attach_actual_observations (test_finding_context.FindingContextTests.test_cookie_and_cors_attach_actual_observations) ... ok\ntest_flow_and_missing_source_are_honest (test_finding_context.FindingContextTests.test_flow_and_missing_source_are_honest) ... ok\ntest_headers_and_queries_exclude_credentials (test_finding_context.FindingContextTests.test_headers_and_queries_exclude_credentials) ... ok\ntest_source_categories_keep_actual_context_and_unknowns (test_finding_context.FindingContextTests.test_source_categories_keep_actual_context_and_unknowns) ... ok\ntest_sql_probe_status_not_baseline_and_no_body (test_finding_context.FindingContextTests.test_sql_probe_status_not_baseline_and_no_body) ... ok\ntest_structured_redaction_preserves_json_and_identity (test_finding_context.FindingContextTests.test_structured_redaction_preserves_json_and_identity) ... ok\ntest_website_categories_never_guess_backend (test_finding_context.FindingContextTests.test_website_categories_never_guess_backend) ... ok\ntest_malformed_nmap_falls_back_without_shell (test_hardening.HardeningTests.test_malformed_nmap_falls_back_without_shell) ... ok\ntest_dast_persistence_masks_credentials_and_form_errors (test_hardening.HardeningTests.test_dast_persistence_masks_credentials_and_form_errors) ... ok\ntest_browser_fragment_is_not_sent_or_persisted (test_network_reliability.NetworkReliabilityTests.test_browser_fragment_is_not_sent_or_persisted) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 1.146s\n\nOK\n",
+  "network_stdout": "{'case': 'HTTP same-origin redirect GET only no cookie replay', 'status': 'PASS', 'seconds': 0.003, 'actual': {'redirects': [{'status': 302, 'from': 'http://127.0.0.1:53960/redirect', 'to': 'http://127.0.0.1:53960/', 'followed': True}], 'no_cookie_replay': True}}\n{'case': 'HTTP /bad', 'status': 'PASS', 'seconds': 0.0, 'actual': {'expected': 'RequestFailure', 'error': 'HTTP request failed or timed out'}}\n{'case': 'HTTP /slow', 'status': 'PASS', 'seconds': 0.101, 'actual': {'expected': 'RequestFailure', 'error': 'HTTP connection or response timed out within the scan budget'}}\n{'case': 'HTTP /loop', 'status': 'PASS', 'seconds': 0.003, 'actual': {'expected': 'RequestFailure', 'error': 'Redirect limit reached'}}\n{'case': 'HTTP external redirect blocked', 'status': 'PASS', 'seconds': 0.001, 'actual': [{'status': 302, 'from': 'http://127.0.0.1:53960/external', 'to': '[out-of-scope redirect blocked]', 'followed': False}]}\n{'case': 'HTTP bytes/request limits', 'status': 'PASS', 'seconds': 0.001, 'actual': {'captured_bytes': 32, 'truncated': True, 'request_limit': True}}\n{'case': 'HTTP deadline', 'status': 'PASS', 'seconds': 0.0, 'actual': 'Scan time budget reached before request'}\n{'case': 'HTTP rate limit', 'status': 'PASS', 'seconds': 0.107, 'actual': {'configured_interval': 0.1, 'observed_gap': 0.10611858405172825}}\n----------------------------------------\nException occurred during processing of request from ('127.0.0.1', 53980)\nTraceback (most recent call last):\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py\", line 697, in process_request_thread\n    self.finish_request(request, client_address)\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py\", line 362, in finish_request\n    self.RequestHandlerClass(request, client_address, self)\n    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socketserver.py\", line 766, in __init__\n    self.handle()\n    ~~~~~~~~~~~^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py\", line 436, in handle\n    self.handle_one_request()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/http/server.py\", line 404, in handle_one_request\n    self.raw_requestline = self.rfile.readline(65537)\n                           ~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/socket.py\", line 719, in readinto\n    return self._sock.recv_into(b)\n           ~~~~~~~~~~~~~~~~~~~~^^^\nConnectionResetError: [Errno 54] Connection reset by peer\n----------------------------------------\n{'case': 'Nmap real loopback inventory', 'status': 'PASS', 'seconds': 6.289, 'actual': {'commands': [['/opt/homebrew/bin/nmap', '-sT', '-sV', '--version-light', '-Pn', '-n', '--max-retries', '1', '--host-timeout', '15s', '-p', '80,443,8000,8080,8443,53960', '-oX', '-', '127.0.0.1']], 'result': {'method': 'Nmap TCP connect/version-light', 'address': '127.0.0.1', 'tested_ports': [80, 443, 8000, 8080, 8443, 53960], 'open_ports': [{'port': 53960, 'protocol': 'tcp', 'service': 'http', 'version': 'BaseHTTPServer 0.6'}]}}}\n{'case': 'TCP fallback real loopback inventory', 'status': 'PASS', 'seconds': 0.001, 'actual': {'method': 'TCP connect fallback', 'warning': 'Nmap is not installed. Bounded TCP connect inventory used; versions are unavailable.', 'address': '127.0.0.1', 'tested_ports': [80, 443, 8000, 8080, 8443, 53960], 'open_ports': [{'port': 53960, 'protocol': 'tcp', 'service': 'unknown (port convention; unverified)', 'version': ''}]}}\n{'case': 'HTTP unavailable service', 'status': 'PASS', 'seconds': 0.0, 'actual': {'expected': 'RequestFailure', 'error': 'Connection unavailable'}}\n{'case': 'parameter probe exclusions and first-five cap', 'status': 'PASS', 'seconds': 0.0, 'actual': {'eligible_names': ['q', 'other'], 'note': 'Sensitive parameters not mutated, but original URL query pairs remain in requests.'}}\n{'case': 'resource path limits', 'status': 'PASS', 'seconds': 0.0, 'actual': 'invalid/traversal/over-limit paths rejected'}\n",
+  "scripts": {
+    "phase03_existing.py": "import os,sys,tempfile,unittest,time\nsys.path[:0]=[os.getcwd(),os.path.join(os.getcwd(),'tests')]\nwith tempfile.TemporaryDirectory(prefix='sentinel-phase03-tests-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td;os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n suite=unittest.TestSuite()\n for pattern in ('test_website_scanner.py','test_finding_context.py'):\n  suite.addTests(unittest.defaultTestLoader.discover('tests',pattern=pattern))\n for name in ('test_hardening.HardeningTests.test_malformed_nmap_falls_back_without_shell','test_hardening.HardeningTests.test_dast_persistence_masks_credentials_and_form_errors','test_network_reliability.NetworkReliabilityTests.test_browser_fragment_is_not_sent_or_persisted'):\n  suite.addTests(unittest.defaultTestLoader.loadTestsFromName(name))\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n sys.exit(not result.wasSuccessful())\n",
+    "phase03_matrix.py": "import sys,os,json,time,tempfile,socket,threading,subprocess,hashlib\nfrom pathlib import Path\nfrom unittest.mock import Mock,patch\nfrom urllib.parse import urlsplit,parse_qs\nsys.path.insert(0,os.getcwd())\nfrom scanner import header_scanner as h,cookie_scanner as c,cors_scanner as cors,xss_scanner as x,sqli_scanner as sql,disclosure_scanner as disc,directory_scanner as d,technology_scanner as tech,tls_scanner as tls,port_scanner as ports,dns_scanner\nfrom scanner.target import validate_target,TargetError\nfrom scanner.http_scanner import Response,Client,RequestFailure,ScanLimit\nfrom scanner.common import SkipModule\nimport dns.resolver,dns.exception\nrows=[]\ndef response(body='<p>ok</p>',headers=None,url='https://localhost/?q=fixture',status=200):return Response(url,status,headers if headers is not None else [('Content-Type','text/html')],body.encode(),False,[])\ndef ctx(r=None):\n client=Mock();client.end=time.monotonic()+30;client.remaining.return_value=1;client.cafile=None\n return dict(target=validate_target('https://localhost/?q=fixture',True),response=r or response(),client=client,findings=[],paths=['/.env','/.git/HEAD','/uploads'])\ndef test(name,module,expected,setup=lambda z:None,r=None,expected_error=None):\n z=ctx(r);setup(z);start=time.monotonic();err=None;data=None\n try:data=module(z)\n except Exception as e:err=type(e).__name__+': '+str(e)\n actual=[f.title for f in z['findings']]\n passed=(err is not None and err.startswith(expected_error)) if expected_error else err is None and (actual==expected if isinstance(expected,list) else expected(actual,data))\n rows.append(dict(case=name,status='PASS' if passed else 'FAIL',expected=expected if isinstance(expected,list) else getattr(expected,'__doc__',None) or str(expected_error or 'predicate'),actual=actual,error=err,observations=data,seconds=round(time.monotonic()-start,3),findings=[dict(title=f.title,severity=f.severity,confidence=f.confidence,location=f.location,evidence=f.evidence,context=json.loads(f.context_json)) for f in z['findings']]))\n print(name,rows[-1]['status'],actual,err,flush=True)\nsecure=[('Content-Type','text/html'),('Content-Security-Policy',\"default-src 'self'; frame-ancestors 'none'\"),('X-Content-Type-Options','nosniff'),('Referrer-Policy','no-referrer'),('Permissions-Policy','camera=()'),('Strict-Transport-Security','max-age=31536000')]\ntest('headers missing',h.run,lambda a,d:len(a)==6)\ntest('headers secure',h.run,[],r=response(headers=secure))\ntest('headers invalid values',h.run,lambda a,d:all(t in a for t in ['Permissive Content-Security-Policy','Invalid MIME sniffing protection','Permissive Referrer-Policy','Missing or disabled HSTS']),r=response(headers=[(k,{'Content-Security-Policy':\"script-src 'unsafe-eval'\",'X-Content-Type-Options':'bad','Referrer-Policy':'unsafe-url','Strict-Transport-Security':'max-age=0'}.get(k,v)) for k,v in secure]))\ntest('headers non HTML',h.run,[],r=response(headers=[('Content-Type','application/json')]))\ntest('headers wildcard framing FN',h.run,[],r=response(headers=[(k,\"default-src 'self'; frame-ancestors *\" if k=='Content-Security-Policy' else v) for k,v in secure]))\nfor value,expect in [('sid=FixtureValue',3),('sid=FixtureValue; Secure; HttpOnly; SameSite=Lax',0),('sid=FixtureValue; SameSite=None',3),('not a valid cookie',0)]:\n test('cookie '+value,c.run,lambda a,d,n=expect:len(a)==n,r=response(headers=[('Set-Cookie',value)]))\nfor allow,cred,title in [('https://sentinelscan-probe.invalid','true','Potential unsafe credentialed CORS'),('https://sentinelscan-probe.invalid','','Potential arbitrary CORS origin reflection'),('*','true','Incompatible wildcard credentialed CORS'),('https://trusted.invalid','true',None),('*','',None),('not-an-origin','bad',None)]:\n test('CORS '+allow+' '+cred,cors.run,[title] if title else [],lambda z,a=allow,b=cred:setattr(z['client'].get,'return_value',response(headers=[('Access-Control-Allow-Origin',a),('Access-Control-Allow-Credentials',b)])))\ndef reflect(kind):\n def setup(z):\n  def get(url):\n   marker=parse_qs(urlsplit(url).query)['q'][0]\n   body={'script':'<script>const x=\"'+marker+'\";</script>','serialized':'<script type=\"application/json\">'+json.dumps(marker)+'</script>','text':'<p>'+marker+'</p>','attribute':'<input value=\"'+marker+'\">','event':'<div onclick=\"'+marker+'\">x</div>','none':'<p>constant</p>'}[kind]\n   return response(body,url=url)\n  z['client'].get.side_effect=get\n return setup\nfor kind in ['script','event','text','attribute','none','serialized']:\n test('XSS '+kind,x.run,['Potential Reflected XSS'] if kind in ('script','event','serialized') else [],reflect(kind))\nfor kind,body,baseline,expected in [('new SQLite','sqlite3.OperationalError: test','ok',['Potential SQL Injection']),('baseline SQLite','sqlite3.OperationalError: test','sqlite3.OperationalError: test',[]),('status only','generic error','ok',[]),('documentation FP','Documentation: sqlite3.OperationalError is a Python exception.','ok',['Potential SQL Injection'])]:\n test('SQL '+kind,sql.run,expected,lambda z,b=body:setattr(z['client'].get,'return_value',response(b,status=500)),r=response(baseline))\nfor kind,body,expected in [('trace','Traceback (most recent call last)',['Verbose application error disclosure']),('safe','generic error',[]),('documentation FP','Tutorial: Traceback (most recent call last)',['Verbose application error disclosure']),('malformed','Traceback (bad)',[])]:test('disclosure '+kind,disc.run,expected,r=response(body))\ntest('version and sourcemap',disc.run,['Server or framework version disclosed','Source map reference disclosed'],r=response('//# sourceMappingURL=x.map',headers=[('Server','nginx/1.2.3')]))\ntest('technology indicators',tech.run,lambda a,d:len(d['technologies'])==3,r=response('<script src=\"/jquery.js\"></script><link href=\"/wp-content/a.css\">',headers=[('Content-Type','text/html'),('Server','nginx')] ))\ntest('technology secure neutral',tech.run,[],r=response('<p>neutral</p>'))\ntest('technology malformed html',tech.run,[],r=response('<script src=jquery.js'))\ndef resources(kind):\n def setup(z):\n  def get(url,**kw):\n   path=urlsplit(url).path\n   if kind=='timeout' and path=='/.env':raise RequestFailure('fixture timeout')\n   if 'sentinelscan-not-found' in path:return response('missing',url=url,status=404)\n   if kind=='secure':return response('denied',url=url,status=403)\n   if kind=='soft':return response('missing',url=url,status=404)\n   if path=='/.env':return response('APP_MODE=fixture\\nSAFE_FLAG=enabled\\n',headers=[('Content-Type','text/plain')],url=url)\n   if path=='/.git/HEAD':return response('ref: refs/heads/fixture\\n',headers=[('Content-Type','text/plain')],url=url)\n   return response('<title>Index of /uploads</title>',url=url)\n  z['client'].get.side_effect=get\n return setup\nfor kind,expected in [('positive',['Potential exposed environment configuration','Exposed Git metadata','Directory listing enabled']),('secure',[]),('soft',[]),('timeout',['Exposed Git metadata','Directory listing enabled'])]:test('resources '+kind,d.run,expected,resources(kind))\ndef softfn(z):\n z['paths']=['/uploads'];z['client'].get.side_effect=[response('x'*45,status=200),response('<title>Index of /uploads</title>',status=200)]\ntest('resources similar length FN',d.run,[],softfn)\n# Explicit baseline failures and network exceptions for every HTTP-dependent module.\nfor mod in [h,c,cors,x,sql,disc,d,tech]:\n test(mod.__name__+' baseline unavailable',mod.run,[],lambda z:z.update(response=None),expected_error='SkipModule')\nfor mod in [cors,x,sql,d]:test(mod.__name__+' timeout',mod.run,[],lambda z:setattr(z['client'].get,'side_effect',RequestFailure('fixture timeout')),expected_error='RequestFailure')\n# No actual DNS network requests.\nfor name,answers,system,expected in [('pinned',{'A':['127.0.0.1'],'AAAA':[],'CNAME':['local.test']},[],None),('timeout fallback',{},['127.0.0.1'],None),('unavailable',{},OSError('offline'),'TargetError'),('empty fallback',{},[],None),('unsafe mixed',{'A':['127.0.0.1','169.254.169.254']},[],'TargetError')]:\n def check(z,answers=answers,system=system):\n  def resolve(host,record,**kw):\n   if record in answers:return answers[record]\n   raise dns.exception.Timeout()\n  with patch('scanner.target.dns.resolver.Resolver.resolve',side_effect=resolve),patch('scanner.target.system_addresses',side_effect=system if isinstance(system,Exception) else None,return_value=system):\n   z['target']=validate_target('http://fixture.test/',True)\n  return dns_scanner.run(z)\n test('DNS '+name,check,[],expected_error=expected)\n# Nmap controlled XML and failover; no remote targets.\nxml=b'<nmaprun><host><ports><port protocol=\"tcp\" portid=\"443\"><state state=\"open\"/><service name=\"https\" product=\"fixture\" version=\"1\"/></port></ports></host></nmaprun>'\nfor name,output,error in [('open',xml,None),('closed',xml.replace(b'\"open\"',b'\"closed\"'),None),('malformed',b'<broken',None),('timeout',b'',subprocess.TimeoutExpired('nmap',.1)),('unavailable',b'',OSError('missing'))]:\n def run(z,out=output,err=error):\n  with patch('scanner.port_scanner.shutil.which',return_value='/trusted/nmap'),patch('scanner.port_scanner.subprocess.run',return_value=Mock(stdout=out),side_effect=err),patch('scanner.port_scanner.connect_ip',side_effect=OSError('closed')):return ports.run(z)\n test('Nmap '+name,run,[])\n# TLS certificate and negotiation branches with trusted test-generated cert; no weak network listener needed.\nfrom cryptography import x509\nfrom cryptography.hazmat.primitives import hashes,serialization\nfrom cryptography.hazmat.primitives.asymmetric import rsa\nfrom cryptography.x509.oid import NameOID\nfrom datetime import datetime,timedelta,timezone\nkey=rsa.generate_private_key(public_exponent=65537,key_size=2048);name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,'localhost')])\ndef cert(days):return x509.CertificateBuilder().subject_name(name).issuer_name(name).public_key(key.public_key()).serial_number(1).not_valid_before(datetime.now(timezone.utc)-timedelta(days=1)).not_valid_after(datetime.now(timezone.utc)+timedelta(days=days)).sign(key,hashes.SHA256()).public_bytes(serialization.Encoding.DER)\nfor kind,days,protocol,bits,expected in [('secure',60,'TLSv1.3',256,[]),('expiry',10,'TLSv1.3',256,['TLS certificate expires soon']),('weak',60,'TLSv1',64,['Weak negotiated TLS configuration']),('malformed',60,'TLSv1.3',256,[])]:\n def run(z,kind=kind,days=days,protocol=protocol,bits=bits):\n  context=Mock();secure=Mock();secure.getpeercert.return_value=b'bad' if kind=='malformed' else cert(days);secure.version.return_value=protocol;secure.cipher.return_value=('fixture',protocol,bits)\n  context.wrap_socket.return_value.__enter__=Mock(return_value=secure);context.wrap_socket.return_value.__exit__=Mock(return_value=False)\n  with patch('scanner.tls_scanner.ssl.create_default_context',return_value=context),patch('scanner.tls_scanner.connect_ip',return_value=Mock()):return tls.run(z)\n test('TLS '+kind,run,expected,expected_error='ValueError' if kind=='malformed' else None)\nfor error in [TimeoutError('timeout'),OSError('unavailable')]:\n def run(z,e=error):\n  with patch('scanner.tls_scanner.connect_ip',side_effect=e):return tls.run(z)\n test('TLS '+str(error),run,[])\nPath('/tmp/phase03_matrix.json').write_text(json.dumps(rows,indent=2))\nprint('TOTAL',len(rows),'PASS',sum(r['status']=='PASS' for r in rows),flush=True)\n",
+    "phase03_network.py": "import os,sys,time,json,threading,socket,subprocess\nfrom pathlib import Path\nfrom http.server import ThreadingHTTPServer,BaseHTTPRequestHandler\nfrom unittest.mock import patch\nsys.path.insert(0,os.getcwd())\nfrom scanner.target import validate_target,TargetError\nfrom scanner.http_scanner import Client,RequestFailure,ScanLimit\nfrom scanner import port_scanner\nfrom scanner.xss_scanner import parameter_urls\nfrom scanner.directory_scanner import paths_from_text\nrows=[];seen=[]\ndef run(name,fn):\n start=time.monotonic()\n try:r=fn();status='PASS'\n except Exception as e:r=repr(e);status='FAIL'\n rows.append(dict(case=name,status=status,seconds=round(time.monotonic()-start,3),actual=r));print(rows[-1],flush=True)\nclass Handler(BaseHTTPRequestHandler):\n def log_message(self,*a):pass\n def do_GET(self):\n  seen.append({'path':self.path,'cookie':self.headers.get('Cookie'),'method':self.command,'time':time.monotonic()})\n  if self.path=='/bad':self.connection.sendall(b'INVALID HTTP\\r\\n\\r\\n');self.close_connection=True;return\n  if self.path=='/slow':time.sleep(.4)\n  self.send_response(302 if self.path in ('/loop','/external','/redirect') else 200)\n  if self.path=='/loop':self.send_header('Location','/loop')\n  if self.path=='/external':self.send_header('Location','http://169.254.169.254/')\n  if self.path=='/redirect':self.send_header('Location','/')\n  self.send_header('Set-Cookie','fixture=Transient');self.end_headers()\n  try:self.wfile.write(b'x'*500 if self.path=='/big' else b'local fixture')\n  except (BrokenPipeError,ConnectionResetError):pass\nserver=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=threading.Thread(target=server.serve_forever);thread.start();url=f'http://127.0.0.1:{server.server_port}';target=validate_target(url,True)\ndef errorcheck(path):\n try:Client(target,interval=0,timeout=.1).get(url+path)\n except RequestFailure as e:return {'expected':'RequestFailure','error':str(e)}\n raise AssertionError('Expected RequestFailure')\ntry:\n def basic():\n  client=Client(target,interval=0);a=client.get(url+'/redirect');b=client.get(url+'/');assert a.status==b.status==200 and all(r['cookie'] is None for r in seen);return {'redirects':a.redirects,'no_cookie_replay':True}\n run('HTTP same-origin redirect GET only no cookie replay',basic)\n for path in ('/bad','/slow','/loop'):run('HTTP '+path,lambda p=path:errorcheck(p))\n def external():\n  r=Client(target,interval=0).get(url+'/external');assert r.status==302 and not r.redirects[0]['followed'];return r.redirects\n run('HTTP external redirect blocked',external)\n def limits():\n  c=Client(target,interval=0,max_requests=1,max_bytes=32);r=c.get(url+'/big');assert len(r.body)==32 and r.truncated\n  try:c.get(url+'/')\n  except ScanLimit:return {'captured_bytes':len(r.body),'truncated':True,'request_limit':True}\n  raise AssertionError('limit not enforced')\n run('HTTP bytes/request limits',limits)\n def deadline():\n  c=Client(target,deadline=0)\n  try:c.get(url+'/')\n  except ScanLimit:return 'Scan time budget reached before request'\n  raise AssertionError('deadline')\n run('HTTP deadline',deadline)\n def rate():\n  c=Client(target,interval=.1);c.get(url+'/');c.get(url+'/');gap=seen[-1]['time']-seen[-2]['time'];assert gap>=.08;return {'configured_interval':.1,'observed_gap':gap}\n run('HTTP rate limit',rate)\n def nmap():\n  call=subprocess.run;commands=[]\n  def spy(args,**kw):commands.append(args);return call(args,**kw)\n  with patch('scanner.port_scanner.subprocess.run',side_effect=spy):r=port_scanner.run({'target':target,'client':Client(target,timeout=1,deadline=30)})\n  assert any(p['port']==server.server_port for p in r['open_ports']);return {'commands':commands,'result':r}\n run('Nmap real loopback inventory',nmap)\n def fallback():\n  with patch('scanner.port_scanner.shutil.which',return_value=None):r=port_scanner.run({'target':target,'client':Client(target,timeout=1,deadline=30)})\n  assert any(p['port']==server.server_port for p in r['open_ports']);return r\n run('TCP fallback real loopback inventory',fallback)\nfinally:server.shutdown();server.server_close();thread.join()\nrun('HTTP unavailable service',lambda:errorcheck('/'))\ndef params():\n generated=list(parameter_urls(url+'/?q=ok&token=sensitive&delete=1&action=go&other=z&six=last',lambda v:'marker'))\n assert [x[0] for x in generated]==['q','other'];return {'eligible_names':[x[0] for x in generated],'note':'Sensitive parameters not mutated, but original URL query pairs remain in requests.'}\nrun('parameter probe exclusions and first-five cap',params)\ndef paths():\n for p in ('//host','/../x','/a?b',' '.join('/x'+str(i) for i in range(16))):\n  try:paths_from_text(p)\n  except ValueError:continue\n  raise AssertionError(p)\n return 'invalid/traversal/over-limit paths rejected'\nrun('resource path limits',paths)\nPath('/tmp/phase03_network.json').write_text(json.dumps(rows,indent=2))\n"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "fixtures": {
+    "python": {
+      "positive.py": "from flask import Flask, request\nimport sqlite3\napp=Flask(__name__)\n@app.route(\"/bad\")\ndef bad():\n    db=sqlite3.connect(\":memory:\")\n    return str(db.execute(\"SELECT \" + request.args.get(\"q\")).fetchall())\n",
+      "negative.py": "from flask import Flask, request\nimport sqlite3\napp=Flask(__name__)\n@app.route(\"/safe\")\ndef safe():\n    db=sqlite3.connect(\":memory:\")\n    return str(db.execute(\"SELECT ?\", (request.args.get(\"q\"),)).fetchall())\n"
+    },
+    "javascript": {
+      "positive.js": "const userInput = location.hash;\ndocument.body.innerHTML = userInput;\n",
+      "negative.js": "const userInput = location.hash;\ndocument.body.textContent = userInput;\n"
+    }
+  },
+  "runs": [
+    {
+      "mode": "missing-search",
+      "language": "python",
+      "result": {
+        "status": "Failed",
+        "languages": [
+          {
+            "language": "python",
+            "status": "Failed",
+            "note": "Tool failed; raw diagnostics are omitted to protect source data."
+          }
+        ],
+        "note": "No-build extraction only. Installed query packs required; no automatic downloads or builds."
+      },
+      "seconds": 4.938,
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-ggejzfwh/python-db",
+            "--language=python",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase14-fixture-wxv_azea",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "seconds_budget": 119.99970441684127,
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-ggejzfwh",
+          "exit": "success",
+          "db_exists": true,
+          "seconds": 3.942
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-ggejzfwh/python-db",
+            "codeql/python-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-ggejzfwh/python.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents"
+          ],
+          "seconds_budget": 116.05779291689396,
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-ggejzfwh",
+          "error": "Tool failed; raw diagnostics are omitted to protect source data.",
+          "seconds": 0.978
+        }
+      ],
+      "cleaned": true,
+      "findings": []
+    },
+    {
+      "mode": "exact-pack",
+      "language": "python",
+      "result": {
+        "status": "Partial",
+        "languages": [
+          {
+            "candidates": 1,
+            "rejected_results": 0,
+            "status": "Partial",
+            "language": "python"
+          }
+        ],
+        "note": "No-build extraction only. Installed query packs required; no automatic downloads or builds."
+      },
+      "seconds": 10.229,
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mwxtx2tz/python-db",
+            "--language=python",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/phase14-fixture-76f4prlb",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "seconds_budget": 119.99986237497069,
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mwxtx2tz",
+          "exit": "success",
+          "db_exists": true,
+          "seconds": 2.898
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mwxtx2tz/python-db",
+            "codeql/python-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mwxtx2tz/python.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents",
+            "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12"
+          ],
+          "seconds_budget": 117.10198562499136,
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mwxtx2tz",
+          "exit": "success",
+          "db_exists": true,
+          "invocations": [
+            {
+              "executionSuccessful": true,
+              "levels": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "note",
+                "note"
+              ]
+            }
+          ],
+          "seconds": 7.26
+        }
+      ],
+      "cleaned": true,
+      "findings": [
+        {
+          "title": "CodeQL candidate: py/sql-injection",
+          "severity": "High",
+          "location": "audit/phase14/positive.py:7",
+          "confidence": "Medium"
+        }
+      ]
+    }
+  ]
+}

@@ -26,7 +26,7 @@ academic assessment tool, not a security certification or proof of exploitabilit
 ## Features
 
 - Website DAST; repository SAST, secrets, configuration and dependency checks.
-- Optional local Semgrep/CodeQL and operator-enabled automatic AI refinement after new scans.
+- Optional local Semgrep/CodeQL and operator-enabled automatic local Ollama refinement after new scans.
 - SQLite-backed dashboard, finding filters/status, scan history, comparison and trends.
 - HTML/JSON/CSV reports; source context, suggested fixes, read-only recommendation viewer.
 

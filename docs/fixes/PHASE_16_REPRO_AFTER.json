@@ -1,0 +1,65 @@
+{
+  "D06": {
+    "count": 2,
+    "findings": [
+      {
+        "title": "Dynamic Python code execution",
+        "location": "audit/fixture/a.py:1",
+        "severity": "Medium",
+        "confidence": "Medium",
+        "evidence": "Dynamic value; original input source unknown \u2192 request.args.get() transformation \u2192 eval. No protection recognized for this operation; static analysis does not prove exploitability.",
+        "fingerprint": "0e28d01fe6cadef2732a99e60459b3cb05b6255e803f361f5569d88a53036320"
+      },
+      {
+        "title": "Dynamic Python code execution",
+        "location": "audit/fixture/a.py:1",
+        "severity": "Medium",
+        "confidence": "Medium",
+        "evidence": "Dynamic value; original input source unknown \u2192 request.args.get() transformation \u2192 eval. No protection recognized for this operation; static analysis does not prove exploitability.",
+        "fingerprint": "e03d8444ac89cc8703176182fa71f2b74963ebf1749224b25bc0c9833e8aa9b9"
+      }
+    ],
+    "saved_count": 2
+  },
+  "D07": {
+    "count": 1,
+    "findings": [
+      {
+        "title": "Potential sensitive HTML comment",
+        "location": "audit/fixture/index.html:2",
+        "severity": "Low",
+        "confidence": "Low",
+        "evidence": "An HTML comment mentions credentials or an authentication bypass. Comment contents are omitted.",
+        "fingerprint": "66215cd7be505a9f8cf22dfedfdef26cf45ae460ecb90e817a0567dada580e25"
+      }
+    ]
+  },
+  "D08-doc": {
+    "count": 0,
+    "findings": []
+  },
+  "D09": {
+    "count": 0,
+    "findings": []
+  },
+  "D12": {
+    "count": 1,
+    "titles": [
+      "Directory listing enabled"
+    ],
+    "observations": {
+      "resources": [
+        {
+          "path": "/uploads",
+          "status": 200,
+          "bytes": 32,
+          "truncated": false,
+          "possible_soft_404": false,
+          "content_type": "text/html"
+        }
+      ],
+      "soft_404_baseline_status": 200,
+      "note": "HTTP 200/401/403 alone is not treated as a vulnerability. Soft-404 filtering is heuristic."
+    }
+  }
+}

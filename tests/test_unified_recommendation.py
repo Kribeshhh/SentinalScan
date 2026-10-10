@@ -13,6 +13,7 @@ from analysis.finding_engine import Finding,save_finding
 from analysis.solution_engine import solution_for
 from analysis.recommendation_composer import compose,final_solution
 from analysis.llm_review import prepare,process
+from analysis.ai_grounding import ACTION
 from reports.report_generator import report_data,csv_document
 from tests import test_source_accuracy
 from tests.test_llm_review import response
@@ -24,8 +25,7 @@ class ComposerTests(unittest.TestCase):
         fixture=test_source_accuracy.SourceAccuracyTests();self.source=fixture.sql();self.finding=fixture.finding(self.source)
         self.base=solution_for(self.finding,self.source)
         snippet=self.base['before'];payload=prepare(self.finding,dict(excerpt=snippet,start_line=6,detected_line=6),solution=self.base)
-        answer=response(original_code=snippet,suggested_code=self.base['examples'][0]['code'],remediation='Bind email at the existing SQLite execute call.')
-        answer['recommendation'].update(why='Binding email separately prevents it from changing the SQL structure.',additional_actions=['Test ordinary emails and quote characters using the same SQLite connection.'])
+        answer=response(original_code=snippet,suggested_code=self.base['examples'][0]['code'],remediation=ACTION)
         self.review=process(self.finding,payload,answer,self.source)
 
     def test_source_fix_off_on_and_dedup(self):
@@ -33,7 +33,7 @@ class ComposerTests(unittest.TestCase):
         on=compose(self.finding,self.base,self.review,True)
         self.assertFalse(off['ai_assisted']);self.assertTrue(on['ai_assisted']);self.assertEqual(on['validation_status'],'Passed')
         self.assertEqual(len(on['examples']),1);self.assertEqual(on['examples'][0]['code'].strip(),off['examples'][0]['code'].strip())
-        self.assertEqual(on['what_to_change'],'Bind email at the existing SQLite execute call.')
+        self.assertEqual(on['what_to_change'],ACTION)
         self.assertNotIn('ai_assisted',self.base)
 
     def test_failed_unvalidated_and_malformed_review_fall_back(self):
@@ -44,7 +44,10 @@ class ComposerTests(unittest.TestCase):
     def test_secret_yaml_and_false_positive_keep_safe_policy(self):
         f=dict(self.finding,category='Secret Exposure',location='o/r/settings.yaml:2',title='Potential embedded credential')
         base=solution_for(f,'service:\n password: "SuperSensitive987"')
-        review=process(f,prepare(f,None),response(remediation='Load credentials securely at runtime.'))
+        from analysis.ai_grounding import statements
+        policy=statements(f);reply=response(reason=policy['reason'][0])
+        reply['recommendation'].update(what_to_change=policy['what_to_change'][0],why=policy['why'][0])
+        review=process(f,prepare(f,None),reply)
         result=compose(f,base,review,True)
         self.assertEqual(result['examples'],[]);self.assertNotIn('SuperSensitive987',json.dumps(result))
         self.assertTrue(any('rotate' in action.lower() for action in result['additional_actions']))
@@ -119,10 +122,10 @@ class UnifiedPageTests(unittest.TestCase):
         self.save_review('Repository');self.app.config['LLM_ENABLED']=True
         with self.app.app_context():
             data=report_data(get_db(),self.scans['Repository']);f=data['findings'][0]
-            self.assertEqual(f['recommendation'],'Bind email at the existing SQLite execute call.')
+            self.assertEqual(f['recommendation'],ACTION)
             self.assertTrue(f['solution']['ai_assisted']);self.assertNotIn('original_code',json.dumps(data))
             html=render_template('report_document.html',report=data)
-            self.assertEqual(html.count('Bind email at the existing SQLite execute call.'),1)
+            self.assertEqual(html.count(ACTION),1)
             self.assertIn('Recommendation Source: AI-assisted',html)
             row=next(row for row in csv.DictReader(io.StringIO(csv_document(data))) if row['record_type']=='finding')
             self.assertEqual(row['recommendation'],f['recommendation'])
@@ -150,7 +153,7 @@ class UnifiedPageTests(unittest.TestCase):
             db=get_db();row=db.execute('SELECT data_json FROM ai_reviews').fetchone();review=json.loads(row[0]);review['recommendation']['what_to_change']='<script>bad()</script>'
             with db:db.execute('UPDATE ai_reviews SET data_json=?',(json.dumps(review),))
             before=tuple(db.execute('SELECT * FROM findings WHERE id=?',(self.ids['Repository'],)).fetchone())
-        section=self.page('Repository');self.assertIsNone(section.find('script'));self.assertIn('<script>bad()</script>',section.get_text())
+        section=self.page('Repository');self.assertIsNone(section.find('script'));self.assertNotIn('<script>bad()</script>',section.get_text());self.assertNotIn('AI-assisted recommendation',section.get_text())
         with self.app.app_context():self.assertEqual(before,tuple(get_db().execute('SELECT * FROM findings WHERE id=?',(self.ids['Repository'],)).fetchone()))
 
 class ExamplePatternTests(unittest.TestCase):

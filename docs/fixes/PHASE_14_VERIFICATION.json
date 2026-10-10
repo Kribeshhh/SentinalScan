@@ -1,0 +1,70 @@
+{
+  "phase": 14,
+  "date": "2026-10-09",
+  "scripts": {
+    "/tmp/phase14_live.py": "import sys,json,time,tempfile,os\nfrom pathlib import Path\nfrom unittest.mock import patch\nsys.path.insert(0,str(Path.cwd()))\nfrom scanner.source_scanner import analyze_directory\nfrom scanner.engines import external\nfrom scanner.engines.process import run_tool\nbase=json.load(open('docs/audit/PHASE_02_EXTERNAL_ENGINES.evidence.json'))\nfixtures={r['language']:r['fixtures'] for r in base['baseline'] if r.get('engine')=='semgrep' and 'fixtures' in r}\npaths=[str(Path.home()/'.codeql/packages/codeql/python-queries/1.8.12'),str(Path.home()/'.codeql/packages/codeql/javascript-queries/2.4.7')]\nrows=[]\nfor mode,lang,search in [('missing-search','python',''),('exact-pack','python',paths[0])]:\n with tempfile.TemporaryDirectory(prefix='phase14-fixture-') as td:\n  root=Path(td)\n  for name,src in fixtures[lang].items():(root/name).write_text(src)\n  ctx=analyze_directory(root,list(fixtures[lang]),'audit/phase14');ctx['deadline']=time.monotonic()+150\n  ctx['engine_config']={'CODEQL_ENABLED':True,'CODEQL_BINARY':'/opt/homebrew/bin/codeql','CODEQL_SEARCH_PATH':search}\n  calls=[]\n  def traced(args,work,seconds,output=None):\n   row={'args':args,'seconds_budget':seconds,'work':str(work)};calls.append(row);start=time.monotonic()\n   try:\n    payload=run_tool(args,work,seconds,output);row['exit']='success';row['db_exists']=Path(args[3]).exists()\n    if output:\n     doc=json.loads(payload);row['invocations']=[{'executionSuccessful':i.get('executionSuccessful'),'levels':[n.get('level') for n in i.get('toolExecutionNotifications',[])]} for r in doc['runs'] for i in r.get('invocations',[])]\n    return payload\n   except Exception as e:row['error']=str(e);raise\n   finally:row['seconds']=round(time.monotonic()-start,3)\n  start=time.monotonic()\n  with patch.object(external,'run_tool',side_effect=traced):result=external.codeql(ctx)\n  rows.append({'mode':mode,'language':lang,'result':result,'seconds':round(time.monotonic()-start,3),'commands':calls,'cleaned':all(not Path(r['work']).exists() for r in calls),'findings':[{'title':f.title,'severity':f.severity,'location':f.location,'confidence':f.confidence} for f in ctx['findings']]})\n  print(mode,result,flush=True)\nPath('docs/fixes/PHASE_14_BEFORE.json').write_text(json.dumps({'fixtures':fixtures,'runs':rows},indent=2)+'\\n')\n",
+    "/tmp/phase14_resolve.py": "import json,tempfile,sys,time,os\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nfrom scanner.engines.process import run_tool\nfrom scanner.engines.external import codeql_search_path\npaths=[str(Path.home()/'.codeql/packages/codeql/python-queries/1.8.12'),str(Path.home()/'.codeql/packages/codeql/javascript-queries/2.4.7')]\nrows=[]\nwith tempfile.TemporaryDirectory(prefix='phase14-resolve-') as td:\n base=Path(td);repo=base/'repo';repo.mkdir();empty=base/'empty';empty.mkdir()\n for language,search in [('python',''),('javascript',''),('python',os.pathsep.join(paths)),('javascript',os.pathsep.join(paths)),('python',str(empty))]:\n  with tempfile.TemporaryDirectory(prefix='phase14-tool-') as work:\n   work=Path(work);output=work/'capture.json';args=['/opt/homebrew/bin/codeql','resolve','queries','codeql/'+language+'-queries']\n   validated=codeql_search_path({'CODEQL_SEARCH_PATH':search},repo)\n   if validated:args.append('--search-path='+validated)\n   code='import json,subprocess,os,pathlib; p=subprocess.run('+repr(args)+',capture_output=True,text=True);pathlib.Path(\"capture.json\").write_text(json.dumps(dict(returncode=p.returncode,stdout=p.stdout,stderr=p.stderr,environment_keys=sorted(os.environ),home=os.environ.get(\"HOME\"))))'\n   start=time.monotonic();data=json.loads(run_tool([sys.executable,'-I','-c',code],work,15,output))\n   entries=data.pop('stdout').splitlines();data.update(language=language,search=search,args=args,query_count=len(entries),seconds=round(time.monotonic()-start,3),private_home=Path(data.pop('home'))==work/'home')\n   assert data['private_home'];assert 'PYTHONPATH' not in data['environment_keys'] and 'GITHUB_TOKEN' not in data['environment_keys']\n   assert data['returncode']==(0 if search==os.pathsep.join(paths) else 2)\n   rows.append(data)\n  data['cleaned']=not work.exists()\nPath('docs/fixes/PHASE_14_RESOLUTION.json').write_text(json.dumps(rows,indent=2)+'\\n')\nprint(json.dumps(rows,indent=2))\n",
+    "/tmp/phase14_launch.py": "import tempfile,subprocess,os\nwith tempfile.TemporaryDirectory(prefix='phase14-data-') as td:\n env=os.environ.copy();env['SENTINELSCAN_DATA_DIR']=td;env['SENTINELSCAN_LLM_ENABLED']='false';env['PYTHONPATH']='/tmp/phase14-launch-hook'\n env.pop('SENTINELSCAN_CODEQL_SEARCH_PATH',None);env.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n p=subprocess.run(['/bin/zsh','./run-local.sh'],env=env,timeout=250)\n raise SystemExit(p.returncode)\n",
+    "/tmp/phase14_launcher_verify.py": "import json,time,tempfile,zipfile,os,sys\nfrom pathlib import Path\nfrom unittest.mock import patch\n\ndef verify(app):\n from scanner.source_scanner import run_repository,MODULE_NAMES\n from scanner.engines import external\n from scanner.engines.process import run_tool\n from database import get_db\n base=json.load(open('docs/fixes/PHASE_14_BEFORE.json'));fixtures=base['fixtures']\n evidence={'launcher':'/bin/zsh ./run-local.sh -> .venv python3 -u app.py -> create_app().run (serving replaced by temporary test hook)','config':{k:app.config[k] for k in ('CODEQL_ENABLED','CODEQL_BINARY','CODEQL_SEARCH_PATH','SEMGREP_ENABLED','LLM_ENABLED')},'interpreter':sys.executable,'runs':[]}\n assert app.config['CODEQL_ENABLED'] and not app.config['LLM_ENABLED']\n assert Path(app.config['DATABASE']).is_relative_to(Path(os.environ['SENTINELSCAN_DATA_DIR']))\n class Archive:\n  destination=None\n  def __init__(self,files):self.files=files\n  def archive(self,repository,commit,destination):\n   self.destination=destination\n   with zipfile.ZipFile(destination,'w') as z:\n    for p,src in self.files.items():z.writestr('fixture/'+p,src)\n try:\n  for language in ('python','javascript','mixed'):\n   files=fixtures[language] if language!='mixed' else {**fixtures['python'],**fixtures['javascript']}\n   archive=Archive(files);calls=[];raw=[];imported=[]\n   def traced(args,work,seconds,output=None):\n    row={'args':args,'work':str(work),'budget':seconds};calls.append(row);start=time.monotonic()\n    try:\n     payload=run_tool(args,work,seconds,output);row['status']='Completed'\n     if 'create' in args:row['database_created']=Path(args[3]).is_dir()\n     if output and 'analyze' in args:\n      doc=json.loads(payload)\n      row['invocations']=[{'success':i.get('executionSuccessful'),'levels':[n.get('level') for n in i.get('toolExecutionNotifications',[])]} for r in doc['runs'] for i in r.get('invocations',[])]\n      raw.extend({'rule':r['ruleId'],'locations':r['locations']} for run in doc['runs'] for r in run['results'])\n     return payload\n    except Exception as e:row['error']=str(e);raise\n    finally:row['seconds']=round(time.monotonic()-start,3)\n   original_import=external.import_results\n   def import_trace(payload,ctx,engine):\n    before=len(ctx['findings']);result=original_import(payload,ctx,engine)\n    if engine=='CodeQL':\n     imported.extend({'title':f.title,'location':f.location,'severity':f.severity,'confidence':f.confidence} for f in ctx['findings'][before:])\n    return result\n   with app.app_context():\n    db=get_db()\n    with db:\n     sid=db.execute(\"INSERT INTO scans(scan_type,target,status) VALUES ('Repository',?,'Queued')\",('audit/'+language,)).lastrowid\n     db.execute('INSERT INTO repositories(name,location,scan_id) VALUES (?,?,?)',(language,'audit/'+language,sid))\n     db.executemany('INSERT INTO scan_modules(scan_id,name) VALUES (?,?)',[(sid,n) for n in MODULE_NAMES])\n   start=time.monotonic()\n   with patch.object(external,'run_tool',side_effect=traced),patch.object(external,'import_results',side_effect=import_trace):run_repository(app,sid,archive,{'full_name':'audit/'+language},'fixture','a'*40,False)\n   with app.app_context():\n    db=get_db();coverage=dict(db.execute(\"SELECT status,error,data_json FROM scan_modules WHERE scan_id=? AND name='CodeQL'\",(sid,)).fetchone())\n    coverage['data']=json.loads(coverage.pop('data_json'));saved=[]\n    for r in db.execute('SELECT f.*,s.data_json FROM findings f JOIN finding_solutions s ON f.id=s.finding_id WHERE scan_id=?',(sid,)):\n     a=json.loads(r['data_json']).get('finding_context',{}).get('analysis',{})\n     engines=[p['engine'] for p in a.get('detected_by',[])]\n     if a.get('engine')=='CodeQL' or 'CodeQL' in engines:saved.append({'title':r['title'],'location':r['location'],'severity':r['severity'],'confidence':r['confidence'],'analysis':a})\n    scan_status=db.execute('SELECT status FROM scans WHERE id=?',(sid,)).fetchone()[0]\n   row={'language':language,'seconds':round(time.monotonic()-start,3),'scan_status':scan_status,'coverage':coverage,'saved':saved,'imported_codeql':imported,'raw_result_locations':raw,'commands':calls,'cleaned':all(not Path(r['work']).exists() for r in calls) and not archive.destination.parent.exists()}\n   evidence['runs'].append(row)\n   print(language,coverage['status'],'saved',len(saved),'cleaned',row['cleaned'],flush=True)\n   assert coverage['status']=='Completed',row\n   assert len(saved)==(2 if language=='mixed' else 1),row\n   assert all('positive.' in r['location'] and r['severity']==('High' if '.py:' in r['location'] else 'Medium') for r in saved),row\n   assert len(imported)==len(saved) and all(f['severity']=='High' and f['confidence']=='Medium' for f in imported),row\n   assert row['cleaned']\n   for r in raw:\n    physical=r['locations'][0]['physicalLocation'];path=physical['artifactLocation']['uri'];line=physical['region']['startLine']\n    assert path=='positive.py' and line==7 or path=='positive.js' and line==2,(path,line)\n finally:\n  app.extensions['scan_manager'].shutdown()\n  Path('docs/fixes/PHASE_14_LAUNCHER.json').write_text(json.dumps(evidence,indent=2)+'\\n')\n",
+    "/tmp/phase14-launch-hook/sitecustomize.py": "# Temporary audit hook: actual launcher/app configuration; replace only serving.\nimport flask,runpy,os\n\ndef verify(app,*args,**kwargs):\n    runpy.run_path('/tmp/phase14_launcher_verify.py')['verify'](app)\nflask.Flask.run=verify\n",
+    "/tmp/phase14_run.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase12-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n os.environ.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n os.environ['SENTINELSCAN_TEST_SEMGREP']='/opt/homebrew/bin/semgrep'\n suite=unittest.defaultTestLoader.discover('tests') if '--full' in sys.argv else unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName('tests.'+n) for n in ['test_llm_review','test_llm_sast_dast','test_repository_phase4','test_unified_recommendation','test_final_validation','test_ollama','test_ai_grounding'])\n start=time.monotonic()\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n print(json.dumps(dict(tests=result.testsRun,passed=result.testsRun-len(result.failures)-len(result.errors)-len(result.skipped),failed=len(result.failures),errors=len(result.errors),skipped=len(result.skipped),seconds=round(time.monotonic()-start,3))))\n sys.exit(not result.wasSuccessful())\n"
+  },
+  "codeql_version": "CodeQL command-line toolchain release 2.27.2.\nCopyright (C) 2019-2026 GitHub, Inc.\nUnpacked in: /opt/homebrew/Caskroom/codeql/2.27.2/codeql\n   Analysis results depend critically on separately distributed query and\n   extractor modules. To list modules that are visible to the toolchain,\n   use 'codeql resolve packs' and 'codeql resolve languages'.\n",
+  "cli_path": "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+  "full_suite": {
+    "tests": 289,
+    "passed": 289,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 23.663,
+    "exit_code": 0
+  },
+  "focused_suite": {
+    "tests": 25,
+    "passed": 25,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 2.876,
+    "exit_code": 0
+  },
+  "live_launcher_exit": 0,
+  "live_summary": [
+    {
+      "language": "python",
+      "seconds": 12.82,
+      "status": "Completed",
+      "imported": 1,
+      "persisted": 1,
+      "cleaned": true
+    },
+    {
+      "language": "javascript",
+      "seconds": 21.156,
+      "status": "Completed",
+      "imported": 1,
+      "persisted": 1,
+      "cleaned": true
+    },
+    {
+      "language": "mixed",
+      "seconds": 32.004,
+      "status": "Completed",
+      "imported": 2,
+      "persisted": 2,
+      "cleaned": true
+    }
+  ],
+  "files_sha256": {
+    "scanner/engines/external.py": "bc507ca07b5efc70e9621c41d1a3a74e2078490c6f087595a4c5f790a682b1f7",
+    "scanner/engines/sarif.py": "4fc261be5560709d54b1f03292f87d10fba7122e20435d06192029ebba1ed607",
+    "scanner/engines/process.py": "77681e94105340ef04c49c43ce617d6feb85dc0903ba2c7186ffcb532e562dd4",
+    "scanner/engines/limit_exec.py": "5dec01431845394e23690b3a3b80118a24e1e8c88020b57fdaec06013f5628ef",
+    "run-local.sh": "afdd9c8622e2f781976a7322c6421d3bf4b48f2af023c35bab9e49dc3f63d28e",
+    "tests/test_codeql_repair.py": "305b722c2f6ce03f8fe08472eb47235fd862104a3a75bebc355fe46483deabe5"
+  },
+  "process_controls_unchanged": true,
+  "zsh_syntax_exit": 0,
+  "diff_check_exit": 0
+}

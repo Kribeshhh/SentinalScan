@@ -22,6 +22,20 @@ def add(ctx,path,line,title,category,evidence,recommendation,severity='Medium',c
     from analysis.finding_context import repository_context
     context=repository_context(vars(finding))
     context["analysis"]=normalized(finding,ctx["repository"],path,line,semantic)
+    # Only disambiguate colliding semantic occurrences. Ordinary/legacy finding
+    # fingerprints and display locations stay unchanged. Re-analysis of the same
+    # AST operation still deduplicates.
+    if semantic is not None:
+        for index, prior in enumerate(ctx['findings']):
+            if (prior.source, prior.category, prior.title, prior.location) != (finding.source, finding.category, finding.title, finding.location):
+                continue
+            previous = json.loads(prior.context_json)
+            detail = previous.get('analysis', {})
+            column = detail.get('start_column')
+            if type(column) is int and (column != semantic.start_column or 'occurrence_column' in detail):
+                detail['occurrence_column'] = column
+                context['analysis']['occurrence_column'] = semantic.start_column
+                ctx['findings'][index] = replace(prior, context_json=json.dumps(previous))
     ctx["findings"].append(replace(finding,context_json=json.dumps(context)))
 
 

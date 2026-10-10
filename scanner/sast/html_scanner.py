@@ -1,7 +1,17 @@
 import re
-from bs4 import BeautifulSoup,Comment
+from bs4 import BeautifulSoup
+from html.parser import HTMLParser
 from scanner.sast.common import add,files
 from scanner.sast.javascript_scanner import analyze
+
+
+class Comments(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.comments = []
+
+    def handle_comment(self, data):
+        self.comments.append((self.getpos()[0], data))
 
 
 def run(ctx):
@@ -22,7 +32,9 @@ def run(ctx):
                 source_type=str(element.get('type','')).lower()
                 if source_type in ('','text/javascript','application/javascript','module') and not analyze(ctx,path,element.get_text(),(element.sourceline or 1)-1):
                     script_errors+=1
-        for comment in soup.find_all(string=lambda value:isinstance(value,Comment)):
+        parser = Comments()
+        parser.feed(source)
+        for line, comment in parser.comments:
             if re.search(r'(?:disable|bypass|skip)\s+(?:auth|authentication|authorization)|(?:password|secret|token)\s*[:=]',str(comment),re.I):
-                add(ctx,path,1,'Potential sensitive HTML comment','Information Disclosure','An HTML comment mentions credentials or an authentication bypass. Comment contents are omitted.','Remove sensitive deployment notes and credentials from client-delivered markup.','Low','Low')
+                add(ctx,path,line,'Potential sensitive HTML comment','Information Disclosure','An HTML comment mentions credentials or an authentication bypass. Comment contents are omitted.','Remove sensitive deployment notes and credentials from client-delivered markup.','Low','Low')
     return {'parsed_files':count,'unparsed_inline_scripts':script_errors,'note':'HTML and inline JavaScript are parsed without rendering, executing scripts or fetching resources.'}

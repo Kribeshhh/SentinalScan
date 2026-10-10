@@ -1,0 +1,10 @@
+[
+  {
+    "case": "D13 invalid module JSON",
+    "http": 200
+  },
+  {
+    "case": "D14 wrong-type finding solution snapshot",
+    "http": 400
+  }
+]

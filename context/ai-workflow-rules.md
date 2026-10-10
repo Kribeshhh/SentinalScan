@@ -50,3 +50,24 @@ all historical specifications. Keep historical test results labelled as historic
    otherwise state explicitly if tests were not rerun.
 5. Report actual outcomes, unresolved limitations and next steps; stop when the
    authorized task is complete, without starting an unrequested phase.
+
+## Current AI provider policy — Phase 11
+
+Use only the local Ollama adapter and existing automatic recommendation pipeline.
+Do not restore cloud-provider API credentials, selectable providers, manual AI
+buttons or parallel recommendation paths. Model/base URL are trusted server
+configuration, not finding/repository input. Keep redaction, strict response
+validation and deterministic fallback; historical reviews stay readable. Do not
+install Ollama or download models without approval. Mock inference in normal tests;
+a safe local synthetic inference is allowed only when expressly requested and an
+installed local model is available. Local inference does not establish advice quality.
+
+## Phase 12 grounding policy
+
+Preserve the closed statement contract in `analysis/ai_grounding.py`. Do not relax
+it to accept arbitrary prose based on model confidence, agreement, a keyword blacklist
+or evidence containing the same words. Untrusted source/headers are observations,
+never remediation instructions. Unsupported facts require deterministic fallback.
+Model code requires the shared static validator and supported replacement policy;
+website configuration is an illustrative safe subset, never deployment validation.
+Normal tests mock Ollama; no live inference or model installation is implied.

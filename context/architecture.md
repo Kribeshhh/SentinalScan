@@ -9,7 +9,7 @@
 | Persistence | SQLite | Scans, findings, triage, snapshots and workflow records |
 | Source analysis | Python AST, JavaScript/Java Tree-sitter | Bounded static detection |
 | Optional engines | Trusted local Semgrep/CodeQL | Additional bounded evidence |
-| Integrations | GitHub API, optional LLM provider | Read-only source access, optional refinement |
+| Integrations | GitHub API, optional local Ollama | Read-only source access, optional refinement |
 
 No React, TypeScript, Node.js dependency or frontend build step.
 
@@ -59,11 +59,11 @@ invent account ownership or deployed access controls that do not exist.
 ## Final recommendation handoff
 
 `ScanManager` finishes/persists either scan, then calls `analysis.llm_review.refine_scan`
-on its existing executor. No new queue, provider, engine, table or AI route exists.
+on its existing executor. No new queue, detection engine, table or AI route exists.
 Enabled/configured AI uses the former review orchestration, now `refine_finding`.
 It reads deterministic `finding_solution`, retained context and existing local draft
 for validation only; allowlisted redacted snippets/flow or HTTP observations reach
-the provider. AI records remain separate. `final_solution` composes one result for
+the loopback-only Ollama provider. AI records remain separate. `final_solution` composes one result for
 finding/new reports. Failure, missing context or invalid code retains the base.
 No page GET sends context. Older records are not bulk processed on startup; rescan
 to collect/refine new context. Existing saved reviews retain read compatibility.
@@ -86,3 +86,79 @@ validation/redacted diff helpers and finding_solution are retained for advice. N
 new drafts/checks/tracking/verification writes occur; historical tables remain and
 the existing AI validator can read old draft source for compatibility. No destructive
 migration or change to detectors, risk, comparison or AI orchestration was made.
+
+## Ollama provider migration — 2026-10-09
+
+Ollama is the only runtime LLM provider. `integrations/llm.py` uses the native
+/api/tags, /api/show and /api/chat APIs through `integrations/ollama.py`; the shared
+public HTTPS client remains reserved for GitHub/OSV. Loopback addresses only, no
+DNS/proxy/redirect forwarding or provider credentials. Local model metadata is
+checked before each inference; missing/remote models fail safely. Configuration:
+SENTINELSCAN_LLM_ENABLED (default false), SENTINELSCAN_OLLAMA_BASE_URL (default
+http://127.0.0.1:11434), SENTINELSCAN_OLLAMA_MODEL (default empty). No model downloads.
+Existing completion hooks, analyst/skeptic schemas, redaction, static validation,
+composition and historical ai_reviews remain. Transport replacement does not fix
+semantic hallucination or unavailable pinned originals. See docs/fixes/PHASE_11_OLLAMA_MIGRATION.md.
+
+## Phase 12 recommendation grounding — 2026-10-09
+
+The existing Ollama handoff now supplies bounded `supported_statements`, generated
+from deterministic recommendation policy, alongside the existing redacted evidence.
+The native response schema constrains prose to those choices; the local validator
+independently reconstructs them before persistence and final composition. It never
+trusts a model-supplied allowlist or treats two-pass agreement as factual verification.
+Unsupported free-form claims and false-positive rationales fall back. This is a
+conservative selection/refinement contract, not unrestricted AI explanation generation.
+Website examples require a small safe-value grammar and the affected header; source
+proposals need the existing pinned-source checks plus a supported deterministic
+replacement. Unknown source/API or unverified examples retain the base recommendation.
+No new route, pipeline, schema, detector, UI panel or provider. Historical reviews
+remain stored, but unsupported content is no longer promoted when read. Immutable
+old report files are unchanged. See docs/fixes/PHASE_12_OLLAMA_REMEDIATION.md.
+
+## Python identity checks — Phase 13 (2026-10-09)
+
+Existing AST abstract values retain supported import/receiver identities. Flask
+sources require absolute import identity; recognized database constructors/cursors
+support SQL confidence. Unresolved receivers keep Low-confidence heuristic candidates
+with explicitly uncertain sinks. Ordinary explicitly declared local methods are not
+SQL sinks solely because of their names; dynamic/inherited/rebound identities stay
+unknown. Scope aliases and conservative branch merging remain bounded; scanned code
+is never executed. No engine, schema or recommendation architecture change. See
+`docs/fixes/PHASE_13_SAST_IDENTITY.md` for supported cases and limitations.
+
+
+## CodeQL pack resolution and coverage — Phase 14 (2026-10-09)
+
+The existing CODEQL_SEARCH_PATH setting accepts a validated OS-path-separated list
+of absolute trusted installed pack directories outside scanned source. The local
+launcher supplies pinned Python1.8.12/JavaScript2.4.7 directories for CLI2.27.2;
+operators can override it when installations change. Private subprocess HOME and
+all existing execution/resource limits remain. SARIF note/none diagnostics permit
+Completed status; warnings/errors/unsuccessful invocations remain Partial, while
+execution failure, timeout and malformed SARIF remain Failed. No download, build,
+new scanner or database change. See docs/fixes/PHASE_14_CODEQL.md.
+
+## Stored data validation — Phase 15 (2026-10-09)
+
+Scan detail validates module JSON objects per record and displays malformed
+observations as unavailable without rewriting stored status or hiding findings.
+Comparison creation validates finding-solution context/analysis/identity and present
+module observations; malformed data returns a controlled error and leaves existing
+comparison snapshots unchanged. Absent optional legacy metadata still uses existing
+qualified matching. No schema, risk, triage or report changes. See
+`docs/fixes/PHASE_15_DATA_ROBUSTNESS.md` for scope and verification.
+
+
+### Phase 16 occurrence and conservative detection corrections
+
+Semantic evidence retains parser byte columns. Only colliding same-line semantic
+findings add a column discriminator to their existing fingerprint; ordinary and
+historical identities remain unchanged. Parsed correlation uses precise columns
+when present and leaves unknown external anchors ambiguous. Display locations stay
+file:line; no schema migration or historical rewrite. HTML comments now carry their
+actual opening line. New scans are required to observe corrected results.
+Website indicators distinguish inert script data, explicitly labeled explanatory
+prose and unrestricted framing, and retain distinct directory-index signatures
+against length-only soft-404s. These remain bounded heuristics. D08 is partial and
+D09 arbitrary credential detection remains unresolved; see the Phase16 fix report.

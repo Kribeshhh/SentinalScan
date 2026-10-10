@@ -1,0 +1,203 @@
+{
+  "initial_suite": {
+    "tests": 95,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 1,
+    "seconds": 8.562,
+    "modules": [
+      "test_hardening",
+      "test_archive_limits",
+      "test_repository_phase2",
+      "test_website_scanner",
+      "test_repository_url",
+      "test_source_scanner",
+      "test_browser_github",
+      "test_dns_fallback",
+      "test_network_reliability",
+      "test_foundation",
+      "test_management",
+      "test_final_validation",
+      "test_restart"
+    ]
+  },
+  "probes": [
+    {
+      "case": "address policy",
+      "address": "127.0.0.1",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "127.0.0.1",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "address policy",
+      "address": "10.1.2.3",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "10.1.2.3",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "address policy",
+      "address": "192.168.1.1",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "192.168.1.1",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "address policy",
+      "address": "[::1]",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[::1]",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "address policy",
+      "address": "[fd12::1]",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[fd12::1]",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "address policy",
+      "address": "169.254.169.254",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "169.254.169.254",
+      "allow_private": true,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "100.100.100.200",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "100.100.100.200",
+      "allow_private": true,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[fd00:ec2::254]",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[fd00:ec2::254]",
+      "allow_private": true,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "0.0.0.0",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "0.0.0.0",
+      "allow_private": true,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "224.0.0.1",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "224.0.0.1",
+      "allow_private": true,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[::ffff:127.0.0.1]",
+      "allow_private": false,
+      "accepted": false
+    },
+    {
+      "case": "address policy",
+      "address": "[::ffff:127.0.0.1]",
+      "allow_private": true,
+      "accepted": true
+    },
+    {
+      "case": "actual queue admission",
+      "accepted": 4,
+      "fifth_rejected": true,
+      "persisted": 4
+    },
+    {
+      "case": "single worker",
+      "maximum_active": 1
+    },
+    {
+      "case": "headers",
+      "headers": {
+        "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "no-referrer",
+        "Cache-Control": "no-store"
+      }
+    },
+    {
+      "case": "CSRF and Host",
+      "missing": 400,
+      "wrong": 400,
+      "host": 400,
+      "cancel": 404
+    },
+    {
+      "case": "fresh directory permissions",
+      "directory": "0o700",
+      "database": "0o644",
+      "key": "0o600"
+    },
+    {
+      "case": "existing directory permissions",
+      "directory": "0o755",
+      "database": "0o644"
+    }
+  ],
+  "suite_log": "test_archive_rejects_preexisting_destination (test_hardening.HardeningTests.test_archive_rejects_preexisting_destination) ... ok\ntest_dashboard_trend_and_report_selection (test_hardening.HardeningTests.test_dashboard_trend_and_report_selection) ... ok\ntest_dast_persistence_masks_credentials_and_form_errors (test_hardening.HardeningTests.test_dast_persistence_masks_credentials_and_form_errors) ... ok\ntest_id_bounds_upload_rejection_and_request_limits (test_hardening.HardeningTests.test_id_bounds_upload_rejection_and_request_limits) ... ok\ntest_malformed_nmap_falls_back_without_shell (test_hardening.HardeningTests.test_malformed_nmap_falls_back_without_shell) ... ok\ntest_repository_module_failure_cleanup_and_queue_limit (test_hardening.HardeningTests.test_repository_module_failure_cleanup_and_queue_limit) ... ok\ntest_retrieval_failure_cleans_temporary_files (test_hardening.HardeningTests.test_retrieval_failure_cleans_temporary_files) ... ok\ntest_safe_error_response_and_logs (test_hardening.HardeningTests.test_safe_error_response_and_logs) ... ok\ntest_session_key_symlink_short_key_and_permissions (test_hardening.HardeningTests.test_session_key_symlink_short_key_and_permissions) ... ok\ntest_download_limit_and_deadline_and_safe_errors (test_archive_limits.ArchiveLimitsTests.test_download_limit_and_deadline_and_safe_errors) ... ok\ntest_oversized_archive_still_rejected (test_archive_limits.ArchiveLimitsTests.test_oversized_archive_still_rejected) ... ok\ntest_both_disabled_and_unavailable (test_repository_phase2.ExternalEngineTests.test_both_disabled_and_unavailable) ... ok\ntest_codeql_create_analyze_safe_no_build (test_repository_phase2.ExternalEngineTests.test_codeql_create_analyze_safe_no_build) ... ok\ntest_codeql_java_only_skipped_and_repo_executable_rejected (test_repository_phase2.ExternalEngineTests.test_codeql_java_only_skipped_and_repo_executable_rejected) ... ok\ntest_path_traversal_remote_uri_and_malformed_output (test_repository_phase2.ExternalEngineTests.test_path_traversal_remote_uri_and_malformed_output) ... ok\ntest_runner_scrubs_environment_and_enforces_timeout_output (test_repository_phase2.ExternalEngineTests.test_runner_scrubs_environment_and_enforces_timeout_output) ... ok\ntest_semgrep_command_uses_trusted_rules_no_remote_auto_or_build (test_repository_phase2.ExternalEngineTests.test_semgrep_command_uses_trusted_rules_no_remote_auto_or_build) ... ok\ntest_tool_failure_timeout_and_bad_output_graceful (test_repository_phase2.ExternalEngineTests.test_tool_failure_timeout_and_bad_output_graceful) ... ok\ntest_valid_semgrep_and_codeql_paths_normalized_without_messages (test_repository_phase2.ExternalEngineTests.test_valid_semgrep_and_codeql_paths_normalized_without_messages) ... ok\ntest_cross_function_source_to_sink_and_returned_query (test_repository_phase2.FlowTests.test_cross_function_source_to_sink_and_returned_query) ... ok\ntest_dead_code_and_function_shadowing (test_repository_phase2.FlowTests.test_dead_code_and_function_shadowing) ... ok\ntest_numeric_sql_protection_survives_supported_helper_only (test_repository_phase2.FlowTests.test_numeric_sql_protection_survives_supported_helper_only) ... ok\ntest_recursion_is_bounded_and_uncertain (test_repository_phase2.FlowTests.test_recursion_is_bounded_and_uncertain) ... ok\ntest_returned_input_alias_and_transform (test_repository_phase2.FlowTests.test_returned_input_alias_and_transform) ... ok\ntest_safe_constant_parameterization_and_sink_specific_protection (test_repository_phase2.FlowTests.test_safe_constant_parameterization_and_sink_specific_protection) ... ok\ntest_unknown_call_does_not_prove_sanitization (test_repository_phase2.FlowTests.test_unknown_call_does_not_prove_sanitization) ... ok\ntest_bundled_rules_vulnerable_safe_and_protected (test_repository_phase2.LiveSemgrepTests.test_bundled_rules_vulnerable_safe_and_protected) ... skipped 'Optional live Semgrep binary not configured'\ntest_https_valid_and_untrusted_certificate (test_website_scanner.WebsiteTests.test_https_valid_and_untrusted_certificate) ... ok\ntest_localhost_real_assessment_pipeline (test_website_scanner.WebsiteTests.test_localhost_real_assessment_pipeline) ... ok\ntest_migration_preserves_existing_related_records (test_website_scanner.WebsiteTests.test_migration_preserves_existing_related_records) ... ok\ntest_mixed_dns_answers_rejected_before_connection (test_website_scanner.WebsiteTests.test_mixed_dns_answers_rejected_before_connection) ... ok\ntest_one_module_failure_does_not_abort_scan (test_website_scanner.WebsiteTests.test_one_module_failure_does_not_abort_scan) ... ok\ntest_pinning_redirect_and_limits (test_website_scanner.WebsiteTests.test_pinning_redirect_and_limits) ... ok\ntest_plain_text_reflection_is_not_xss_or_sqli (test_website_scanner.WebsiteTests.test_plain_text_reflection_is_not_xss_or_sqli) ... ok\ntest_restart_marks_interrupted_jobs_failed (test_website_scanner.WebsiteTests.test_restart_marks_interrupted_jobs_failed) ... ok\ntest_validation_and_authorization (test_website_scanner.WebsiteTests.test_validation_and_authorization) ... ok\ntest_open_url_and_scan_with_existing_authorization (test_repository_url.RepositoryURLTests.test_open_url_and_scan_with_existing_authorization) ... ok\ntest_url_validation (test_repository_url.RepositoryURLTests.test_url_validation) ... ok\ntest_reject_duplicate_paths_and_zip_bomb (test_source_scanner.ArchiveSafetyTests.test_reject_duplicate_paths_and_zip_bomb) ... ok\ntest_reject_malicious_archives_and_skip_exclusions (test_source_scanner.ArchiveSafetyTests.test_reject_malicious_archives_and_skip_exclusions) ... ok\ntest_access_errors_distinguish_sso_and_rate_limits_without_leaking (test_source_scanner.GitHubTransportTests.test_access_errors_distinguish_sso_and_rate_limits_without_leaking) ... ok\ntest_authenticated_owner_listing_includes_private_and_preserves_pagination (test_source_scanner.GitHubTransportTests.test_authenticated_owner_listing_includes_private_and_preserves_pagination) ... ok\ntest_authentication_errors_are_fixed_messages (test_source_scanner.GitHubTransportTests.test_authentication_errors_are_fixed_messages) ... ok\ntest_bad_redirects_and_errors_do_not_leak (test_source_scanner.GitHubTransportTests.test_bad_redirects_and_errors_do_not_leak) ... ok\ntest_token_never_forwarded_to_archive_host (test_source_scanner.GitHubTransportTests.test_token_never_forwarded_to_archive_host) ... ok\ntest_build_hooks_are_only_read_as_text (test_source_scanner.NonExecutionTests.test_build_hooks_are_only_read_as_text) ... ok\ntest_context_reduces_code_false_positives (test_source_scanner.SourceScannerTests.test_context_reduces_code_false_positives) ... ok\ntest_dependency_vulnerability_and_outage (test_source_scanner.SourceScannerTests.test_dependency_vulnerability_and_outage) ... ok\ntest_github_connection_keeps_token_server_side (test_source_scanner.SourceScannerTests.test_github_connection_keeps_token_server_side) ... ok\ntest_optional_tool_failure_preserves_custom_scan (test_source_scanner.SourceScannerTests.test_optional_tool_failure_preserves_custom_scan) ... ok\ntest_osv_failure_does_not_fail_repository (test_source_scanner.SourceScannerTests.test_osv_failure_does_not_fail_repository) ... ok\ntest_repository_pipeline_and_secret_redaction (test_source_scanner.SourceScannerTests.test_repository_pipeline_and_secret_redaction) ... ok\ntest_secret_placeholders_and_export_redaction (test_source_scanner.SourceScannerTests.test_secret_placeholders_and_export_redaction) ... ok\ntest_submission_validation_and_csrf (test_source_scanner.SourceScannerTests.test_submission_validation_and_csrf) ... ok\ntest_access_diagnostics_preserve_specific_errors (test_browser_github.BrowserGitHubTests.test_access_diagnostics_preserve_specific_errors) ... ok\ntest_browser_connect_scan_disconnect_without_environment (test_browser_github.BrowserGitHubTests.test_browser_connect_scan_disconnect_without_environment) ... ok\ntest_csrf_remote_http_and_browser_isolation (test_browser_github.BrowserGitHubTests.test_csrf_remote_http_and_browser_isolation) ... ok\ntest_filtered_empty_page_keeps_next_navigation (test_browser_github.BrowserGitHubTests.test_filtered_empty_page_keeps_next_navigation) ... ok\ntest_invalid_or_rejected_token_is_not_retained_or_echoed (test_browser_github.BrowserGitHubTests.test_invalid_or_rejected_token_is_not_retained_or_echoed) ... ok\ntest_reconnect_preserves_repository_and_distinguishes_access_stages (test_browser_github.BrowserGitHubTests.test_reconnect_preserves_repository_and_distinguishes_access_stages) ... ok\ntest_restart_expires_connection_even_with_signed_session_cookie (test_browser_github.BrowserGitHubTests.test_restart_expires_connection_even_with_signed_session_cookie) ... ok\ntest_store_is_bounded_and_reconnect_rotates_handle (test_browser_github.BrowserGitHubTests.test_store_is_bounded_and_reconnect_rotates_handle) ... ok\ntest_both_resolvers_failing_has_actionable_error (test_dns_fallback.DNSFallbackTests.test_both_resolvers_failing_has_actionable_error) ... ok\ntest_fixed_service_never_connects_to_private_dns_address (test_dns_fallback.DNSFallbackTests.test_fixed_service_never_connects_to_private_dns_address) ... FAIL\ntest_native_resolution_deduplicates (test_dns_fallback.DNSFallbackTests.test_native_resolution_deduplicates) ... ok\ntest_system_fallback_does_not_bypass_ssrf_checks (test_dns_fallback.DNSFallbackTests.test_system_fallback_does_not_bypass_ssrf_checks) ... ok\ntest_system_fallback_preserves_pinning_and_fragment_removal (test_dns_fallback.DNSFallbackTests.test_system_fallback_preserves_pinning_and_fragment_removal) ... ok\ntest_browser_fragment_is_not_sent_or_persisted (test_network_reliability.NetworkReliabilityTests.test_browser_fragment_is_not_sent_or_persisted) ... ok\ntest_read_retries_transient_failures_once (test_network_reliability.NetworkReliabilityTests.test_read_retries_transient_failures_once) ... ok\ntest_writes_tls_and_size_failures_are_not_retried (test_network_reliability.NetworkReliabilityTests.test_writes_tls_and_size_failures_are_not_retried) ... ok\ntest_csrf_status_update_and_validation (test_foundation.FoundationTests.test_csrf_status_update_and_validation) ... ok\ntest_navigation_empty_database_and_headers (test_foundation.FoundationTests.test_navigation_empty_database_and_headers) ... ok\ntest_pagination_and_report_records (test_foundation.FoundationTests.test_pagination_and_report_records) ... ok\ntest_persistence_new_app_instance (test_foundation.FoundationTests.test_persistence_new_app_instance) ... ok\ntest_real_data_escaping_filter_and_risk (test_foundation.FoundationTests.test_real_data_escaping_filter_and_risk) ... ok\ntest_risk_weights_and_bounds (test_foundation.FoundationTests.test_risk_weights_and_bounds) ... ok\ntest_schema_constraints_and_fingerprint (test_foundation.FoundationTests.test_schema_constraints_and_fingerprint) ... ok\ntest_comparison_rejects_wrong_target_running_and_reverse (test_management.ManagementTests.test_comparison_rejects_wrong_target_running_and_reverse) ... ok\ntest_csv_formula_html_escaping_and_legacy_secret_masking (test_management.ManagementTests.test_csv_formula_html_escaping_and_legacy_secret_masking) ... ok\ntest_filtering_search_and_history_counts (test_management.ManagementTests.test_filtering_search_and_history_counts) ... ok\ntest_real_scans_comparison_status_and_trends (test_management.ManagementTests.test_real_scans_comparison_status_and_trends) ... ok\ntest_report_snapshot_persistence_and_path_security (test_management.ManagementTests.test_report_snapshot_persistence_and_path_security) ... ok\ntest_source_fingerprint_ignores_ids_and_line_shifts (test_management.ManagementTests.test_source_fingerprint_ignores_ids_and_line_shifts) ... ok\ntest_website_repository_reports_redaction_and_downloads (test_management.ManagementTests.test_website_repository_reports_redaction_and_downloads) ... ok\ntest_all_provider_failures_render_one_safe_fallback_without_logging (test_final_validation.FinalFailureAndPrivacyTests.test_all_provider_failures_render_one_safe_fallback_without_logging) ... ok\ntest_failed_code_notice_in_page_and_report (test_final_validation.FinalFailureAndPrivacyTests.test_failed_code_notice_in_page_and_report) ... ok\ntest_secret_stays_redacted_in_model_page_reports_database_and_logs (test_final_validation.FinalFailureAndPrivacyTests.test_secret_stays_redacted_in_model_page_reports_database_and_logs) ... ok\ntest_candidate_parse_pattern_and_new_findings (test_final_validation.FinalValidationTests.test_candidate_parse_pattern_and_new_findings) ... ok\ntest_failed_ai_does_not_discredit_valid_deterministic_fix (test_final_validation.FinalValidationTests.test_failed_ai_does_not_discredit_valid_deterministic_fix) ... ok\ntest_known_accuracy_limits_are_recorded_not_claimed_as_security (test_final_validation.FinalValidationTests.test_known_accuracy_limits_are_recorded_not_claimed_as_security) ... ok\ntest_quality_contract_for_website_categories (test_final_validation.FinalValidationTests.test_quality_contract_for_website_categories) ... ok\ntest_repository_injection_payload_is_data_and_credentials_are_removed (test_final_validation.FinalValidationTests.test_repository_injection_payload_is_data_and_credentials_are_removed) ... ok\ntest_safe_website_controls_do_not_emit_findings (test_final_validation.FinalValidationTests.test_safe_website_controls_do_not_emit_findings) ... ok\ntest_website_prompt_injection_stays_untrusted_and_headers_are_filtered (test_final_validation.FinalValidationTests.test_website_prompt_injection_stays_untrusted_and_headers_are_filtered) ... ok\ntest_restart_retains_records (test_restart.ProcessRestartTests.test_restart_retains_records) ... ok\n\n======================================================================\nFAIL: test_fixed_service_never_connects_to_private_dns_address (test_dns_fallback.DNSFallbackTests.test_fixed_service_never_connects_to_private_dns_address)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/kribeshthapa/Developer/Vibe code/SentinalScan/tests/test_dns_fallback.py\", line 27, in test_fixed_service_never_connects_to_private_dns_address\n    request('api.github.com','/repos/owner/repo')\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/kribeshthapa/Developer/Vibe code/SentinalScan/integrations/network.py\", line 87, in request\n    result=_request_once(host,path,method,headers,body,limit,seconds)\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py\", line 1169, in __call__\n    return self._mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py\", line 1173, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/python3.13/unittest/mock.py\", line 1228, in _execute_mock_call\n    raise effect\nAssertionError: External network blocked by audit\n\n----------------------------------------------------------------------\nRan 95 tests in 8.561s\n\nFAILED (failures=1, skipped=1)\n",
+  "dns_retry_log": "test_fixed_service_never_connects_to_private_dns_address (test_dns_fallback.DNSFallbackTests.test_fixed_service_never_connects_to_private_dns_address) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.012s\n\nOK\n",
+  "scripts": {
+    "phase08_tests.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nwith tempfile.TemporaryDirectory(prefix='phase08-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false',SENTINELSCAN_SEMGREP_ENABLED='false',SENTINELSCAN_CODEQL_ENABLED='false')\n for k in ('SENTINELSCAN_LLM_API_KEY','SENTINELSCAN_GITHUB_TOKEN','SENTINELSCAN_TEST_SEMGREP'):os.environ.pop(k,None)\n from unittest.mock import patch\n names=['test_hardening','test_archive_limits','test_repository_phase2','test_website_scanner','test_repository_url','test_source_scanner','test_browser_github','test_dns_fallback','test_network_reliability','test_foundation','test_management','test_final_validation','test_restart']\n suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in names);start=time.monotonic()\n with patch('integrations.network._request_once',side_effect=AssertionError('External network blocked by audit')):\n  r=unittest.TextTestRunner(verbosity=2).run(suite)\n Path('/tmp/phase08_tests_summary.json').write_text(json.dumps(dict(tests=r.testsRun,failures=len(r.failures),errors=len(r.errors),skipped=len(r.skipped),seconds=round(time.monotonic()-start,3),modules=names)))\n sys.exit(not r.wasSuccessful())\n",
+    "phase08_probes.py": "import os,sys,tempfile,json,threading,stat\nfrom pathlib import Path\nfrom unittest.mock import patch\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\nrows=[]\nfrom scanner.target import validate_target,TargetError\nfor address in ('127.0.0.1','10.1.2.3','192.168.1.1','[::1]','[fd12::1]','169.254.169.254','100.100.100.200','[fd00:ec2::254]','0.0.0.0','224.0.0.1','[::ffff:127.0.0.1]'):\n for allow in (False,True):\n  try:validate_target('http://'+address+'/',allow);accepted=True\n  except TargetError:accepted=False\n  rows.append(dict(case='address policy',address=address,allow_private=allow,accepted=accepted))\nwith tempfile.TemporaryDirectory(prefix='phase08-') as td:\n os.environ.update(SENTINELSCAN_DATA_DIR=td,SENTINELSCAN_LLM_ENABLED='false')\n from app import create_app\n from database import get_db\n from scanner.website_scanner import QueueFull\n app=create_app(dict(TESTING=True,REPORTS_DIR=str(Path(td)/'reports')));manager=app.extensions['scan_manager'];gate=threading.Event();started=threading.Event();active=[];max_active=[0]\n def worker(*args):\n  active.append(1);max_active[0]=max(max_active[0],len(active));started.set()\n  try:gate.wait(3)\n  finally:active.pop();manager.slots.release()\n try:\n  with patch.object(manager,'run',side_effect=worker),app.app_context():\n   ids=[manager.submit(validate_target('http://127.0.0.1/',True),[]) for _ in range(4)]\n   started.wait(1)\n   try:manager.submit(validate_target('http://127.0.0.1/',True),[]);rejected=False\n   except QueueFull:rejected=True\n   rows.append(dict(case='actual queue admission',accepted=len(ids),fifth_rejected=rejected,persisted=get_db().execute('select count(*) from scans').fetchone()[0]))\n   gate.set();manager.executor.submit(lambda:None).result(timeout=5)\n  rows.append(dict(case='single worker',maximum_active=max_active[0]))\n  client=app.test_client();r=client.get('/');headers={k:r.headers.get(k) for k in ('Content-Security-Policy','X-Content-Type-Options','X-Frame-Options','Referrer-Policy','Cache-Control')}\n  with client.session_transaction() as s:csrf=s['csrf_token']\n  rows.append(dict(case='headers',headers=headers))\n  rows.append(dict(case='CSRF and Host',missing=client.post('/reports/generate').status_code,wrong=client.post('/reports/generate',data={'csrf_token':'wrong'}).status_code,host=client.get('/',headers={'Host':'foreign.invalid'}).status_code,cancel=client.post('/scans/1/cancel',data={'csrf_token':csrf}).status_code))\n  rows.append(dict(case='fresh directory permissions',directory=oct(Path(td).stat().st_mode&0o777),database=oct(Path(app.config['DATABASE']).stat().st_mode&0o777),key=oct((Path(td)/'.secret_key').stat().st_mode&0o777)))\n finally:gate.set();manager.shutdown()\n # Existing data directory permissions are not tightened by settings().\n old=Path(td)/'existing';old.mkdir(mode=0o755);old.chmod(0o755)\n os.environ['SENTINELSCAN_DATA_DIR']=str(old)\n app2=create_app(dict(TESTING=True))\n try:rows.append(dict(case='existing directory permissions',directory=oct(old.stat().st_mode&0o777),database=oct(Path(app2.config['DATABASE']).stat().st_mode&0o777)))\n finally:app2.extensions['scan_manager'].shutdown()\nPath('/tmp/phase08_probes.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))\n",
+    "phase08_dns_retry.py": "import sys,unittest\nfrom pathlib import Path\nfrom unittest.mock import patch\nsys.path[:0]=[str(Path.cwd()),str(Path.cwd()/'tests')]\ns=unittest.defaultTestLoader.loadTestsFromName('test_dns_fallback.DNSFallbackTests.test_fixed_service_never_connects_to_private_dns_address')\nwith patch('socket.socket.connect',side_effect=AssertionError('No socket connection allowed')):\n r=unittest.TextTestRunner(verbosity=2).run(s)\nsys.exit(not r.wasSuccessful())\n"
+  }
+}

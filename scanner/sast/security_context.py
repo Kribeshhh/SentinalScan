@@ -55,7 +55,7 @@ class ContextRetriever:
                         name=node.func.attr if isinstance(node.func,ast.Attribute) else node.func.id if isinstance(node.func,ast.Name) else None
                         # Redact before hashing; never retain a digest of a raw credential.
                         signature=mask_source(ast.dump(node,include_attributes=False),self.ctx.get('secrets',()))
-                        operations.append({'name':name,'start':node.lineno,'end':node.end_lineno,'scope':scope,
+                        operations.append({'name':name,'start':node.lineno,'column':node.col_offset,'end':node.end_lineno,'scope':scope,
                                            'signature':digest(signature)})
                     children=list(ast.iter_child_nodes(node))
                 else:
@@ -76,7 +76,7 @@ class ContextRetriever:
                             if not part.children:tokens.append((part.type,part.text.decode('utf-8')))
                             else:pending.extend(reversed(part.children))
                         signature=mask_source(json.dumps(tokens),self.ctx.get('secrets',()))
-                        operations.append({'name':label,'start':node.start_point.row+1,'end':node.end_point.row+1,'scope':scope,'signature':digest(signature)})
+                        operations.append({'name':label,'start':node.start_point.row+1,'column':node.start_point.column,'end':node.end_point.row+1,'scope':scope,'signature':digest(signature)})
                     children=node.named_children
                 stack.extend((child,scope) for child in reversed(children))
         except (SyntaxError,ValueError,RecursionError):pass
@@ -92,6 +92,8 @@ class ContextRetriever:
         data=self.file(path)
         if not data or not 1<=line<=len(data['lines']):return empty
         matching=[op for op in data['operations'] if op['start']<=line<=op['end'] and op['name'] in OPERATIONS.get(analysis.get('cwe'),set())]
+        if type(analysis.get('start_column')) is int:
+            matching=[op for op in matching if op['start']==line and op['column']==analysis['start_column']]
         anchor=matching[0] if len(matching)==1 else None
         functions=[fn for fn in data['functions'] if fn[1]<=line<=fn[2]]
         function=min(functions,key=lambda fn:fn[2]-fn[1]) if functions else None

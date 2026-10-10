@@ -1,0 +1,25 @@
+[
+  {
+    "case": "D03",
+    "rejected": true,
+    "ai_assisted": false,
+    "unsupported_prose_present": false
+  },
+  {
+    "case": "D04",
+    "rejected": true,
+    "ai_assisted": false,
+    "unsupported_prose_present": false
+  },
+  {
+    "case": "D03 agreeing unsafe reviews",
+    "rejected": true,
+    "provider_calls": 1
+  },
+  {
+    "case": "positive safe header",
+    "ai_assisted": true,
+    "code": "X-Content-Type-Options: nosniff",
+    "validation": "Not Available"
+  }
+]

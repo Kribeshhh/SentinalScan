@@ -9,6 +9,7 @@ from database import get_db
 from analysis.finding_engine import Finding,save_finding
 from analysis.solution_engine import solution_for
 from analysis.recommendation_composer import compose
+from analysis.ai_grounding import ACTION
 from analysis.recommendation import brief,presentation_summary
 from tests import test_unified_recommendation as unified
 
@@ -50,7 +51,7 @@ class SimplifiedFindingTests(unittest.TestCase):
         self.app.config['LLM_REVIEW_PROVIDER']=provider
         soup=self.page();visible=self.primary(soup)
         self.assertEqual(len(visible.select('.ai-enhanced')),1)
-        self.assertEqual(visible.get_text().count('Bind email at the existing SQLite execute call.'),1)
+        self.assertEqual(visible.get_text().count(ACTION),1)
         self.assertEqual(len(visible.select('.primary-fix code')),1)
         self.assertEqual(len(soup.select('#ai-review form')),0)
         self.assertIn('AI review details',soup.select_one('#technical-details').get_text())

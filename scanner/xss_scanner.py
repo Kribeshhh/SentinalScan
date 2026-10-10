@@ -29,8 +29,13 @@ def run(ctx):
         if probe.html:
             soup = BeautifulSoup(probe.text,'html.parser')
             for tag in soup.find_all(True):
+                if tag.find_parent('template') is not None:
+                    continue
                 if tag.name == 'script' and marker in tag.get_text():
-                    contexts.add('script text')
+                    script_type = str(tag.get('type', '')).strip().lower().split(';', 1)[0]
+                    executable = script_type in ('', 'module', 'text/javascript', 'application/javascript',
+                        'text/ecmascript', 'application/ecmascript', 'application/x-javascript')
+                    contexts.add('script text' if executable else 'inert script data')
                 for attr, value in tag.attrs.items():
                     if marker in str(value):
                         contexts.add('event-handler attribute' if attr.lower().startswith('on') else 'HTML attribute')

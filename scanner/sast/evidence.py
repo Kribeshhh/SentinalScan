@@ -35,6 +35,7 @@ class SemanticEvidence:
     constructed: bool
     calls: tuple
     uncertain: bool
+    start_column: int
 
 
 def semantic(node, value, sink, language, function=None, offset=0):
@@ -54,7 +55,8 @@ def semantic(node, value, sink, language, function=None, offset=0):
     return SemanticEvidence('python-ast' if language == 'Python' else 'tree-sitter',
         language, end + offset, function, value.sources, sink,
         value.trace, ('HTML protection recognized; not applicable to this sink',) if value.html_safe else (),
-        value.constructed, value.calls, value.uncertain)
+        value.constructed, value.calls, value.uncertain,
+        node.col_offset if language == "Python" else node.start_point.column)
 
 
 def bounded(value):
@@ -74,7 +76,7 @@ def normalized(finding, repository, path, line, detail=None):
     return scrub(bounded(dict(schema_version=1, title=finding.title, category=finding.category,
         cwe=cwe, owasp=[owasp] if owasp else [], severity=finding.severity, confidence=finding.confidence,
         repository=repository, file=path, start_line=line or None, end_line=data.get('end_line',line or None),
-        language=language, function=data.get('function'), source=list(data.get('sources',())),
+        start_column=data.get('start_column'), language=language, function=data.get('function'), source=list(data.get('sources',())),
         sink=data.get('sink'), data_flow=list(data.get('data_flow',())), sanitizers=list(data.get('sanitizers',())),
         engine=engine, rule_id=rule, evidence=finding.evidence[:2000], description=finding.description,
         impact=finding.impact, recommendation=finding.recommendation[:2000], suggested_code=None,

@@ -18,7 +18,7 @@ class DetectionAccuracyTests(unittest.TestCase):
     def test_flask_sources_and_alias_chain(self):
         for source in ('request.args.get("u")','request.form["u"]','request.values.get("u")','request.json["u"]','request.get_json()["u"]','request.headers.get("u")','request.cookies.get("u")'):
             with self.subTest(source=source):
-                findings=self.scan('from flask import request\ndef route():\n    username='+source+'\n    name=username\n    query="SELECT * FROM users WHERE name="+name\n    cursor.execute(query)')
+                findings=self.scan('from flask import request\nimport sqlite3\ncursor=sqlite3.connect(":memory:").cursor()\ndef route():\n    username='+source+'\n    name=username\n    query="SELECT * FROM users WHERE name="+name\n    cursor.execute(query)')
                 self.assertEqual(len(findings),1);self.assertEqual(findings[0].confidence,'High')
                 self.assertIn('username → name → query',findings[0].evidence)
 
@@ -26,12 +26,12 @@ class DetectionAccuracyTests(unittest.TestCase):
         for source in ('cursor.execute("SELECT ?", (request.args.get("u"),))', 'q="SELECT "+"1"\ncursor.execute(q)', 'cursor.execute(query_object)'):
             self.assertEqual(self.scan(source),[])
         for source in ('q=f"SELECT {user_id}"\ncursor.execute(q)', 'q="SELECT {}".format(user_id)\ncursor.execute(q)', 'q="SELECT "+user_id\ncursor.execute(q,(other,))'):
-            findings=self.scan(source);self.assertEqual(len(findings),1);self.assertEqual(findings[0].confidence,'Medium')
+            findings=self.scan('import sqlite3\ncursor=sqlite3.connect(":memory:").cursor()\n'+source);self.assertEqual(len(findings),1);self.assertEqual(findings[0].confidence,'Medium')
 
     def test_python_command_and_eval(self):
         for sink in ('os.system(value)','os.popen(value)','subprocess.run(value,shell=True)','subprocess.call(value,shell=True)','subprocess.Popen(value,shell=True)','eval(value)','exec(value)'):
             with self.subTest(sink=sink):
-                findings=self.scan('import os, subprocess\nvalue=request.args.get("x")\n'+sink)
+                findings=self.scan('from flask import request\nimport os, subprocess\nvalue=request.args.get("x")\n'+sink)
                 self.assertEqual(len(findings),1);self.assertEqual(findings[0].confidence,'High')
                 self.assertEqual(self.scan('import os, subprocess\nvalue="date"\n'+sink),[])
         self.assertEqual(self.scan('import subprocess\nsubprocess.run(["echo",request.args.get("x")],shell=False)'),[])
@@ -42,7 +42,7 @@ class DetectionAccuracyTests(unittest.TestCase):
 
     def test_python_deserialization_and_crypto(self):
         self.assertEqual(self.scan('import yaml\nyaml.load(request.get_json(),Loader=yaml.SafeLoader)\nyaml.safe_load(data)'),[])
-        findings=self.scan('import pickle\npickle.loads(request.args.get("x"))');self.assertEqual(findings[0].confidence,'High')
+        findings=self.scan('from flask import request\nimport pickle\npickle.loads(request.args.get("x"))');self.assertEqual(findings[0].confidence,'High')
         findings=self.scan('import pickle\npickle.loads(data)');self.assertEqual(findings[0].confidence,'Low')
         findings=self.scan('import hashlib\nchecksum=hashlib.md5(file_contents)\npassword_hash=hashlib.md5(password.encode())')
         self.assertEqual([(f.severity,f.confidence) for f in findings],[('Informational','Low'),('High','Medium')])

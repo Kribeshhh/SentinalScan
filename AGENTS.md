@@ -1,3 +1,12 @@
+# Current provider policy — Ollama only (2026-10-09)
+
+Phase 11 replaces the cloud transport with native loopback Ollama. Use
+SENTINELSCAN_LLM_ENABLED, SENTINELSCAN_OLLAMA_BASE_URL and SENTINELSCAN_OLLAMA_MODEL;
+no provider key or selectable cloud adapter remains. Preserve automatic refinement,
+existing validation/composition, deterministic fallback and all historical reviews.
+Do not add routes/buttons/models, change detectors or silently download a model.
+Older provider descriptions are historical; see docs/fixes/PHASE_11_OLLAMA_MIGRATION.md.
+
 # SentinelScan maintenance
 
 ## Current product scope — recommendation-only (2026-10-04)
@@ -23,7 +32,8 @@ The existing scan queue invokes the completion hook after durable scan results.
 Bound each scan to 20 candidate reviews, prioritized by severity, and a 60-second
 between-review budget; an in-flight bounded review can finish after that budget.
 Stop on first provider failure. All remaining findings keep deterministic guidance.
-Do not enable AI or use a live provider for tests. External processing permission
+Use mocked AI in normal tests; explicitly authorized synthetic local Ollama checks
+may use an already-installed local model. Never install/download models implicitly. Optional local processing permission
 comes from the operator's enabled configuration; preserve pre-request redaction,
 unknown context, no tools, structured validation and human review outside SentinelScan.
 A source fix without pinned local source stays unvalidated and cannot replace the
@@ -316,3 +326,15 @@ Keep examples distinct from source-specific fixes and unvalidated. Never invent
 package versions, backend frameworks or original source; use advisory-supported
 versions or explicit placeholders and backend-neutral pseudocode. Keep operational
 recommendations text-only when no useful safe example exists.
+
+## Phase 12 — current Ollama recommendation validation
+
+Read `docs/fixes/PHASE_12_OLLAMA_REMEDIATION.md` before changing AI validation.
+Keep the existing automatic flow and single recommendation. The model selects
+from locally reconstructed grounded statements; free-form factual claims are
+rejected, including unverified false-positive explanations. Do not whitelist raw
+scanner evidence as instructions. Schema enums assist generation but do not replace
+local validation. Website values and affected-header checks, source matching and
+supported static replacements are mandatory. Revalidate saved AI at composition;
+never rewrite history to remove a rejected contribution. No confidence or two-pass
+agreement can substitute for evidence. No new detector, route, database or UI feature.

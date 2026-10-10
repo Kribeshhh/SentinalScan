@@ -1,0 +1,28 @@
+[
+  {
+    "case": "D03",
+    "ai_assisted": true,
+    "action": "Upgrade imaginary-package to 99.99.99 to fix this header.",
+    "examples": [
+      {
+        "language": "Configuration",
+        "code": "X-Content-Type-Options: nosniff"
+      }
+    ]
+  },
+  {
+    "case": "D04",
+    "ai_assisted": true,
+    "action": "Configure the header.",
+    "examples": [
+      {
+        "language": "Configuration",
+        "code": "X-Content-Type-Options: unsafe-value"
+      }
+    ]
+  },
+  {
+    "case": "D03 two passes",
+    "ai_assisted": true
+  }
+]

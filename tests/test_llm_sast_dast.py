@@ -1,3 +1,4 @@
+from tests.ollama_fixtures import transport, envelope
 """Optional AI uses bounded Phase 1 context for both scanner types; no live AI."""
 import json
 from pathlib import Path
@@ -10,6 +11,7 @@ from analysis.finding_engine import Finding,save_finding
 from analysis.llm_review import prepare,process,validate_response
 from integrations.llm import review,INSTRUCTIONS
 from tests.test_llm_review import finding,response
+from analysis.ai_grounding import ACTION, IMPACT, FOLLOWUP
 
 
 def website(category='Security Headers',**changes):
@@ -17,7 +19,7 @@ def website(category='Security Headers',**changes):
 
 
 def configuration(code='X-Content-Type-Options: nosniff',kind='configuration'):
-    return response(recommendation=dict(what_to_change='Configure the header.',suggested_code_or_config=code,example_type=kind,why='Prevent MIME sniffing.',additional_actions=['Test deployed responses.']))
+    return response(recommendation=dict(what_to_change=ACTION,suggested_code_or_config=code,example_type=kind,why=IMPACT,additional_actions=[FOLLOWUP]))
 
 
 class LLMContextTests(unittest.TestCase):
@@ -38,9 +40,9 @@ class LLMContextTests(unittest.TestCase):
         wire=json.dumps(payload)
         for value in (secret,api,'private-password','private-query','private-fragment','private-auth','private-cookie','private-key','private-body','other-cookie','abc'):self.assertNotIn(value,wire)
         self.assertEqual(payload['website_context']['http_status'],403);self.assertFalse(payload['website_context']['observations']['cookie_attributes']['httponly'])
-        raw=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps(configuration())}}]}).encode()
-        with patch('integrations.llm.request',return_value=(200,{},raw)) as send:
-            review(payload,{'LLM_API_KEY':api,'LLM_MODEL':'fixture'})
+        raw=envelope(json.dumps(configuration()))
+        with patch('integrations.llm.request',side_effect=transport(200,raw)) as send:
+            review(payload,{'LLM_ENABLED':True,'OLLAMA_MODEL':'fixture'})
         body=json.loads(send.call_args.kwargs['body'])
         self.assertIn('IGNORE PREVIOUS',body['messages'][1]['content']);self.assertNotIn('IGNORE PREVIOUS',body['messages'][0]['content'])
         self.assertIn('UNTRUSTED DATA',INSTRUCTIONS);self.assertIn('Never reveal credentials',INSTRUCTIONS)
@@ -82,7 +84,7 @@ class LLMContextTests(unittest.TestCase):
 
     def test_provider_status_failures_and_invalid_json(self):
         for status,body in [(401,b'private error'),(429,b'private error'),(500,b'private error'),(200,b'not-json')]:
-            with patch('integrations.llm.request',return_value=(status,{},body)),self.assertRaises(ValueError):review({},dict(LLM_API_KEY='fixture',LLM_MODEL='fixture'))
+            with patch('integrations.llm.request',side_effect=transport(status,body)),self.assertRaises(ValueError):review({},dict(LLM_ENABLED=True,OLLAMA_MODEL='fixture'))
 
 
 class WebsiteAIRouteTests(unittest.TestCase):
@@ -122,7 +124,7 @@ class WebsiteAIRouteTests(unittest.TestCase):
             db=get_db()
             with db:db.execute('INSERT INTO ai_reviews(finding_id,data_json) VALUES (?,?)',(self.id,json.dumps(old)))
         page=self.client.get(f'/findings/{self.id}')
-        self.assertEqual(page.status_code,200);self.assertIn(b'Old review',page.data);self.assertFalse(self.calls)
+        self.assertEqual(page.status_code,200);self.assertNotIn(b'Old review',page.data);self.assertFalse(self.calls)
 
     def test_website_disabled_removed_route_failure_preserves_previous_review(self):
         self.assertEqual(self.client.post(f'/findings/{self.id}/ai-review',data={'csrf_token':self.csrf}).status_code,404)
@@ -161,7 +163,7 @@ class WebsitePipelineAIIsolationTests(unittest.TestCase):
                 # Completion hook sees durable scan results, not an in-flight detector.
                 self.assertEqual(get_db().execute('SELECT status FROM scans').fetchone()[0],'Completed')
                 calls.append(payload)
-                return response(remediation='Review the affected response policy using the recorded probe evidence.')
+                return response(remediation=ACTION)
             fixture.app.config.update(LLM_ENABLED=True,LLM_REVIEW_PROVIDER=provider)
             fixture.test_localhost_real_assessment_pipeline()
             self.assertTrue(calls)

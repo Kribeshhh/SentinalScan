@@ -27,6 +27,29 @@ def coordinate(location,ctx):
     return {'file':relative,'start_line':start,'end_line':end}
 
 
+def invocation_status(invocations):
+    """SARIF note/none diagnostics do not mean incomplete analysis.
+
+    Missing notification levels default conservatively to warning. Do not persist
+    tool messages, which may include source text or credentials.
+    """
+    if not isinstance(invocations,list) or len(invocations)>100:raise ValueError()
+    partial=False
+    for invocation in invocations:
+        if not isinstance(invocation,dict):raise ValueError()
+        if 'executionSuccessful' in invocation and type(invocation['executionSuccessful']) is not bool:raise ValueError()
+        if invocation.get('executionSuccessful') is False:partial=True
+        for key in ('toolExecutionNotifications','toolConfigurationNotifications'):
+            notifications=invocation.get(key,[])
+            if not isinstance(notifications,list) or len(notifications)>10000:raise ValueError()
+            for notification in notifications:
+                if not isinstance(notification,dict):raise ValueError()
+                level=notification.get('level','warning')
+                if level not in ('none','note','warning','error'):raise ValueError()
+                if level in ('warning','error'):partial=True
+    return partial
+
+
 def import_results(payload,ctx,engine):
     try:
         if len(payload)>OUTPUT_LIMIT:raise ValueError()
@@ -37,7 +60,7 @@ def import_results(payload,ctx,engine):
         for run in doc['runs']:
             if not isinstance(run,dict) or not isinstance(run.get('results'),list):raise ValueError()
             invocations=run.get('invocations',[])
-            if any(item.get('executionSuccessful') is False or item.get('toolExecutionNotifications') for item in invocations):partial=True
+            if invocation_status(invocations):partial=True
             rules=run.get('tool',{}).get('driver',{}).get('rules',[])
             if not isinstance(rules,list) or len(rules)>10000:raise ValueError()
             by_id={r['id']:r for r in rules if isinstance(r,dict) and isinstance(r.get('id'),str)}

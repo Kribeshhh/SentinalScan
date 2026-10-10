@@ -27,7 +27,7 @@ class LLMProvider(Protocol):
     def review_finding(self, payload, config, *, role, prior=None): ...
 
 
-class OpenAIProvider:
+class OllamaProvider:
     def review_finding(self, payload, config, *, role, prior=None):
         data = deepcopy(payload)
         if prior is not None:
@@ -41,6 +41,4 @@ def provider_for(config):
     supplied = config.get('LLM_EVIDENCE_PROVIDER')
     if supplied is not None:
         return supplied
-    if config.get('LLM_PROVIDER', 'openai') != 'openai':
-        raise ValueError('Unsupported AI provider')
-    return OpenAIProvider()
+    return OllamaProvider()

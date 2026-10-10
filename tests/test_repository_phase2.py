@@ -31,6 +31,8 @@ class FlowTests(unittest.TestCase):
 
     def test_cross_function_source_to_sink_and_returned_query(self):
         source='''from flask import request
+import sqlite3
+cursor=sqlite3.connect(':memory:').cursor()
 def build_query(value):
  return "SELECT "+value
 def search(value):
@@ -51,6 +53,8 @@ def route():
 
     def test_returned_input_alias_and_transform(self):
         findings,_=self.scan('''from flask import request
+import sqlite3
+cursor=sqlite3.connect(':memory:').cursor()
 def read():
  return request.args.get("q")
 def build(x):
@@ -81,7 +85,10 @@ eval(value)''')
         self.assertTrue(findings)
 
     def test_recursion_is_bounded_and_uncertain(self):
-        findings,data=self.scan('''def cycle(x):
+        findings,data=self.scan('''from flask import request
+import sqlite3
+cursor=sqlite3.connect(':memory:').cursor()
+def cycle(x):
  return cycle(x)
 cursor.execute(cycle(request.args.get("q")))''')
         self.assertEqual(data['flow_limited_files'],['a.py'])
@@ -89,7 +96,7 @@ cursor.execute(cycle(request.args.get("q")))''')
         self.assertEqual(json.loads(findings[0].context_json)['analysis']['reachability'],'Potential pattern')
 
     def test_unknown_call_does_not_prove_sanitization(self):
-        findings,_=self.scan('q=validate_username(request.args.get("q"))\ncursor.execute(q)')
+        findings,_=self.scan('from flask import request\nimport sqlite3\ncursor=sqlite3.connect(":memory:").cursor()\nq=validate_username(request.args.get("q"))\ncursor.execute(q)')
         self.assertEqual(findings[0].confidence,'Medium')
         self.assertIn('Potential pattern',findings[0].context_json)
 

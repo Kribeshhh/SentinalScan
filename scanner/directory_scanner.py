@@ -27,6 +27,8 @@ def run(ctx):
     random_path = '/sentinelscan-not-found-' + secrets.token_hex(10)
     missing = ctx['client'].get(url(random_path), redirects=False)
     missing_hash = hashlib.sha256(missing.body).digest()
+    def listing(result):
+        return result.html and bool(re.search(r'<title>\s*Index of\s*/', result.text, re.I))
     rows = []
     for path in ctx['paths']:
         try:
@@ -35,6 +37,10 @@ def run(ctx):
             rows.append({'path':path,'error':'Request unavailable'})
             continue
         soft = result.status == missing.status and (hashlib.sha256(result.body).digest() == missing_hash or (result.html and missing.html and abs(len(result.body)-len(missing.body)) < 80))
+        # A distinct positive signature outweighs length similarity, never an
+        # identical body or a baseline that itself has the same signature.
+        if listing(result) and not listing(missing) and hashlib.sha256(result.body).digest() != missing_hash:
+            soft = False
         row = {'path':path,'status':result.status,'bytes':len(result.body),'truncated':result.truncated,'possible_soft_404':soft,'content_type':result.header('Content-Type')[:120]}
         rows.append(row)
         if result.status != 200 or soft:

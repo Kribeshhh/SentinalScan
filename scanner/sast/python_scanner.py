@@ -8,10 +8,14 @@ from scanner.sast.flow import Value,UNKNOWN,combine,merge_environments,confidenc
 
 
 class Analyzer:
-    def __init__(self,ctx,path):self.ctx=ctx;self.path=path;self.env={};self.aliases={};self.target='';self.function_name=None;self.functions={};self.global_env={};self.global_aliases={};self.active=[];self.expansions=0;self.returns=[];self.limited=False;self.class_depth=0
+    def __init__(self,ctx,path):self.ctx=ctx;self.path=path;self.env={};self.aliases={};self.target='';self.function_name=None;self.functions={};self.global_env={};self.global_aliases={};self.active=[];self.expansions=0;self.returns=[];self.limited=False;self.class_depth=0;self.local_classes={};self.mutated_attributes=set()
 
     def prepare(self,tree):
         # Only unambiguous plain module functions; no dispatch, decorators or closures.
+        # Attribute rebinding/dynamic lookup makes local receiver identity uncertain.
+        self.mutated_attributes={n.attr for n in ast.walk(tree) if isinstance(n,ast.Attribute) and isinstance(n.ctx,(ast.Store,ast.Del))}
+        if any(isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id in ('setattr','delattr') for n in ast.walk(tree)):
+            self.mutated_attributes.update(('execute','executemany','executescript','raw'))
         definitions={}
         for node in tree.body:
             if isinstance(node,ast.FunctionDef):definitions.setdefault(node.name,[]).append(node)
@@ -48,8 +52,12 @@ class Analyzer:
             def bind_locals(nodes):
                 for child in nodes:
                     if isinstance(child,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,ast.Lambda)):
-                        if hasattr(child,'name'):self.env[child.name]=UNKNOWN
+                        if hasattr(child,'name'):self.env[child.name]=UNKNOWN;self.aliases.pop(child.name,None)
                         continue
+                    if isinstance(child,(ast.Import,ast.ImportFrom)):
+                        for alias in child.names:
+                            key=alias.asname or (alias.name.split('.')[0] if isinstance(child,ast.Import) else alias.name)
+                            self.env[key]=UNKNOWN;self.aliases.pop(key,None)
                     if isinstance(child,ast.Name) and isinstance(child.ctx,ast.Store):
                         self.env[child.id]=UNKNOWN;self.aliases.pop(child.id,None)
                     bind_locals(ast.iter_child_nodes(child))
@@ -71,8 +79,10 @@ class Analyzer:
 
     def name(self,node):
         if isinstance(node,ast.Name):
-            value=self.env.get(node.id,UNKNOWN)
-            return self.aliases.get(node.id,node.id if node.id not in self.env else value.callable_name if value.callable_name not in self.functions else '') or ''
+            if node.id in self.aliases:return self.aliases[node.id]
+            if node.id not in self.env:return node.id
+            value=self.env[node.id]
+            return value.identity or (value.callable_name if value.callable_name not in self.functions else '') or ''
         if isinstance(node,ast.Attribute):return self.name(node.value)+'.'+node.attr
         if isinstance(node,ast.Call) and self.name(node.func) in ('getattr','builtins.getattr') and len(node.args)==2 and not node.keywords:
             attr=node.args[1]
@@ -89,14 +99,19 @@ class Analyzer:
     def expr(self,node):
         if node is None:return UNKNOWN
         if isinstance(node,ast.Constant):return Value(static=True,literal=node.value)
-        if isinstance(node,ast.Name):return self.env.get(node.id,Value(sensitive=sensitive_name(node.id)))
+        if isinstance(node,ast.Name):return self.env.get(node.id,Value(identity=self.aliases.get(node.id),sensitive=sensitive_name(node.id)))
         if isinstance(node,ast.Lambda):
             self.function(node);return UNKNOWN
         if isinstance(node,(ast.Attribute,ast.Subscript)):
-            label=self.name(node)
-            if any(label==prefix or label.startswith(prefix+'.') for prefix in ('request.args','request.form','request.values','request.json','request.headers','request.cookies','flask.request.args','flask.request.form','flask.request.values','flask.request.json','flask.request.headers','flask.request.cookies')):
+            receiver=self.expr(node.value)
+            if isinstance(node,ast.Subscript):
+                self.expr(node.slice)
+                return replace(receiver,identity=None,callable_name=None)
+            if node.attr in self.mutated_attributes:return replace(receiver,identity=None,callable_name=None,uncertain=True)
+            label=(receiver.identity+'.'+node.attr) if receiver.identity else ''
+            if label in ('flask.request.args','flask.request.form','flask.request.values','flask.request.json','flask.request.headers','flask.request.cookies'):
                 return Value(sources=(label,))
-            return self.expr(node.value)
+            return replace(receiver,identity=label or None,callable_name=None)
         if isinstance(node,ast.NamedExpr):
             value=self.expr(node.value);self.assign(node.target,value);return value
         if isinstance(node,ast.Call):
@@ -109,9 +124,17 @@ class Analyzer:
                     return replace(combine(args),static=False,uncertain=True)
                 return self.invoke(callable_value.callable_name,args,keywords)
             first=args[0] if args else UNKNOWN
+            if fn.startswith('class:'):
+                return Value(identity=fn.replace('class:', 'local:', 1) if fn in self.local_classes else None)
+            if fn in ('sqlite3.connect','psycopg.connect','psycopg2.connect','pymysql.connect','mysql.connector.connect') and self.expr(node.func).identity==fn:
+                return Value(identity='db:connection')
+            if fn=='django.db.connection.cursor' and self.expr(node.func).identity==fn:
+                return Value(identity='db:cursor')
+            if receiver.identity=='db:connection' and isinstance(node.func,ast.Attribute) and node.func.attr=='cursor':
+                return Value(identity='db:cursor')
             if fn in ('getattr','builtins.getattr') and self.name(node):
                 return Value(callable_name=self.name(node))
-            source=receiver.sources or ((fn,) if fn in ('request.get_json','flask.request.get_json','input','builtins.input') else ())
+            source=receiver.sources or ((fn,) if fn in ('input','builtins.input') or fn=='flask.request.get_json' and self.expr(node.func).identity==fn else ())
             result=replace(combine([receiver,*args]),static=False,literal=None)
             if source:result=replace(result,sources=source)
             if fn in ('str','bytes') and args:return first
@@ -130,8 +153,12 @@ class Analyzer:
             if fn in ('subprocess.run','subprocess.call','subprocess.Popen','subprocess.check_call','subprocess.check_output') and args and not first.static and shell.literal is True and 'fixed-posix-command' not in first.protections:
                 self.report(node,'Unsafe subprocess shell invocation','Injection',first,fn+'(shell=True)','High','Use an argument array and shell=False.')
             method=node.func.attr if isinstance(node.func,ast.Attribute) else fn.rsplit('.',1)[-1] if '.' in fn else ''
-            if method in ('execute','executemany','executescript','raw') and args and not first.static and (first.constructed or first.sources) and 'sql-value' not in first.protections:
-                self.report(node,'Potential SQL injection in constructed query','Injection',first,'SQL '+method,'High','Use database-bound parameters instead of concatenation or interpolation.')
+            sink_identity=(receiver.identity or fn.rsplit('.',1)[0]) if method not in self.mutated_attributes else ''
+            if method in ('execute','executemany','executescript','raw') and not (method in self.local_classes.get(sink_identity.replace('local:','class:',1),()) and method not in self.mutated_attributes) and args and not first.static and (first.constructed or first.sources) and 'sql-value' not in first.protections:
+                self.report(node,'Potential SQL injection in constructed query','Injection',replace(first,uncertain=True) if sink_identity not in ('db:connection','db:cursor') else first,
+                    ('SQL ' if sink_identity in ('db:connection','db:cursor') else 'Unresolved receiver method ')+method,'High',
+                    'Use database-bound parameters instead of concatenation or interpolation.',
+                    level=confidence(first) if sink_identity in ('db:connection','db:cursor') else 'Low')
             if fn in ('requests.get','requests.post','requests.put','requests.patch','requests.delete','requests.head','requests.options','requests.request') and any(v=='requests' or v==fn for v in self.aliases.values()) and keywords.get('verify',UNKNOWN).literal is False:
                 add(self.ctx,self.path,node.lineno,'Security control disabled in configuration','Configuration','An imported requests API explicitly disables TLS certificate verification.',
                     'Enable TLS certificate verification. Configure a trusted CA bundle when required instead of verify=False.','Medium','High')
@@ -194,6 +221,8 @@ class Analyzer:
                 if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef,ast.ClassDef,ast.Lambda)):
                     if hasattr(n,'name'):yield n.name
                     continue
+                if isinstance(n,(ast.Import,ast.ImportFrom)):
+                    for alias in n.names:yield alias.asname or (alias.name.split('.')[0] if isinstance(n,ast.Import) else alias.name)
                 if isinstance(n,ast.Name) and isinstance(n.ctx,ast.Store):yield n.id
                 yield from locals_in(ast.iter_child_nodes(n))
         body=[node.body] if isinstance(node,ast.Lambda) else node.body
@@ -218,11 +247,19 @@ class Analyzer:
             if isinstance(node,(ast.FunctionDef,ast.AsyncFunctionDef)):
                 self.function(node);self.env[node.name]=Value(callable_name=node.name) if self.functions.get(node.name) is node else UNKNOWN;self.aliases.pop(node.name,None)
             elif isinstance(node,ast.ClassDef):
-                saved=self.env,self.aliases;self.env=self.env.copy();self.aliases=self.aliases.copy();self.class_depth+=1;self.block(node.body);self.class_depth-=1;self.env,self.aliases=saved
+                saved=self.env,self.aliases;self.env=self.env.copy();self.aliases=self.aliases.copy();self.class_depth+=1;self.block(node.body);self.class_depth-=1
+                # Plain local classes cannot inherit database methods. Dynamic
+                # dispatch, decorators, bases and attribute writes stay unresolved.
+                identity='class:'+str(node.lineno)
+                if not node.bases and not node.keywords and not node.decorator_list and not any(isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and (n.name.startswith('__') or n.decorator_list) for n in node.body):
+                    rebound={t.id for t in ast.walk(node) if isinstance(t,ast.Name) and isinstance(t.ctx,ast.Store)}
+                    self.local_classes[identity]={n.name for n in node.body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name not in rebound}
+                self.env,self.aliases=saved
+                self.env[node.name]=Value(identity=identity);self.aliases.pop(node.name,None)
             elif isinstance(node,(ast.Import,ast.ImportFrom)):
                 for alias in node.names:
                     key=alias.asname or (alias.name.split('.')[0] if isinstance(node,ast.Import) else alias.name)
-                    self.aliases[key]=(alias.name if alias.asname else alias.name.split('.')[0]) if isinstance(node,ast.Import) else (node.module or '')+'.'+alias.name
+                    self.aliases[key]=(alias.name if alias.asname else alias.name.split('.')[0]) if isinstance(node,ast.Import) else ('.'*node.level)+(node.module or '')+'.'+alias.name
                     self.env.pop(key,None)
             elif isinstance(node,(ast.Assign,ast.AnnAssign,ast.AugAssign)):
                 targets=node.targets if isinstance(node,ast.Assign) else [node.target]
@@ -260,7 +297,9 @@ class Analyzer:
                 self.block(node.body)
                 branches=[before,self.env.copy()];branch_aliases=[before_aliases,self.aliases.copy()]
                 for handler in getattr(node,'handlers',[]):
-                    self.env=before.copy();self.aliases=before_aliases.copy();self.block(handler.body);branches.append(self.env.copy());branch_aliases.append(self.aliases.copy())
+                    self.env=before.copy();self.aliases=before_aliases.copy()
+                    if handler.name:self.env[handler.name]=UNKNOWN;self.aliases.pop(handler.name,None)
+                    self.block(handler.body);branches.append(self.env.copy());branch_aliases.append(self.aliases.copy())
                 self.env=merge_environments(before,*branches)
                 self.aliases={k:v for k,v in before_aliases.items() if all(b.get(k)==v for b in branch_aliases)}
                 self.block(getattr(node,'orelse',[]));self.block(getattr(node,'finalbody',[]))

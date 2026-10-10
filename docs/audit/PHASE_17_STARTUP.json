@@ -1,0 +1,10 @@
+{
+  "interpreter": "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/.venv/bin/python",
+  "version": "3.13.5 (main, Jun 11 2025, 15:36:57) [Clang 17.0.0 (clang-1700.0.13.3)]",
+  "browser_packages": {
+    "playwright": false,
+    "selenium": false
+  },
+  "port_available": false,
+  "startup": "SKIPPED: existing listener; no user process stopped"
+}

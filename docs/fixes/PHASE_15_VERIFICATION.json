@@ -1,0 +1,58 @@
+{
+  "phase": 15,
+  "date": "2026-10-09",
+  "scripts": {
+    "/tmp/phase15_repro.py": "import os,sys,tempfile,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase15-repro-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td;os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n from app import create_app\n from database import get_db\n from analysis.finding_engine import Finding,save_finding\n app=create_app({'TESTING':False,'DATABASE':str(Path(td)/'test.sqlite3'),'REPORTS_DIR':str(Path(td)/'reports')});client=app.test_client();client.get('/')\n with client.session_transaction() as s:csrf=s['csrf_token']\n with app.app_context():\n  db=get_db()\n  with db:\n   a=db.execute(\"INSERT INTO scans(scan_type,target,status) VALUES ('Website','https://audit.invalid/','Completed')\").lastrowid\n   b=db.execute(\"INSERT INTO scans(scan_type,target,status) VALUES ('Website','https://audit.invalid/','Completed')\").lastrowid\n  fid=save_finding(db,a,Finding(title='Retained finding',severity='High',confidence='High',category='Audit',source='Website',location='https://audit.invalid/',description='Fixture',evidence='Fixture',impact='Fixture',recommendation='Review'))\n  with db:db.execute(\"INSERT INTO scan_modules(scan_id,name,status,data_json) VALUES (?,'Malformed','Completed','{bad')\",(a,))\n r=client.get('/scans/'+str(a));rows=[{'case':'D13 invalid module JSON','http':r.status_code}]\n with app.app_context():\n  db=get_db()\n  with db:\n   db.execute('DELETE FROM scan_modules')\n   db.execute('INSERT INTO finding_solutions VALUES (?,?)',(fid,'[]'))\n r=client.post('/comparisons',data={'csrf_token':csrf,'baseline':a,'current':b});rows.append({'case':'D14 wrong-type finding solution snapshot','http':r.status_code})\n app.extensions['scan_manager'].shutdown()\nPath(sys.argv[1]).write_text(json.dumps(rows,indent=2)+'\\n');print(rows)\n",
+    "/tmp/phase15_focused.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()));sys.path.insert(0,str(Path.cwd()/'tests'))\nwith tempfile.TemporaryDirectory(prefix='phase15-focused-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td;os.environ['SENTINELSCAN_LLM_ENABLED']='false';os.environ.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ('test_data_robustness','test_management','test_foundation'))\n start=time.monotonic();r=unittest.TextTestRunner(verbosity=2).run(suite)\n print(json.dumps(dict(tests=r.testsRun,passed=r.testsRun-len(r.failures)-len(r.errors)-len(r.skipped),failed=len(r.failures),errors=len(r.errors),skipped=len(r.skipped),seconds=round(time.monotonic()-start,3))))\n sys.exit(not r.wasSuccessful())\n",
+    "/tmp/phase15_run.py": "import os,sys,tempfile,unittest,time,json\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nwith tempfile.TemporaryDirectory(prefix='phase12-') as td:\n os.environ['SENTINELSCAN_DATA_DIR']=td\n os.environ['SENTINELSCAN_LLM_ENABLED']='false'\n os.environ.pop('SENTINELSCAN_GITHUB_TOKEN',None)\n os.environ['SENTINELSCAN_TEST_SEMGREP']='/opt/homebrew/bin/semgrep'\n suite=unittest.defaultTestLoader.discover('tests') if '--full' in sys.argv else unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName('tests.'+n) for n in ['test_llm_review','test_llm_sast_dast','test_repository_phase4','test_unified_recommendation','test_final_validation','test_ollama','test_ai_grounding'])\n start=time.monotonic()\n result=unittest.TextTestRunner(verbosity=2).run(suite)\n print(json.dumps(dict(tests=result.testsRun,passed=result.testsRun-len(result.failures)-len(result.errors)-len(result.skipped),failed=len(result.failures),errors=len(result.errors),skipped=len(result.skipped),seconds=round(time.monotonic()-start,3))))\n sys.exit(not result.wasSuccessful())\n"
+  },
+  "full_suite": {
+    "tests": 299,
+    "passed": 299,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 21.456,
+    "exit_code": 0
+  },
+  "focused_suite": {
+    "tests": 24,
+    "passed": 24,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 3.375,
+    "exit_code": 0
+  },
+  "before": [
+    {
+      "case": "D13 invalid module JSON",
+      "http": 500
+    },
+    {
+      "case": "D14 wrong-type finding solution snapshot",
+      "http": 500
+    }
+  ],
+  "after": [
+    {
+      "case": "D13 invalid module JSON",
+      "http": 200
+    },
+    {
+      "case": "D14 wrong-type finding solution snapshot",
+      "http": 400
+    }
+  ],
+  "sha256": {
+    "analysis/stored_data.py": "879bf27330f9a01055ca7a7389637c9a1ce2920e2665192dcfd7197947c61e54",
+    "analysis/management.py": "1967e66f7223085c6999d68e699a29f61568a7fcb3c971860a85d8ad9c6a0119",
+    "app.py": "bcdb52cea45cb74cec5dc8cd102ea741609ebbfd98f21fb4b416277088aa6730",
+    "management_routes.py": "9f1cb99663370bf758d7473b020745e2caf0810010ff2b6bd74a27a3918f9a1a",
+    "templates/scan_detail.html": "0d22324b0a73955b2d78e5c3cbaee4f0b369e6c80898a23841a77b4206a0b26a",
+    "tests/test_data_robustness.py": "88144a58e248b3e3f37dcd492783144727ee1d1db90edf7f4ad07e1b70586df2"
+  },
+  "schema_changed": false,
+  "user_database_touched": false,
+  "diff_check_exit": 0
+}
