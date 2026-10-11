@@ -1,0 +1,19 @@
+{
+  "scanner/sast/javascript_scanner.py": "75421df0bff23fca157d90b259079836025b9642a506a016ce7495a5b53b7baf",
+  "scanner/sast/evidence.py": "78ac34e9eb4a167a8852ad08978700161d442236ee3c158361b2ef411ac8613c",
+  "scanner/sast/security_context.py": "dde3612f79fcbd82b66f3c85ef7f957252f5620026b3816b81cd704e69e81b7d",
+  "scanner/engines/semgrep_rules.yml": "19a5907473d4eb26d02da34194b3c28e6f8051ef05346ba5b04a1bf6775dfe8f",
+  "scanner/port_scanner.py": "851deb08922075795295de4a97f8cd72eaeddc8bebda07549e295bbf789a54e3",
+  "database.py": "c1a1ebe6dbb067786e980c2cf96da6e25e55d4e954edc39284bffaa70dae4f95",
+  "analysis/recommendation.py": "18abb6aef861dd18fe960ad0c0731e4ed6963023516656808d0d48ce43b25909",
+  "templates/website_scan.html": "64fe9cd4d8eceb9121ff4109874310575c67d04d9a1e2a2fd91f23fd4e36b1f4",
+  "tests/test_phase23_quality.py": "94eb19ac6fd6d553044ce807832eb164dae23e2b7cce85e8ff27c27c3d0b282e",
+  "tests/test_hardening.py": "c4427830b7564edd8197721a6a4ab10ffd7d47569fca51010c96d3ecaf846713",
+  "evaluation/fixtures.json": "73c72c4db254ac9f52071915f5e8a56d111c7d0933ebc1e6ad363c4e25b3a2d1",
+  "docs/audit/PHASE_22_HOLDOUT.json": "ef1634f59e6a1d697453298ba26600c73ec013d17abd878c261588b6891d72eb",
+  "scanner/http_scanner.py": "1b200e35ee3833992b3b2bf02579dc6e432ec7936fd6c2e57f6d27836419026b",
+  "scanner/xss_scanner.py": "966cd563de388ecaba9235ba3b19408a5c82b9474de36a080cebd79fc2169def",
+  "scanner/sqli_scanner.py": "bf9e1a073be099935d32bf1c287fff62049594d795b32a63540b5dd8d0ae6b39",
+  "integrations/llm.py": "5f7e08a46615db9f4480315e1045a4b9dd902cebf7a61ad8dbc9b5548d6f4c42",
+  "analysis/llm_review.py": "9b3ff8bf1b6dc4fd01a1c1ef4af3260220cd7022cddd47bdd8df973af10a4f05"
+}

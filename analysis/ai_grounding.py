@@ -58,7 +58,7 @@ def statements(finding):
 def prompt_statements(finding, known=()):
     # Redact BEFORE serialization, including advisory-derived version strings.
     from analysis.llm_review import clean
-    return {key: [clean(value, known) for value in values]
+    return {key: [clean(value, known) for value in reversed(values)]
             for key, values in statements(finding).items()}
 
 

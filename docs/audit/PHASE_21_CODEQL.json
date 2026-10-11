@@ -1,0 +1,1072 @@
+{
+  "launcher": "/bin/zsh ./run-local.sh -> .venv python3 -u app.py -> create_app().run (serving replaced by temporary test hook)",
+  "config": {
+    "CODEQL_ENABLED": true,
+    "CODEQL_BINARY": "/opt/homebrew/bin/codeql",
+    "CODEQL_SEARCH_PATH": "/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7",
+    "SEMGREP_ENABLED": true,
+    "LLM_ENABLED": false
+  },
+  "interpreter": "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/.venv/bin/python3",
+  "runs": [
+    {
+      "language": "python",
+      "seconds": 14.494,
+      "scan_status": "Completed",
+      "coverage": {
+        "status": "Completed",
+        "error": null,
+        "data": {
+          "status": "Completed",
+          "languages": [
+            {
+              "candidates": 1,
+              "rejected_results": 0,
+              "status": "Completed",
+              "language": "python"
+            }
+          ],
+          "note": "No-build extraction only. Installed query packs required; no automatic downloads or builds."
+        }
+      },
+      "saved": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "location": "audit/python/positive.py:7",
+          "severity": "High",
+          "confidence": "High",
+          "analysis": {
+            "schema_version": 1,
+            "title": "Potential SQL injection in constructed query",
+            "category": "Injection",
+            "cwe": "CWE-89",
+            "owasp": [
+              "A03:2021"
+            ],
+            "severity": "High",
+            "confidence": "High",
+            "repository": "audit/python",
+            "file": "positive.py",
+            "start_line": 7,
+            "end_line": 7,
+            "start_column": 15,
+            "language": "Python",
+            "function": "bad",
+            "source": [
+              "flask.request.args"
+            ],
+            "sink": "SQL execute",
+            "data_flow": [],
+            "sanitizers": [],
+            "engine": "python-ast",
+            "rule_id": "python.sql.constructed",
+            "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+            "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+            "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+            "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+            "suggested_code": null,
+            "verification_status": "Strongly Supported",
+            "evidence_kind": "semantic candidate",
+            "constructed": true,
+            "calls": [],
+            "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+            "flow_scope": "local; call targets and runtime reachability not proven",
+            "evidence_package": {
+              "available": true,
+              "function": "bad",
+              "snippets": [
+                {
+                  "file": "positive.py",
+                  "role": "affected operation",
+                  "start_line": 5,
+                  "text": "5: def bad():\n6:     db=sqlite3.connect(\":memory:\")\n7:     return str(db.execute(\"SELECT \" + request.args.get(\"q\")).fetchall())"
+                }
+              ],
+              "related_functions": [],
+              "related_files": [
+                "positive.py"
+              ],
+              "limits": {
+                "files": 1,
+                "depth": 1,
+                "characters": 3600
+              },
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "source": [
+                "flask.request.args"
+              ],
+              "sink": "SQL execute",
+              "data_flow": [],
+              "sanitizers": [],
+              "validators": [],
+              "framework": null,
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+            },
+            "detected_by": [
+              {
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "confidence": "High",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": []
+              },
+              {
+                "engine": "Semgrep",
+                "rule_id": "sentinelscan.python.flask-sql-flow",
+                "evidence": "Semgrep rule sentinelscan.python.flask-sql-flow reported a static candidate at line 7. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Low",
+                "source": [],
+                "sink": null,
+                "data_flow": []
+              },
+              {
+                "engine": "CodeQL",
+                "rule_id": "py/sql-injection",
+                "evidence": "CodeQL rule py/sql-injection reported a static candidate at line 7. An engine-reported path is available; endpoints are not independently verified. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Medium",
+                "source": [
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  }
+                ],
+                "sink": {
+                  "file": "positive.py",
+                  "start_line": 7,
+                  "end_line": 7
+                },
+                "data_flow": [
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  }
+                ]
+              }
+            ],
+            "logical_fingerprint": "7f302e3a79f67d6f34083dc907cbe0b51dfb5325fc4fb4f5788a95a3a5bebc59",
+            "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+          }
+        }
+      ],
+      "imported_codeql": [
+        {
+          "title": "CodeQL candidate: py/sql-injection",
+          "location": "audit/python/positive.py:7",
+          "severity": "High",
+          "confidence": "Medium"
+        }
+      ],
+      "raw_result_locations": [
+        {
+          "rule": "py/sql-injection",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.py",
+                  "uriBaseId": "%SRCROOT%",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 27,
+                  "endColumn": 60
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Cellar/semgrep/1.179.0/libexec/bin/semgrep",
+            "scan",
+            "--config",
+            "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/scanner/engines/semgrep_rules.yml",
+            "--sarif",
+            "--output",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-qcnsr4su/result.sarif",
+            "--dataflow-traces",
+            "--metrics=off",
+            "--disable-version-check",
+            "--no-rewrite-rule-ids",
+            "--disable-nosem",
+            "--no-git-ignore",
+            "--jobs=1",
+            "--max-memory=512",
+            "--timeout=5",
+            "--max-target-bytes=524288",
+            "/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-_9qjtdta/source"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-qcnsr4su",
+          "budget": 30,
+          "status": "Completed",
+          "seconds": 1.817
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-wfe853lg/python-db",
+            "--language=python",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-_9qjtdta/source",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-wfe853lg",
+          "budget": 119.99968450004235,
+          "status": "Completed",
+          "database_created": true,
+          "seconds": 4.435
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-wfe853lg/python-db",
+            "codeql/python-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-wfe853lg/python.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents",
+            "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-wfe853lg",
+          "budget": 115.56417158409022,
+          "status": "Completed",
+          "invocations": [
+            {
+              "success": true,
+              "levels": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "note",
+                "note",
+                "note"
+              ]
+            }
+          ],
+          "seconds": 8.102
+        }
+      ],
+      "cleaned": true
+    },
+    {
+      "language": "javascript",
+      "seconds": 22.176,
+      "scan_status": "Completed",
+      "coverage": {
+        "status": "Completed",
+        "error": null,
+        "data": {
+          "status": "Completed",
+          "languages": [
+            {
+              "candidates": 1,
+              "rejected_results": 0,
+              "status": "Completed",
+              "language": "javascript"
+            }
+          ],
+          "note": "No-build extraction only. Installed query packs required; no automatic downloads or builds."
+        }
+      },
+      "saved": [
+        {
+          "title": "Potential unsafe DOM HTML assignment",
+          "location": "audit/javascript/positive.js:2",
+          "severity": "Medium",
+          "confidence": "High",
+          "analysis": {
+            "schema_version": 1,
+            "title": "Potential unsafe DOM HTML assignment",
+            "category": "Injection",
+            "cwe": "CWE-79",
+            "owasp": [
+              "A03:2021"
+            ],
+            "severity": "Medium",
+            "confidence": "High",
+            "repository": "audit/javascript",
+            "file": "positive.js",
+            "start_line": 2,
+            "end_line": 2,
+            "start_column": 0,
+            "language": "JavaScript",
+            "function": null,
+            "source": [
+              "Browser/HTTP input"
+            ],
+            "sink": "innerHTML",
+            "data_flow": [
+              "userInput"
+            ],
+            "sanitizers": [],
+            "engine": "tree-sitter",
+            "rule_id": "javascript.dom.html",
+            "evidence": "Recognized input Browser/HTTP input \u2192 userInput \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+            "description": "Potential unsafe DOM HTML assignment was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+            "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+            "recommendation": "Use textContent for text, or a maintained HTML sanitizer before assigning HTML.",
+            "suggested_code": null,
+            "verification_status": "Strongly Supported",
+            "evidence_kind": "semantic candidate",
+            "constructed": false,
+            "calls": [],
+            "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+            "flow_scope": "local; call targets and runtime reachability not proven",
+            "evidence_package": {
+              "available": true,
+              "function": null,
+              "snippets": [
+                {
+                  "file": "positive.js",
+                  "role": "affected operation",
+                  "start_line": 1,
+                  "text": "1: const userInput = location.hash;\n2: document.body.innerHTML = userInput;"
+                }
+              ],
+              "related_functions": [],
+              "related_files": [
+                "positive.js"
+              ],
+              "limits": {
+                "files": 1,
+                "depth": 1,
+                "characters": 3600
+              },
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "source": [
+                "Browser/HTTP input"
+              ],
+              "sink": "innerHTML",
+              "data_flow": [
+                "userInput"
+              ],
+              "sanitizers": [],
+              "validators": [],
+              "framework": null,
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+            },
+            "detected_by": [
+              {
+                "engine": "tree-sitter",
+                "rule_id": "javascript.dom.html",
+                "evidence": "Recognized input Browser/HTTP input \u2192 userInput \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "confidence": "High",
+                "source": [
+                  "Browser/HTTP input"
+                ],
+                "sink": "innerHTML",
+                "data_flow": [
+                  "userInput"
+                ]
+              },
+              {
+                "engine": "Semgrep",
+                "rule_id": "sentinelscan.javascript.dom-flow",
+                "evidence": "Semgrep rule sentinelscan.javascript.dom-flow reported a static candidate at line 2. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Low",
+                "source": [],
+                "sink": null,
+                "data_flow": []
+              },
+              {
+                "engine": "CodeQL",
+                "rule_id": "js/xss",
+                "evidence": "CodeQL rule js/xss reported a static candidate at line 2. An engine-reported path is available; endpoints are not independently verified. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Medium",
+                "source": [
+                  {
+                    "file": "positive.js",
+                    "start_line": 1,
+                    "end_line": 1
+                  }
+                ],
+                "sink": {
+                  "file": "positive.js",
+                  "start_line": 2,
+                  "end_line": 2
+                },
+                "data_flow": [
+                  {
+                    "file": "positive.js",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.js",
+                    "start_line": 2,
+                    "end_line": 2
+                  }
+                ]
+              }
+            ],
+            "logical_fingerprint": "b0f0e5a2a0d6e93ed26f277ecc61c10e21e5112e2bcac43c2b4dc8dab2815665",
+            "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+          }
+        }
+      ],
+      "imported_codeql": [
+        {
+          "title": "CodeQL candidate: js/xss",
+          "location": "audit/javascript/positive.js:2",
+          "severity": "High",
+          "confidence": "Medium"
+        }
+      ],
+      "raw_result_locations": [
+        {
+          "rule": "js/xss",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.js",
+                  "uriBaseId": "%SRCROOT%",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 27,
+                  "endColumn": 36
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Cellar/semgrep/1.179.0/libexec/bin/semgrep",
+            "scan",
+            "--config",
+            "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/scanner/engines/semgrep_rules.yml",
+            "--sarif",
+            "--output",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-dhc97rln/result.sarif",
+            "--dataflow-traces",
+            "--metrics=off",
+            "--disable-version-check",
+            "--no-rewrite-rule-ids",
+            "--disable-nosem",
+            "--no-git-ignore",
+            "--jobs=1",
+            "--max-memory=512",
+            "--timeout=5",
+            "--max-target-bytes=524288",
+            "/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-lsi4gblw/source"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-dhc97rln",
+          "budget": 30,
+          "status": "Completed",
+          "seconds": 1.723
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-vrc1_7lz/javascript-db",
+            "--language=javascript",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-lsi4gblw/source",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-vrc1_7lz",
+          "budget": 119.99984458321705,
+          "status": "Completed",
+          "database_created": true,
+          "seconds": 4.739
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-vrc1_7lz/javascript-db",
+            "codeql/javascript-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-vrc1_7lz/javascript.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents",
+            "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-vrc1_7lz",
+          "budget": 115.26085404120386,
+          "status": "Completed",
+          "invocations": [
+            {
+              "success": true,
+              "levels": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none"
+              ]
+            }
+          ],
+          "seconds": 15.544
+        }
+      ],
+      "cleaned": true
+    },
+    {
+      "language": "mixed",
+      "seconds": 31.382,
+      "scan_status": "Completed",
+      "coverage": {
+        "status": "Completed",
+        "error": null,
+        "data": {
+          "status": "Completed",
+          "languages": [
+            {
+              "candidates": 1,
+              "rejected_results": 0,
+              "status": "Completed",
+              "language": "python"
+            },
+            {
+              "candidates": 1,
+              "rejected_results": 0,
+              "status": "Completed",
+              "language": "javascript"
+            }
+          ],
+          "note": "No-build extraction only. Installed query packs required; no automatic downloads or builds."
+        }
+      },
+      "saved": [
+        {
+          "title": "Potential SQL injection in constructed query",
+          "location": "audit/mixed/positive.py:7",
+          "severity": "High",
+          "confidence": "High",
+          "analysis": {
+            "schema_version": 1,
+            "title": "Potential SQL injection in constructed query",
+            "category": "Injection",
+            "cwe": "CWE-89",
+            "owasp": [
+              "A03:2021"
+            ],
+            "severity": "High",
+            "confidence": "High",
+            "repository": "audit/mixed",
+            "file": "positive.py",
+            "start_line": 7,
+            "end_line": 7,
+            "start_column": 15,
+            "language": "Python",
+            "function": "bad",
+            "source": [
+              "flask.request.args"
+            ],
+            "sink": "SQL execute",
+            "data_flow": [],
+            "sanitizers": [],
+            "engine": "python-ast",
+            "rule_id": "python.sql.constructed",
+            "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+            "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+            "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+            "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+            "suggested_code": null,
+            "verification_status": "Strongly Supported",
+            "evidence_kind": "semantic candidate",
+            "constructed": true,
+            "calls": [],
+            "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+            "flow_scope": "local; call targets and runtime reachability not proven",
+            "evidence_package": {
+              "available": true,
+              "function": "bad",
+              "snippets": [
+                {
+                  "file": "positive.py",
+                  "role": "affected operation",
+                  "start_line": 5,
+                  "text": "5: def bad():\n6:     db=sqlite3.connect(\":memory:\")\n7:     return str(db.execute(\"SELECT \" + request.args.get(\"q\")).fetchall())"
+                }
+              ],
+              "related_functions": [],
+              "related_files": [
+                "positive.py"
+              ],
+              "limits": {
+                "files": 1,
+                "depth": 1,
+                "characters": 3600
+              },
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "source": [
+                "flask.request.args"
+              ],
+              "sink": "SQL execute",
+              "data_flow": [],
+              "sanitizers": [],
+              "validators": [],
+              "framework": null,
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+            },
+            "detected_by": [
+              {
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "confidence": "High",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": []
+              },
+              {
+                "engine": "Semgrep",
+                "rule_id": "sentinelscan.python.flask-sql-flow",
+                "evidence": "Semgrep rule sentinelscan.python.flask-sql-flow reported a static candidate at line 7. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Low",
+                "source": [],
+                "sink": null,
+                "data_flow": []
+              },
+              {
+                "engine": "CodeQL",
+                "rule_id": "py/sql-injection",
+                "evidence": "CodeQL rule py/sql-injection reported a static candidate at line 7. An engine-reported path is available; endpoints are not independently verified. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Medium",
+                "source": [
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  }
+                ],
+                "sink": {
+                  "file": "positive.py",
+                  "start_line": 7,
+                  "end_line": 7
+                },
+                "data_flow": [
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  },
+                  {
+                    "file": "positive.py",
+                    "start_line": 7,
+                    "end_line": 7
+                  }
+                ]
+              }
+            ],
+            "logical_fingerprint": "a9004c4f6a65a37f4f8a0324dd995ffe91a9fe14e95f245d03755df0817fcafa",
+            "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+          }
+        },
+        {
+          "title": "Potential unsafe DOM HTML assignment",
+          "location": "audit/mixed/positive.js:2",
+          "severity": "Medium",
+          "confidence": "High",
+          "analysis": {
+            "schema_version": 1,
+            "title": "Potential unsafe DOM HTML assignment",
+            "category": "Injection",
+            "cwe": "CWE-79",
+            "owasp": [
+              "A03:2021"
+            ],
+            "severity": "Medium",
+            "confidence": "High",
+            "repository": "audit/mixed",
+            "file": "positive.js",
+            "start_line": 2,
+            "end_line": 2,
+            "start_column": 0,
+            "language": "JavaScript",
+            "function": null,
+            "source": [
+              "Browser/HTTP input"
+            ],
+            "sink": "innerHTML",
+            "data_flow": [
+              "userInput"
+            ],
+            "sanitizers": [],
+            "engine": "tree-sitter",
+            "rule_id": "javascript.dom.html",
+            "evidence": "Recognized input Browser/HTTP input \u2192 userInput \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+            "description": "Potential unsafe DOM HTML assignment was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+            "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+            "recommendation": "Use textContent for text, or a maintained HTML sanitizer before assigning HTML.",
+            "suggested_code": null,
+            "verification_status": "Strongly Supported",
+            "evidence_kind": "semantic candidate",
+            "constructed": false,
+            "calls": [],
+            "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+            "flow_scope": "local; call targets and runtime reachability not proven",
+            "evidence_package": {
+              "available": true,
+              "function": null,
+              "snippets": [
+                {
+                  "file": "positive.js",
+                  "role": "affected operation",
+                  "start_line": 1,
+                  "text": "1: const userInput = location.hash;\n2: document.body.innerHTML = userInput;"
+                }
+              ],
+              "related_functions": [],
+              "related_files": [
+                "positive.js"
+              ],
+              "limits": {
+                "files": 1,
+                "depth": 1,
+                "characters": 3600
+              },
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "source": [
+                "Browser/HTTP input"
+              ],
+              "sink": "innerHTML",
+              "data_flow": [
+                "userInput"
+              ],
+              "sanitizers": [],
+              "validators": [],
+              "framework": null,
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+            },
+            "detected_by": [
+              {
+                "engine": "tree-sitter",
+                "rule_id": "javascript.dom.html",
+                "evidence": "Recognized input Browser/HTTP input \u2192 userInput \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "confidence": "High",
+                "source": [
+                  "Browser/HTTP input"
+                ],
+                "sink": "innerHTML",
+                "data_flow": [
+                  "userInput"
+                ]
+              },
+              {
+                "engine": "Semgrep",
+                "rule_id": "sentinelscan.javascript.dom-flow",
+                "evidence": "Semgrep rule sentinelscan.javascript.dom-flow reported a static candidate at line 2. No source-to-sink path was supplied. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Low",
+                "source": [],
+                "sink": null,
+                "data_flow": []
+              },
+              {
+                "engine": "CodeQL",
+                "rule_id": "js/xss",
+                "evidence": "CodeQL rule js/xss reported a static candidate at line 2. An engine-reported path is available; endpoints are not independently verified. Tool agreement or a reported path does not prove runtime exploitability.",
+                "confidence": "Medium",
+                "source": [
+                  {
+                    "file": "positive.js",
+                    "start_line": 1,
+                    "end_line": 1
+                  }
+                ],
+                "sink": {
+                  "file": "positive.js",
+                  "start_line": 2,
+                  "end_line": 2
+                },
+                "data_flow": [
+                  {
+                    "file": "positive.js",
+                    "start_line": 1,
+                    "end_line": 1
+                  },
+                  {
+                    "file": "positive.js",
+                    "start_line": 2,
+                    "end_line": 2
+                  }
+                ]
+              }
+            ],
+            "logical_fingerprint": "c7dff3ddd19dfe521861c7fd4b0e99b12f461a3c4d9bfe905fa49faf4db1e2c3",
+            "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+          }
+        }
+      ],
+      "imported_codeql": [
+        {
+          "title": "CodeQL candidate: py/sql-injection",
+          "location": "audit/mixed/positive.py:7",
+          "severity": "High",
+          "confidence": "Medium"
+        },
+        {
+          "title": "CodeQL candidate: js/xss",
+          "location": "audit/mixed/positive.js:2",
+          "severity": "High",
+          "confidence": "Medium"
+        }
+      ],
+      "raw_result_locations": [
+        {
+          "rule": "py/sql-injection",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.py",
+                  "uriBaseId": "%SRCROOT%",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 27,
+                  "endColumn": 60
+                }
+              }
+            }
+          ]
+        },
+        {
+          "rule": "js/xss",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.js",
+                  "uriBaseId": "%SRCROOT%",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 27,
+                  "endColumn": 36
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "commands": [
+        {
+          "args": [
+            "/opt/homebrew/Cellar/semgrep/1.179.0/libexec/bin/semgrep",
+            "scan",
+            "--config",
+            "/Users/kribeshthapa/Developer/Vibe code/SentinalScan/scanner/engines/semgrep_rules.yml",
+            "--sarif",
+            "--output",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-u7jyxncs/result.sarif",
+            "--dataflow-traces",
+            "--metrics=off",
+            "--disable-version-check",
+            "--no-rewrite-rule-ids",
+            "--disable-nosem",
+            "--no-git-ignore",
+            "--jobs=1",
+            "--max-memory=512",
+            "--timeout=5",
+            "--max-target-bytes=524288",
+            "/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-4lhklamd/source"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-semgrep-u7jyxncs",
+          "budget": 30,
+          "status": "Completed",
+          "seconds": 1.688
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/python-db",
+            "--language=python",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-4lhklamd/source",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf",
+          "budget": 119.99985195789486,
+          "status": "Completed",
+          "database_created": true,
+          "seconds": 2.979
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/python-db",
+            "codeql/python-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/python.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents",
+            "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf",
+          "budget": 117.02127058291808,
+          "status": "Completed",
+          "invocations": [
+            {
+              "success": true,
+              "levels": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "note",
+                "note"
+              ]
+            }
+          ],
+          "seconds": 7.296
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "create",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/javascript-db",
+            "--language=javascript",
+            "--build-mode=none",
+            "--source-root=/private/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-repository-4lhklamd/source",
+            "--threads=1",
+            "--ram=1024"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf",
+          "budget": 109.7224037500564,
+          "status": "Completed",
+          "database_created": true,
+          "seconds": 4.293
+        },
+        {
+          "args": [
+            "/opt/homebrew/Caskroom/codeql/2.27.2/codeql/codeql",
+            "database",
+            "analyze",
+            "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/javascript-db",
+            "codeql/javascript-queries",
+            "--format=sarifv2.1.0",
+            "--output=/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf/javascript.sarif",
+            "--threads=1",
+            "--ram=1024",
+            "--timeout=30",
+            "--no-sarif-add-file-contents",
+            "--search-path=/Users/kribeshthapa/.codeql/packages/codeql/python-queries/1.8.12:/Users/kribeshthapa/.codeql/packages/codeql/javascript-queries/2.4.7"
+          ],
+          "work": "/var/folders/02/fy2phk3d2c98n6c5ls6vc9g40000gn/T/sentinelscan-codeql-mbkhcsmf",
+          "budget": 105.4294702920597,
+          "status": "Completed",
+          "invocations": [
+            {
+              "success": true,
+              "levels": [
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none",
+                "none"
+              ]
+            }
+          ],
+          "seconds": 14.853
+        }
+      ],
+      "cleaned": true
+    }
+  ]
+}

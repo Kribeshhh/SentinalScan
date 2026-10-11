@@ -44,8 +44,9 @@ class WebsiteTests(unittest.TestCase):
         cls.thread.join()
 
     def setUp(self):
+        # This authored lab endpoint is reviewed as inert, including q mutations.
         self.directory = tempfile.TemporaryDirectory()
-        self.app = create_app({'TESTING':True, 'DATABASE':str(Path(self.directory.name)/'scan.sqlite3'), 'SCANNER_CLIENT_OPTIONS':{'interval':0,'timeout':1}})
+        self.app = create_app({'TESTING':True, 'DATABASE':str(Path(self.directory.name)/'scan.sqlite3'), 'SCANNER_CLIENT_OPTIONS':{'interval':0,'timeout':1,'reviewed_queries':{self.url:[0]}}})
         self.client = self.app.test_client()
         self.client.get('/website-scan')
         with self.client.session_transaction() as session:
@@ -111,13 +112,13 @@ class WebsiteTests(unittest.TestCase):
     def test_pinning_redirect_and_limits(self):
         target = validate_target(self.url,True)
         with patch('socket.getaddrinfo',side_effect=AssertionError('Unexpected DNS re-resolution')):
-            response = Client(target,interval=0).get(self.url)
+            response = Client(target,reviewed_queries={target.url:[0]},interval=0).get(self.url)
         self.assertEqual(response.status,200)
         url = self.url.split('/?')[0] + '/redirect-external'
-        response = Client(target,interval=0).get(url)
+        response = Client(target,reviewed_queries={target.url:[0]},interval=0).get(url)
         self.assertEqual(response.status,302)
         self.assertFalse(response.redirects[0]['followed'])
-        client = Client(target,interval=0,max_requests=1,max_bytes=50)
+        client = Client(target,reviewed_queries={target.url:[0]},interval=0,max_requests=1,max_bytes=50)
         response = client.get(self.url)
         self.assertEqual(len(response.body),50)
         self.assertTrue(response.truncated)
@@ -153,19 +154,19 @@ class WebsiteTests(unittest.TestCase):
         try:
             url=f'https://localhost:{server.server_port}/?q=hello'
             target=validate_target(url,True)
-            client=Client(target,cafile=str(certpath),interval=0)
+            client=Client(target,reviewed_queries={target.url:[0]},cafile=str(certpath),interval=0)
             response=client.get(url)
             ctx={'target':target,'client':client,'response':response,'findings':[]}
             data=tls_scanner.run(ctx)
             self.assertTrue(data['verified']);self.assertTrue(data['available'])
-            self.app.config['SCANNER_CLIENT_OPTIONS']={'cafile':str(certpath),'interval':0,'timeout':1}
+            self.app.config['SCANNER_CLIENT_OPTIONS']={'cafile':str(certpath),'interval':0,'timeout':1,'reviewed_queries':{url:[0]}}
             with patch('scanner.port_scanner.shutil.which',return_value=None):
                 self.submit(url)
                 self.app.extensions['scan_manager'].shutdown()
             with self.app.app_context():
                 self.assertEqual(get_db().execute('SELECT status FROM scans').fetchone()[0],'Completed')
                 self.assertIn('Missing or disabled HSTS',[r[0] for r in get_db().execute('SELECT title FROM findings')])
-            ctx={'target':target,'client':Client(target,interval=0),'findings':[]}
+            ctx={'target':target,'client':Client(target,reviewed_queries={target.url:[0]},interval=0),'findings':[]}
             data=tls_scanner.run(ctx)
             self.assertFalse(data['verified'])
             self.assertIn('TLS certificate validation failed',[f.title for f in ctx['findings']])
@@ -197,7 +198,7 @@ class WebsiteTests(unittest.TestCase):
         from scanner import xss_scanner, sqli_scanner
         url = self.url.replace('/?','/safe?')
         target = validate_target(url,True)
-        client = Client(target,interval=0)
+        client = Client(target,reviewed_queries={target.url:[0]},interval=0)
         ctx = {'target':target,'client':client,'response':client.get(url),'findings':[]}
         observations = xss_scanner.run(ctx)
         self.assertTrue(observations['parameters'][0]['reflected'])

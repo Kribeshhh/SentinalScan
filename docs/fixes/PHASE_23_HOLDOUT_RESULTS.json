@@ -1,0 +1,3714 @@
+{
+  "dataset_sha256": "ef1634f59e6a1d697453298ba26600c73ec013d17abd878c261588b6891d72eb",
+  "stages": [
+    {
+      "stage": "custom-with-dataflow",
+      "seconds": 0.4683455831836909,
+      "valid_run": true,
+      "coverage": [
+        {
+          "name": "Repository retrieval",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Secrets",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Python",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "JavaScript",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Java",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "HTML",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Configuration",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Dependencies",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Semgrep",
+          "status": "Skipped",
+          "error": "Semgrep is disabled."
+        },
+        {
+          "name": "CodeQL",
+          "status": "Skipped",
+          "error": "CodeQL is disabled."
+        }
+      ],
+      "coverage_details": {
+        "Repository retrieval": {
+          "repository": {
+            "full_name": "evaluation/controlled-fixtures"
+          },
+          "branch": "fixed-dataset",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inventory": {
+            "files": 32,
+            "bytes": 4083,
+            "excluded": 0,
+            "oversized_files": 0,
+            "binary_files": 0,
+            "unsupported_files": 0
+          },
+          "languages": {
+            "Python": 21,
+            "Configuration / other text": 2,
+            "JavaScript": 4,
+            "Java": 5
+          },
+          "project_index": {
+            "schema_version": 1,
+            "files": [
+              {
+                "file": "checksum_unknown/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_join/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_quote_embedding/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_subprocess_array/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_http_auth/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_public_uuid/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_runtime/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_crc/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_hmac_md5/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_nonsecurity_api/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_password_alias/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "dom_adjacent/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_sanitized_alias/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_text_node/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_write_decoded/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "java_bound_query/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_crc/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_digest_unknown/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_sql_format/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_weak_cipher/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "opaque_unknown/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "secret_custom_direct/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "secret_fixture_placeholder/fixtures/config.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_batch_bind/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_crossfile_builder/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_crossfile_builder/query_builder.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_explicit_cast/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_local_display/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_numeric_lookalike/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_search_format/main.py",
+                "language": "Python"
+              }
+            ],
+            "languages": {
+              "Python": 21,
+              "JavaScript": 4,
+              "Java": 5
+            },
+            "records": [
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "transform",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.digest",
+                "line": 3,
+                "scope": "transform",
+                "resolved": false,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashlib.md5",
+                "line": 3,
+                "scope": "transform",
+                "resolved": false,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.join",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  },
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 3,
+                "scope": "search",
+                "resolved": false,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "HTTPBasicAuth",
+                    "alias": "Credential"
+                  }
+                ],
+                "module": "requests.auth",
+                "line": 1,
+                "scope": null,
+                "file": "credential_http_auth/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "Credential",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_http_auth/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_public_uuid/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  },
+                  {
+                    "name": "psycopg2",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "credential_runtime/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "psycopg2.connect",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_runtime/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "zlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "checksum",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "zlib.crc32",
+                "line": 3,
+                "scope": "checksum",
+                "resolved": false,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hmac",
+                    "alias": null
+                  },
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "sign",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 3,
+                "scope": "sign",
+                "resolved": false,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hmac.new",
+                "line": 3,
+                "scope": "sign",
+                "resolved": false,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "new",
+                    "alias": "digest"
+                  }
+                ],
+                "module": "hashlib",
+                "line": 1,
+                "scope": null,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "bucket",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 3,
+                "scope": "bucket",
+                "resolved": false,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "digest",
+                "line": 3,
+                "scope": "bucket",
+                "resolved": false,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": "hashes"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "digest",
+                "line": 2,
+                "end_line": 4,
+                "scope": null,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "password.encode",
+                "line": 3,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 4,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashes.sha1",
+                "line": 4,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "slice",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "insertAdjacentHTML",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "sanitize",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_sanitized_alias/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_sanitized_alias/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "slice",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "appendChild",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "createTextNode",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "substring",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "write",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "prepareStatement",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "setString",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "executeQuery",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "checksum",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "update",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getValue",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "transform",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getInstance",
+                "line": 1,
+                "scope": "Main.transform",
+                "resolved": false,
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "format",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getParameter",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "executeQuery",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "prepareStatement",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  "Cipher",
+                  "crypto",
+                  "javax"
+                ],
+                "line": 1,
+                "scope": null,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 2,
+                "end_line": 2,
+                "scope": null,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "process",
+                "line": 2,
+                "end_line": 2,
+                "scope": "Main",
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getInstance",
+                "line": 2,
+                "scope": "Main.process",
+                "resolved": false,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "pymysql",
+                    "alias": "db"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "start",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.connect",
+                "line": 3,
+                "scope": "start",
+                "resolved": false,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "save",
+                "line": 2,
+                "end_line": 4,
+                "scope": null,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 3,
+                "scope": "save",
+                "resolved": false,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.executemany",
+                "line": 4,
+                "scope": "save",
+                "resolved": false,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "build",
+                    "alias": null
+                  }
+                ],
+                "module": "query_builder",
+                "line": 3,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "build",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "build",
+                "line": 1,
+                "end_line": 2,
+                "scope": null,
+                "file": "sql_crossfile_builder/query_builder.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "lookup",
+                "line": 2,
+                "end_line": 5,
+                "scope": null,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 3,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 4,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "class",
+                "name": "Printer",
+                "line": 1,
+                "end_line": 3,
+                "scope": null,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "execute",
+                "line": 2,
+                "end_line": 3,
+                "scope": "Printer",
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 3,
+                "scope": "Printer.execute",
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 4,
+                "scope": null,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "Printer",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "int",
+                "line": 3,
+                "end_line": 4,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 3,
+                "end_line": 7,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 4,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 5,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.format",
+                "line": 6,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "connection.execute",
+                "line": 7,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              }
+            ],
+            "unparsed_files": [],
+            "framework_indicators": [
+              "flask"
+            ],
+            "truncated": false,
+            "note": "Declarations and syntactic calls only; imports do not prove framework use or resolved call relationships."
+          }
+        },
+        "Secrets": {
+          "potential_secrets": 3,
+          "values_retained": false,
+          "note": "Candidates are not tested against services. Placeholders are suppressed. False positives remain possible."
+        },
+        "Python": {
+          "flow_limited_files": [],
+          "parsed_files": 21,
+          "unparsed_files": [],
+          "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+        },
+        "JavaScript": {
+          "parsed_files": 4,
+          "unparsed_files": [],
+          "note": "Tree-sitter statement-order local variable and sanitizer context; comments and string contents do not trigger code rules. TypeScript and interprocedural data flow are not supported."
+        },
+        "Java": {
+          "parsed_files": 5,
+          "unparsed_files": [],
+          "note": "Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review."
+        },
+        "HTML": {
+          "parsed_files": 0,
+          "unparsed_inline_scripts": 0,
+          "note": "HTML and inline JavaScript are parsed without rendering, executing scripts or fetching resources."
+        },
+        "Configuration": {
+          "configuration_files": 1,
+          "unparsed_files": [],
+          "note": "Literal configuration inspection only; environment overrides and runtime behavior are not evaluated. JSON/YAML locations are file-level line 1."
+        },
+        "Dependencies": {
+          "dependencies": [],
+          "unparsed_manifests": [],
+          "inventory_capped": false,
+          "queried_packages": 0,
+          "lookup_failures": 0,
+          "unsupported_manifests": [],
+          "limited_manifests": [],
+          "note": "Only exact declared or locked versions are queried; unsupported formats are explicitly listed; no dependency installation, transitive resolution or guessing of version ranges. Unknown advisory severity is Informational. Private package names/versions are sent to OSV only when enabled."
+        },
+        "Semgrep": {
+          "status": "Skipped",
+          "note": "Semgrep is disabled."
+        },
+        "CodeQL": {
+          "status": "Skipped",
+          "note": "CodeQL is disabled."
+        }
+      },
+      "archive_cleaned": true,
+      "metrics": {
+        "TP": 13,
+        "FP": 0,
+        "TN": 14,
+        "FN": 1,
+        "precision": 1.0,
+        "recall": 0.9285714285714286,
+        "f1": 0.9629629629629629
+      },
+      "categories": {
+        "Command Injection": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "DOM XSS": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Java Security": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SQL Injection": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Secrets": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Weak Cryptography": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 2,
+          "FN": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        }
+      },
+      "cases": [
+        {
+          "id": "sql_batch_bind",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Values supplied separately to executemany; fixed SQL structure.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_explicit_cast",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Integer conversion constrains injected SQL syntax; not a general string sanitizer.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_search_format",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_search_format/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Request-controlled value interpolated into quoted SQL without binding.",
+          "outcome": "TP"
+        },
+        {
+          "id": "sql_crossfile_builder",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_crossfile_builder/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Cross-file helper directly interpolates untrusted name into SQL. This tests a supported-language boundary, not assumed whole-program support.",
+          "outcome": "TP"
+        },
+        {
+          "id": "command_subprocess_array",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Fixed executable and separate pattern argument; no shell interpretation.",
+          "outcome": "TN"
+        },
+        {
+          "id": "command_document",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Documentary text only, never executed.",
+          "outcome": "TN"
+        },
+        {
+          "id": "command_join",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "command_join/main.py",
+              "title": "Unsafe subprocess shell invocation",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.subprocess.shell"
+            }
+          ],
+          "rationale": "Joining untrusted data into a shell command retains shell metacharacters.",
+          "outcome": "TP"
+        },
+        {
+          "id": "command_quote_embedding",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "command_quote_embedding/main.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "rationale": "POSIX single-argument quoting nested inside double quotes is not general shell protection.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_adjacent",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "dom_adjacent/main.js",
+              "title": "Potential unsafe DOM HTML insertion",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.dom.insertion"
+            }
+          ],
+          "rationale": "Decoded URL data enters HTML parser; attacker HTML could contain event handlers.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_write_decoded",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "dom_write_decoded/main.js",
+              "title": "Potential unsafe document.write",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.document.write"
+            }
+          ],
+          "rationale": "Untrusted decoded browser fragment enters document HTML.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_text_node",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Text node creation does not parse HTML.",
+          "outcome": "TN"
+        },
+        {
+          "id": "dom_sanitized_alias",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Standard DOMPurify default contract assumed; sanitized value not altered.",
+          "outcome": "TN"
+        },
+        {
+          "id": "credential_http_auth",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "credential_http_auth/main.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Literal password supplied to recognized imported authentication constructor; synthetic/nonfunctional.",
+          "outcome": "TP"
+        },
+        {
+          "id": "credential_env_file",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "credential_env_file/service.env",
+              "title": "Potential embedded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Hardcoded literal assigned to credential configuration; synthetic/nonfunctional.",
+          "outcome": "TP"
+        },
+        {
+          "id": "credential_public_uuid",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Public identifier printed, no authentication use or credential structure.",
+          "outcome": "TN"
+        },
+        {
+          "id": "credential_runtime",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Password loaded at runtime; no hardcoded credential in source.",
+          "outcome": "TN"
+        },
+        {
+          "id": "crypto_password_alias",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "crypto_password_alias/main.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "rationale": "Fast SHA1 used to derive password digest; no slow salted password KDF.",
+          "outcome": "TP"
+        },
+        {
+          "id": "crypto_hmac_md5",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": false,
+          "findings": [],
+          "rationale": "MD5 explicitly selected for authentication MAC; weak-primitive policy label, not claim of demonstrated forgery.",
+          "outcome": "FN"
+        },
+        {
+          "id": "crypto_crc",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Non-cryptographic accidental-corruption checksum, no authentication usage.",
+          "outcome": "TN"
+        },
+        {
+          "id": "crypto_nonsecurity_api",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Explicit nonsecurity hashing for bucket identification; no security decision.",
+          "outcome": "TN"
+        },
+        {
+          "id": "java_weak_cipher",
+          "category": "Java Security",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_weak_cipher/Main.java",
+              "title": "Weak Java cryptographic algorithm",
+              "severity": "Medium",
+              "confidence": "Medium",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.crypto.weak"
+            }
+          ],
+          "rationale": "Explicit weak cipher selection, not a checksum.",
+          "outcome": "TP"
+        },
+        {
+          "id": "java_sql_format",
+          "category": "Java Security",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_sql_format/Main.java",
+              "title": "Potential SQL injection in Java query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.sql.constructed"
+            }
+          ],
+          "rationale": "prepareStatement cannot repair SQL already interpolated with servlet input.",
+          "outcome": "TP"
+        },
+        {
+          "id": "java_bound_query",
+          "category": "Java Security",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Fixed query with bound string value.",
+          "outcome": "TN"
+        },
+        {
+          "id": "java_crc",
+          "category": "Java Security",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "CRC computes non-security checksum of public bytes.",
+          "outcome": "TN"
+        },
+        {
+          "id": "secret_fixture_placeholder",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Explicit placeholder, no real secret-like format.",
+          "outcome": "TN"
+        },
+        {
+          "id": "secret_custom_direct",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "secret_custom_direct/main.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Direct literal at identified credential API; no variable-name dependency.",
+          "outcome": "TP"
+        },
+        {
+          "id": "sql_local_display",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Local display method prints a string; does not execute SQL.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_numeric_lookalike",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_numeric_lookalike/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Local int is identity function, not numeric sanitizer; request reaches SQL.",
+          "outcome": "TP"
+        }
+      ],
+      "ambiguous": [
+        {
+          "id": "opaque_unknown",
+          "category": "Secrets",
+          "expected": null,
+          "detected": false,
+          "findings": [],
+          "rationale": "No use/type evidence; credential purpose cannot be labeled from source."
+        },
+        {
+          "id": "checksum_unknown",
+          "category": "Weak Cryptography",
+          "expected": null,
+          "detected": true,
+          "findings": [
+            {
+              "file": "checksum_unknown/main.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "Informational",
+              "confidence": "Low",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "rationale": "Purpose unspecified; may be nonsecurity checksum or a security digest."
+        },
+        {
+          "id": "java_digest_unknown",
+          "category": "Java Security",
+          "expected": null,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_digest_unknown/Main.java",
+              "title": "Weak Java cryptographic algorithm",
+              "severity": "Informational",
+              "confidence": "Low",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.crypto.weak"
+            }
+          ],
+          "rationale": "Digest returned to unknown caller; security role unspecified."
+        }
+      ],
+      "unscored": []
+    },
+    {
+      "stage": "custom-plus-semgrep",
+      "seconds": 2.2499253328423947,
+      "valid_run": true,
+      "coverage": [
+        {
+          "name": "Repository retrieval",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Secrets",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Python",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "JavaScript",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Java",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "HTML",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Configuration",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Dependencies",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "Semgrep",
+          "status": "Completed",
+          "error": null
+        },
+        {
+          "name": "CodeQL",
+          "status": "Skipped",
+          "error": "CodeQL is disabled."
+        }
+      ],
+      "coverage_details": {
+        "Repository retrieval": {
+          "repository": {
+            "full_name": "evaluation/controlled-fixtures"
+          },
+          "branch": "fixed-dataset",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inventory": {
+            "files": 32,
+            "bytes": 4083,
+            "excluded": 0,
+            "oversized_files": 0,
+            "binary_files": 0,
+            "unsupported_files": 0
+          },
+          "languages": {
+            "Python": 21,
+            "Configuration / other text": 2,
+            "JavaScript": 4,
+            "Java": 5
+          },
+          "project_index": {
+            "schema_version": 1,
+            "files": [
+              {
+                "file": "checksum_unknown/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_join/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_quote_embedding/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "command_subprocess_array/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_http_auth/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_public_uuid/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "credential_runtime/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_crc/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_hmac_md5/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_nonsecurity_api/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "crypto_password_alias/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "dom_adjacent/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_sanitized_alias/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_text_node/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "dom_write_decoded/main.js",
+                "language": "JavaScript"
+              },
+              {
+                "file": "java_bound_query/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_crc/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_digest_unknown/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_sql_format/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "java_weak_cipher/Main.java",
+                "language": "Java"
+              },
+              {
+                "file": "opaque_unknown/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "secret_custom_direct/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "secret_fixture_placeholder/fixtures/config.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_batch_bind/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_crossfile_builder/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_crossfile_builder/query_builder.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_explicit_cast/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_local_display/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_numeric_lookalike/main.py",
+                "language": "Python"
+              },
+              {
+                "file": "sql_search_format/main.py",
+                "language": "Python"
+              }
+            ],
+            "languages": {
+              "Python": 21,
+              "JavaScript": 4,
+              "Java": 5
+            },
+            "records": [
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "transform",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.digest",
+                "line": 3,
+                "scope": "transform",
+                "resolved": false,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashlib.md5",
+                "line": 3,
+                "scope": "transform",
+                "resolved": false,
+                "file": "checksum_unknown/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.join",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_join/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  },
+                  {
+                    "name": "shlex",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "shlex.quote",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "os.system",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "command_quote_embedding/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "subprocess",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "subprocess.run",
+                "line": 3,
+                "scope": "search",
+                "resolved": false,
+                "file": "command_subprocess_array/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "HTTPBasicAuth",
+                    "alias": "Credential"
+                  }
+                ],
+                "module": "requests.auth",
+                "line": 1,
+                "scope": null,
+                "file": "credential_http_auth/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "Credential",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_http_auth/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_public_uuid/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "os",
+                    "alias": null
+                  },
+                  {
+                    "name": "psycopg2",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "credential_runtime/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "psycopg2.connect",
+                "line": 3,
+                "scope": null,
+                "resolved": false,
+                "file": "credential_runtime/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "zlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "checksum",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "zlib.crc32",
+                "line": 3,
+                "scope": "checksum",
+                "resolved": false,
+                "file": "crypto_crc/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hmac",
+                    "alias": null
+                  },
+                  {
+                    "name": "hashlib",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "sign",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 3,
+                "scope": "sign",
+                "resolved": false,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hmac.new",
+                "line": 3,
+                "scope": "sign",
+                "resolved": false,
+                "file": "crypto_hmac_md5/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "new",
+                    "alias": "digest"
+                  }
+                ],
+                "module": "hashlib",
+                "line": 1,
+                "scope": null,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "bucket",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 3,
+                "scope": "bucket",
+                "resolved": false,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "digest",
+                "line": 3,
+                "scope": "bucket",
+                "resolved": false,
+                "file": "crypto_nonsecurity_api/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "hashlib",
+                    "alias": "hashes"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "digest",
+                "line": 2,
+                "end_line": 4,
+                "scope": null,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "password.encode",
+                "line": 3,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.hexdigest",
+                "line": 4,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "hashes.sha1",
+                "line": 4,
+                "scope": "digest",
+                "resolved": false,
+                "file": "crypto_password_alias/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "slice",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "insertAdjacentHTML",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_adjacent/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "sanitize",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_sanitized_alias/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_sanitized_alias/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "slice",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "appendChild",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "querySelector",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "createTextNode",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_text_node/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "decodeURIComponent",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "substring",
+                "line": 1,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "call",
+                "name": "write",
+                "line": 2,
+                "scope": null,
+                "resolved": false,
+                "file": "dom_write_decoded/main.js"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "prepareStatement",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "setString",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "executeQuery",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_bound_query/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "checksum",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "update",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getValue",
+                "line": 1,
+                "scope": "Main.checksum",
+                "resolved": false,
+                "file": "java_crc/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "transform",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getInstance",
+                "line": 1,
+                "scope": "Main.transform",
+                "resolved": false,
+                "file": "java_digest_unknown/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 1,
+                "end_line": 1,
+                "scope": null,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 1,
+                "end_line": 1,
+                "scope": "Main",
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "format",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getParameter",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "executeQuery",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "prepareStatement",
+                "line": 1,
+                "scope": "Main.search",
+                "resolved": false,
+                "file": "java_sql_format/Main.java"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  "Cipher",
+                  "crypto",
+                  "javax"
+                ],
+                "line": 1,
+                "scope": null,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "class",
+                "name": "Main",
+                "line": 2,
+                "end_line": 2,
+                "scope": null,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "function",
+                "name": "process",
+                "line": 2,
+                "end_line": 2,
+                "scope": "Main",
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "call",
+                "name": "getInstance",
+                "line": 2,
+                "scope": "Main.process",
+                "resolved": false,
+                "file": "java_weak_cipher/Main.java"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "pymysql",
+                    "alias": "db"
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "start",
+                "line": 2,
+                "end_line": 3,
+                "scope": null,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.connect",
+                "line": 3,
+                "scope": "start",
+                "resolved": false,
+                "file": "secret_custom_direct/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "save",
+                "line": 2,
+                "end_line": 4,
+                "scope": null,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 3,
+                "scope": "save",
+                "resolved": false,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.executemany",
+                "line": 4,
+                "scope": "save",
+                "resolved": false,
+                "file": "sql_batch_bind/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "build",
+                    "alias": null
+                  }
+                ],
+                "module": "query_builder",
+                "line": 3,
+                "scope": null,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 4,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "build",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_crossfile_builder/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "build",
+                "line": 1,
+                "end_line": 2,
+                "scope": null,
+                "file": "sql_crossfile_builder/query_builder.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "lookup",
+                "line": 2,
+                "end_line": 5,
+                "scope": null,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 3,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 4,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 5,
+                "scope": "lookup",
+                "resolved": false,
+                "file": "sql_explicit_cast/main.py"
+              },
+              {
+                "kind": "class",
+                "name": "Printer",
+                "line": 1,
+                "end_line": 3,
+                "scope": null,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "execute",
+                "line": 2,
+                "end_line": 3,
+                "scope": "Printer",
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "print",
+                "line": 3,
+                "scope": "Printer.execute",
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 4,
+                "scope": null,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.execute",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "Printer",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_local_display/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "int",
+                "line": 3,
+                "end_line": 4,
+                "scope": null,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 5,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "db.execute",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "int",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.args.get",
+                "line": 6,
+                "scope": null,
+                "resolved": false,
+                "file": "sql_numeric_lookalike/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "sqlite3",
+                    "alias": null
+                  }
+                ],
+                "module": null,
+                "line": 1,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "import",
+                "names": [
+                  {
+                    "name": "request",
+                    "alias": null
+                  }
+                ],
+                "module": "flask",
+                "line": 2,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "function",
+                "name": "search",
+                "line": 3,
+                "end_line": 7,
+                "scope": null,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "sqlite3.connect",
+                "line": 4,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "request.form.get",
+                "line": 5,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "<unresolved>.format",
+                "line": 6,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              },
+              {
+                "kind": "call",
+                "name": "connection.execute",
+                "line": 7,
+                "scope": "search",
+                "resolved": false,
+                "file": "sql_search_format/main.py"
+              }
+            ],
+            "unparsed_files": [],
+            "framework_indicators": [
+              "flask"
+            ],
+            "truncated": false,
+            "note": "Declarations and syntactic calls only; imports do not prove framework use or resolved call relationships."
+          }
+        },
+        "Secrets": {
+          "potential_secrets": 3,
+          "values_retained": false,
+          "note": "Candidates are not tested against services. Placeholders are suppressed. False positives remain possible."
+        },
+        "Python": {
+          "flow_limited_files": [],
+          "parsed_files": 21,
+          "unparsed_files": [],
+          "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+        },
+        "JavaScript": {
+          "parsed_files": 4,
+          "unparsed_files": [],
+          "note": "Tree-sitter statement-order local variable and sanitizer context; comments and string contents do not trigger code rules. TypeScript and interprocedural data flow are not supported."
+        },
+        "Java": {
+          "parsed_files": 5,
+          "unparsed_files": [],
+          "note": "Tree-sitter local statement-order flow and declared types; no interprocedural flow, Java build or code execution. Deserialization filters require manual review."
+        },
+        "HTML": {
+          "parsed_files": 0,
+          "unparsed_inline_scripts": 0,
+          "note": "HTML and inline JavaScript are parsed without rendering, executing scripts or fetching resources."
+        },
+        "Configuration": {
+          "configuration_files": 1,
+          "unparsed_files": [],
+          "note": "Literal configuration inspection only; environment overrides and runtime behavior are not evaluated. JSON/YAML locations are file-level line 1."
+        },
+        "Dependencies": {
+          "dependencies": [],
+          "unparsed_manifests": [],
+          "inventory_capped": false,
+          "queried_packages": 0,
+          "lookup_failures": 0,
+          "unsupported_manifests": [],
+          "limited_manifests": [],
+          "note": "Only exact declared or locked versions are queried; unsupported formats are explicitly listed; no dependency installation, transitive resolution or guessing of version ranges. Unknown advisory severity is Informational. Private package names/versions are sent to OSV only when enabled."
+        },
+        "Semgrep": {
+          "candidates": 4,
+          "rejected_results": 0,
+          "status": "Completed"
+        },
+        "CodeQL": {
+          "status": "Skipped",
+          "note": "CodeQL is disabled."
+        }
+      },
+      "archive_cleaned": true,
+      "metrics": {
+        "TP": 13,
+        "FP": 0,
+        "TN": 14,
+        "FN": 1,
+        "precision": 1.0,
+        "recall": 0.9285714285714286,
+        "f1": 0.9629629629629629
+      },
+      "categories": {
+        "Command Injection": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "DOM XSS": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Java Security": {
+          "TP": 2,
+          "FP": 0,
+          "TN": 2,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "SQL Injection": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Secrets": {
+          "TP": 3,
+          "FP": 0,
+          "TN": 3,
+          "FN": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "Weak Cryptography": {
+          "TP": 1,
+          "FP": 0,
+          "TN": 2,
+          "FN": 1,
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666
+        }
+      },
+      "cases": [
+        {
+          "id": "sql_batch_bind",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Values supplied separately to executemany; fixed SQL structure.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_explicit_cast",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Integer conversion constrains injected SQL syntax; not a general string sanitizer.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_search_format",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_search_format/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast",
+                "Semgrep"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Request-controlled value interpolated into quoted SQL without binding.",
+          "outcome": "TP"
+        },
+        {
+          "id": "sql_crossfile_builder",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_crossfile_builder/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast",
+                "Semgrep"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Cross-file helper directly interpolates untrusted name into SQL. This tests a supported-language boundary, not assumed whole-program support.",
+          "outcome": "TP"
+        },
+        {
+          "id": "command_subprocess_array",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Fixed executable and separate pattern argument; no shell interpretation.",
+          "outcome": "TN"
+        },
+        {
+          "id": "command_document",
+          "category": "Command Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Documentary text only, never executed.",
+          "outcome": "TN"
+        },
+        {
+          "id": "command_join",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "command_join/main.py",
+              "title": "Unsafe subprocess shell invocation",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast",
+                "Semgrep"
+              ],
+              "rule": "python.subprocess.shell"
+            }
+          ],
+          "rationale": "Joining untrusted data into a shell command retains shell metacharacters.",
+          "outcome": "TP"
+        },
+        {
+          "id": "command_quote_embedding",
+          "category": "Command Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "command_quote_embedding/main.py",
+              "title": "Potential shell command injection",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Command Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.shell.dynamic"
+            }
+          ],
+          "rationale": "POSIX single-argument quoting nested inside double quotes is not general shell protection.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_adjacent",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "dom_adjacent/main.js",
+              "title": "Potential unsafe DOM HTML insertion",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter",
+                "Semgrep"
+              ],
+              "rule": "javascript.dom.insertion"
+            }
+          ],
+          "rationale": "Decoded URL data enters HTML parser; attacker HTML could contain event handlers.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_write_decoded",
+          "category": "DOM XSS",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "dom_write_decoded/main.js",
+              "title": "Potential unsafe document.write",
+              "severity": "Medium",
+              "confidence": "High",
+              "category": "DOM XSS",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "javascript.document.write"
+            }
+          ],
+          "rationale": "Untrusted decoded browser fragment enters document HTML.",
+          "outcome": "TP"
+        },
+        {
+          "id": "dom_text_node",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Text node creation does not parse HTML.",
+          "outcome": "TN"
+        },
+        {
+          "id": "dom_sanitized_alias",
+          "category": "DOM XSS",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Standard DOMPurify default contract assumed; sanitized value not altered.",
+          "outcome": "TN"
+        },
+        {
+          "id": "credential_http_auth",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "credential_http_auth/main.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Literal password supplied to recognized imported authentication constructor; synthetic/nonfunctional.",
+          "outcome": "TP"
+        },
+        {
+          "id": "credential_env_file",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "credential_env_file/service.env",
+              "title": "Potential embedded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Hardcoded literal assigned to credential configuration; synthetic/nonfunctional.",
+          "outcome": "TP"
+        },
+        {
+          "id": "credential_public_uuid",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Public identifier printed, no authentication use or credential structure.",
+          "outcome": "TN"
+        },
+        {
+          "id": "credential_runtime",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Password loaded at runtime; no hardcoded credential in source.",
+          "outcome": "TN"
+        },
+        {
+          "id": "crypto_password_alias",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "crypto_password_alias/main.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "rationale": "Fast SHA1 used to derive password digest; no slow salted password KDF.",
+          "outcome": "TP"
+        },
+        {
+          "id": "crypto_hmac_md5",
+          "category": "Weak Cryptography",
+          "expected": true,
+          "detected": false,
+          "findings": [],
+          "rationale": "MD5 explicitly selected for authentication MAC; weak-primitive policy label, not claim of demonstrated forgery.",
+          "outcome": "FN"
+        },
+        {
+          "id": "crypto_crc",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Non-cryptographic accidental-corruption checksum, no authentication usage.",
+          "outcome": "TN"
+        },
+        {
+          "id": "crypto_nonsecurity_api",
+          "category": "Weak Cryptography",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Explicit nonsecurity hashing for bucket identification; no security decision.",
+          "outcome": "TN"
+        },
+        {
+          "id": "java_weak_cipher",
+          "category": "Java Security",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_weak_cipher/Main.java",
+              "title": "Weak Java cryptographic algorithm",
+              "severity": "Medium",
+              "confidence": "Medium",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.crypto.weak"
+            }
+          ],
+          "rationale": "Explicit weak cipher selection, not a checksum.",
+          "outcome": "TP"
+        },
+        {
+          "id": "java_sql_format",
+          "category": "Java Security",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_sql_format/Main.java",
+              "title": "Potential SQL injection in Java query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.sql.constructed"
+            }
+          ],
+          "rationale": "prepareStatement cannot repair SQL already interpolated with servlet input.",
+          "outcome": "TP"
+        },
+        {
+          "id": "java_bound_query",
+          "category": "Java Security",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Fixed query with bound string value.",
+          "outcome": "TN"
+        },
+        {
+          "id": "java_crc",
+          "category": "Java Security",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "CRC computes non-security checksum of public bytes.",
+          "outcome": "TN"
+        },
+        {
+          "id": "secret_fixture_placeholder",
+          "category": "Secrets",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Explicit placeholder, no real secret-like format.",
+          "outcome": "TN"
+        },
+        {
+          "id": "secret_custom_direct",
+          "category": "Secrets",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "secret_custom_direct/main.py",
+              "title": "Hardcoded credential",
+              "severity": "High",
+              "confidence": "Medium",
+              "category": "Secrets",
+              "engines": [
+                "secret-patterns"
+              ],
+              "rule": null
+            }
+          ],
+          "rationale": "Direct literal at identified credential API; no variable-name dependency.",
+          "outcome": "TP"
+        },
+        {
+          "id": "sql_local_display",
+          "category": "SQL Injection",
+          "expected": false,
+          "detected": false,
+          "findings": [],
+          "rationale": "Local display method prints a string; does not execute SQL.",
+          "outcome": "TN"
+        },
+        {
+          "id": "sql_numeric_lookalike",
+          "category": "SQL Injection",
+          "expected": true,
+          "detected": true,
+          "findings": [
+            {
+              "file": "sql_numeric_lookalike/main.py",
+              "title": "Potential SQL injection in constructed query",
+              "severity": "High",
+              "confidence": "High",
+              "category": "SQL Injection",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.sql.constructed"
+            }
+          ],
+          "rationale": "Local int is identity function, not numeric sanitizer; request reaches SQL.",
+          "outcome": "TP"
+        }
+      ],
+      "ambiguous": [
+        {
+          "id": "opaque_unknown",
+          "category": "Secrets",
+          "expected": null,
+          "detected": false,
+          "findings": [],
+          "rationale": "No use/type evidence; credential purpose cannot be labeled from source."
+        },
+        {
+          "id": "checksum_unknown",
+          "category": "Weak Cryptography",
+          "expected": null,
+          "detected": true,
+          "findings": [
+            {
+              "file": "checksum_unknown/main.py",
+              "title": "Weak hash algorithm usage",
+              "severity": "Informational",
+              "confidence": "Low",
+              "category": "Weak Cryptography",
+              "engines": [
+                "python-ast"
+              ],
+              "rule": "python.hash.weak"
+            }
+          ],
+          "rationale": "Purpose unspecified; may be nonsecurity checksum or a security digest."
+        },
+        {
+          "id": "java_digest_unknown",
+          "category": "Java Security",
+          "expected": null,
+          "detected": true,
+          "findings": [
+            {
+              "file": "java_digest_unknown/Main.java",
+              "title": "Weak Java cryptographic algorithm",
+              "severity": "Informational",
+              "confidence": "Low",
+              "category": "Java Security",
+              "engines": [
+                "tree-sitter"
+              ],
+              "rule": "java.crypto.weak"
+            }
+          ],
+          "rationale": "Digest returned to unknown caller; security role unspecified."
+        }
+      ],
+      "unscored": []
+    }
+  ]
+}

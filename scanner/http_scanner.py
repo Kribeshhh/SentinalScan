@@ -51,7 +51,7 @@ def connect_ip(address, port, timeout):
 
 
 class Client:
-    def __init__(self, target, timeout=12, max_bytes=262144, interval=.2, max_requests=60, deadline=150, cafile=None):
+    def __init__(self, target, timeout=12, max_bytes=262144, interval=.2, max_requests=60, deadline=150, cafile=None, reviewed_queries=None):
         self.target = target
         self.timeout = timeout
         self.max_bytes = max_bytes
@@ -61,6 +61,10 @@ class Client:
         self.count = 0
         self.last = 0
         self.cafile = cafile
+        # Trusted server configuration only. Never derived from submitted parameters,
+        # authorization checkbox, localhost/private-lab permission or parameter names.
+        self.reviewed_queries = dict(reviewed_queries or {})
+        self._probe_urls = set()
 
     def remaining(self):
         left = self.end - time.monotonic()
@@ -68,11 +72,23 @@ class Client:
             raise ScanLimit('Scan time budget reached')
         return min(left, self.timeout)
 
+    def query_permitted(self, url):
+        return not urlsplit(url).query or url in self.reviewed_queries or url in self._probe_urls
+
+    def parameter_urls(self, url, value_function):
+        from scanner.xss_scanner import parameter_urls
+        for name, probe, value in parameter_urls(url, value_function, self.reviewed_queries):
+            self._probe_urls.add(probe)
+            yield name, probe, value
+
     def get(self, url, headers=None, redirects=True):
         chain = []
         for _ in range(5):
             if not self.target.permits(url):
                 raise RequestFailure('Redirect outside authorized origin blocked')
+            if not self.query_permitted(url):
+                from scanner.common import SkipModule
+                raise SkipModule('Query replay safety: unreviewed query URL blocked before HTTP request.')
             if self.count >= self.max_requests:
                 raise ScanLimit('Request budget reached')
             time.sleep(min(max(0, self.interval - (time.monotonic() - self.last)), self.remaining()))
@@ -140,7 +156,11 @@ class Client:
             if redirects and result.status in (301, 302, 303, 307, 308) and location:
                 next_url = urljoin(url, location)
                 allowed = self.target.permits(next_url) and not any(ord(c) < 32 for c in next_url)
+                query_allowed = self.query_permitted(next_url)
+                allowed = allowed and query_allowed
                 chain.append({'status': result.status, 'from': safe_url(url), 'to': safe_url(next_url) if allowed else '[out-of-scope redirect blocked]', 'followed': allowed})
+                if not query_allowed:
+                    chain[-1]['reason'] = 'Query replay safety: unreviewed redirect query blocked.'
                 if not allowed:
                     result.redirects = chain
                     return result

@@ -1,0 +1,39 @@
+{
+  "docs/fixes/PHASE_23_HOLDOUT_RESULTS.json": [
+    {
+      "stage": "custom-with-dataflow",
+      "changes": [
+        {
+          "id": "dom_adjacent",
+          "before": "FN",
+          "after": "TP"
+        }
+      ]
+    },
+    {
+      "stage": "custom-plus-semgrep",
+      "changes": [
+        {
+          "id": "dom_adjacent",
+          "before": "FN",
+          "after": "TP"
+        },
+        {
+          "id": "sql_local_display",
+          "before": "FP",
+          "after": "TN"
+        }
+      ]
+    }
+  ],
+  "docs/fixes/PHASE_23_BENCHMARK.json": [
+    {
+      "stage": "custom-with-dataflow",
+      "changes": []
+    },
+    {
+      "stage": "custom-plus-semgrep",
+      "changes": []
+    }
+  ]
+}

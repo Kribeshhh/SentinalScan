@@ -1,0 +1,15 @@
+{
+  "method": "Temporary clone reinstates original stop predicate; no production rollback",
+  "results": [
+    {
+      "case": "before_original_stop_predicate",
+      "calls": 1,
+      "accepted_rows": 0
+    },
+    {
+      "case": "after",
+      "calls": 2,
+      "accepted_rows": 1
+    }
+  ]
+}

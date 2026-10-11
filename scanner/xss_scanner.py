@@ -5,22 +5,42 @@ from scanner.common import baseline, issue
 from scanner.target import safe_url
 
 
-def parameter_urls(url, value_function):
+def parameter_urls(url, value_function, reviewed_queries=None):
+    """Only operator-reviewed full query URLs permit explicitly reviewed positions.
+
+    A review covers replay of the WHOLE endpoint/query and mutation of these positions.
+    Parameter names and private-address opt-in confer no safety approval.
+    """
+    from scanner.common import SkipModule
     p = urlsplit(url)
-    pairs = parse_qsl(p.query, keep_blank_values=True)
-    for index, (name, value) in enumerate(pairs[:5]):
-        # Avoid replaying obvious state-changing query parameters.
-        if name.lower() in ('delete','remove','logout','action','command','cmd','execute','token','password','secret','api_key','key'):
-            continue
-        changed = pairs.copy()
-        changed[index] = (name, value_function(value))
-        yield name, urlunsplit((p.scheme,p.netloc,p.path,urlencode(changed),'')), changed[index][1]
+    if not p.query:
+        return
+    reviews = reviewed_queries or {}
+    if url not in reviews:
+        raise SkipModule('Query replay safety: this full URL has not been reviewed as inert; active requests skipped.')
+    positions = reviews[url]
+    raw = p.query.split('&')
+    if not isinstance(positions, (list, tuple)) or any(type(i) is not int or i < 0 or i >= len(raw) for i in positions):
+        raise SkipModule('Query replay safety: invalid trusted review configuration.')
+    if not positions:
+        raise SkipModule('Query replay safety: no parameter positions reviewed for mutation.')
+    for index in list(dict.fromkeys(positions))[:5]:
+        pair = parse_qsl(raw[index], keep_blank_values=True)
+        if len(pair) != 1:
+            raise SkipModule('Query replay safety: ambiguous query component.')
+        name, value = pair[0]
+        replacement = value_function(value)
+        changed = raw.copy()
+        # Preserve every unrelated byte, duplicate, blank and original name encoding.
+        from urllib.parse import quote_plus
+        changed[index] = raw[index].split('=', 1)[0] + '=' + quote_plus(replacement)
+        yield name, urlunsplit((p.scheme, p.netloc, p.path, '&'.join(changed), '')), replacement
 
 
 def run(ctx):
     response = baseline(ctx)
     observations = []
-    for name, url, marker in parameter_urls(response.url, lambda _: 'ssprobe' + secrets.token_hex(10)):
+    for name, url, marker in ctx['client'].parameter_urls(response.url, lambda _: 'ssprobe' + secrets.token_hex(10)):
         probe = ctx['client'].get(url)
         if marker not in probe.text:
             observations.append({'parameter':name,'reflected':False})

@@ -1,0 +1,481 @@
+{
+  "model": "qwen2.5-coder:3b",
+  "endpoint": "http://127.0.0.1:11434",
+  "cases": [
+    {
+      "case": "sql",
+      "requests": [
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.01
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.01
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "000c78ea7cffd4c20d59325554b62f304f88e394bc9c07d8b3d8925eed92e352",
+          "bytes": 9045,
+          "context": {
+            "review_protocol": "evidence-v1",
+            "source_type": "Repository",
+            "category": "Injection",
+            "title": "Potential SQL injection in constructed query",
+            "severity": "High",
+            "detection_confidence": "High",
+            "language": "Python",
+            "evidence_package": {
+              "function": "search",
+              "framework": null,
+              "sink": "SQL execute",
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "available": true,
+              "source": [
+                "flask.request.args"
+              ],
+              "data_flow": [],
+              "sanitizers": [],
+              "validators": [],
+              "related_functions": [],
+              "related_files": [
+                "app.py"
+              ],
+              "detected_by": [
+                {
+                  "engine": "python-ast",
+                  "rule_id": "python.sql.constructed",
+                  "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                  "confidence": "High"
+                }
+              ],
+              "snippets": [
+                {
+                  "file": "app.py",
+                  "role": "affected operation",
+                  "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+                  "start_line": 3
+                }
+              ]
+            },
+            "base_recommendation": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "snippet": "def search():\n db=sqlite3.connect(\":memory:\")\n return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "start_line": 3,
+            "repository_context": {
+              "file": "app.py",
+              "function": "search",
+              "framework": null,
+              "database": null,
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "protection": "No protection recognized by this rule; not proof that none exists."
+            },
+            "scope": "One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner reported a potential issue; exploitability has not been verified.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified."
+              ],
+              "why": [
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context.",
+                "When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure."
+              ],
+              "what_to_change": [
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence.",
+                "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            }
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T12:31:20.840275Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner reported a potential issue; exploitability has not been verified.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Review the affected operation and apply the deterministic recommendation after checking the recorded evidence.\",\n    \"suggested_code_or_config\": \"def search():\\n db=sqlite3.connect(\\\":memory:\\\")\\n query = \\\"SELECT * FROM users WHERE name=?\\\"\\n return db.execute(query, (request.args.get(\\\"q\\\"),))\",\n    \"example_type\": \"none\",\n    \"why\": \"If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"def search():\\n db=sqlite3.connect(\\\":memory:\\\")\\n return db.execute(\\\"SELECT * FROM users WHERE name=\\\"+request.args.get(\\\"q\\\"))\",\n  \"fix_confidence\": \"medium\",\n  \"evidence_supported\": true,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 18596857916,
+            "load_duration": 8850025833,
+            "prompt_eval_count": 1335,
+            "prompt_eval_cached_count": 0,
+            "prompt_eval_duration": 3334104000,
+            "eval_count": 233,
+            "eval_duration": 6361063000
+          },
+          "seconds": 18.625
+        }
+      ],
+      "validation_errors": [
+        {
+          "stage": "run_review",
+          "type": "ValueError",
+          "message": "Inconsistent example"
+        }
+      ],
+      "scan": {
+        "id": 1,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "id": 1,
+          "title": "Potential SQL injection in constructed query",
+          "severity": "High",
+          "confidence": "High",
+          "location": "audit/sql/app.py:5",
+          "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+          "base": {
+            "version": 4,
+            "matched": true,
+            "summary": "Keep SQL structure constant and bind untrusted values.",
+            "examples": [],
+            "notes": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   2   import sqlite3\n   3   def search():\n   4    db=sqlite3.connect(\":memory:\")\n   5 >  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "exact": false,
+            "metadata": {
+              "file": "app.py",
+              "line": 5,
+              "function": "search"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "app.py",
+              "line": 5,
+              "function": "search",
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "simple_flow": [],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "2: import sqlite3\n3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+              "scanner_evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential SQL injection in constructed query",
+                "category": "Injection",
+                "cwe": "CWE-89",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "High",
+                "confidence": "High",
+                "repository": "audit/sql",
+                "file": "app.py",
+                "start_line": 5,
+                "end_line": 5,
+                "start_column": 8,
+                "language": "Python",
+                "function": "search",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": true,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": "search",
+                  "snippets": [
+                    {
+                      "file": "app.py",
+                      "role": "affected operation",
+                      "start_line": 3,
+                      "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "flask.request.args"
+                  ],
+                  "sink": "SQL execute",
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "python-ast",
+                    "rule_id": "python.sql.constructed",
+                    "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "flask.request.args"
+                    ],
+                    "sink": "SQL execute",
+                    "data_flow": []
+                  }
+                ],
+                "logical_fingerprint": "1674ec52989f5f3f157739a1b1f8616507e2e20548e6c361383188533db45b44",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Binding values prevents those values from being interpreted as SQL syntax. The database driver and placeholder syntax could not be established reliably.",
+            "source_matched": false,
+            "kind": "Remediation guidance",
+            "fix_confidence": "Low",
+            "fix_reason": "Insufficient source or framework context to safely generate replacement code.",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "suggested_code_or_config": [],
+            "example_type": "none",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "_ai_review_failed": true
+          },
+          "ai_saved": false,
+          "ai_review": null,
+          "final": {
+            "version": 4,
+            "matched": true,
+            "summary": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "examples": [
+              {
+                "language": "Pseudocode \u00b7 database API unknown",
+                "code": "query(\"SELECT id FROM example_table WHERE id = <value-placeholder>\",\n      parameters=[user_input])",
+                "kind": "Example Secure Pattern",
+                "note": "Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver\u2019s binding API; allowlist dynamic identifiers separately."
+              }
+            ],
+            "notes": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   2   import sqlite3\n   3   def search():\n   4    db=sqlite3.connect(\":memory:\")\n   5 >  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "exact": false,
+            "metadata": {
+              "file": "app.py",
+              "line": 5,
+              "function": "search"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "app.py",
+              "line": 5,
+              "function": "search",
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "simple_flow": [],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "2: import sqlite3\n3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+              "scanner_evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential SQL injection in constructed query",
+                "category": "Injection",
+                "cwe": "CWE-89",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "High",
+                "confidence": "High",
+                "repository": "audit/sql",
+                "file": "app.py",
+                "start_line": 5,
+                "end_line": 5,
+                "start_column": 8,
+                "language": "Python",
+                "function": "search",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": true,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": "search",
+                  "snippets": [
+                    {
+                      "file": "app.py",
+                      "role": "affected operation",
+                      "start_line": 3,
+                      "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "flask.request.args"
+                  ],
+                  "sink": "SQL execute",
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "python-ast",
+                    "rule_id": "python.sql.constructed",
+                    "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "flask.request.args"
+                    ],
+                    "sink": "SQL execute",
+                    "data_flow": []
+                  }
+                ],
+                "logical_fingerprint": "1674ec52989f5f3f157739a1b1f8616507e2e20548e6c361383188533db45b44",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Binding values prevents those values from being interpreted as SQL syntax. The database driver and placeholder syntax could not be established reliably.",
+            "source_matched": false,
+            "kind": "Illustrative Secure Example",
+            "fix_confidence": "Low",
+            "fix_reason": "Insufficient source or framework context to safely generate replacement code.",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "suggested_code_or_config": [
+              {
+                "language": "Pseudocode \u00b7 database API unknown",
+                "code": "query(\"SELECT id FROM example_table WHERE id = <value-placeholder>\",\n      parameters=[user_input])",
+                "kind": "Example Secure Pattern",
+                "note": "Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver\u2019s binding API; allowlist dynamic identifiers separately."
+              }
+            ],
+            "example_type": "illustrative",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "ai_assisted": false,
+            "recommendation_source": "Deterministic",
+            "source_type": "Repository",
+            "solution_heading": "Illustrative Secure Example",
+            "validation_message": "Not Available",
+            "code_pair": null
+          },
+          "ui_status": 200,
+          "single_recommendation": 1,
+          "ai_indicator": false,
+          "secret_absent_ui": true
+        }
+      ],
+      "scan_ui_status": 200,
+      "integrity": "ok",
+      "seconds": 18.844
+    }
+  ],
+  "inventory": {
+    "status": 200,
+    "body": {
+      "models": [
+        {
+          "name": "qwen2.5-coder:3b",
+          "model": "qwen2.5-coder:3b",
+          "modified_at": "2026-10-09T07:42:23.679607461+05:45",
+          "size": 1929912626,
+          "digest": "f72c60cabf6237b07f6e632b2c48d533cef25eda2efbd34bed21c5e9c01e6225",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "3.1B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 2048,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools",
+            "insert"
+          ]
+        }
+      ]
+    }
+  }
+}

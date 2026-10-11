@@ -1,0 +1,18 @@
+[
+  {
+    "module": "scanner.xss_scanner",
+    "original": "http://127.0.0.1/?action=fixture-noop&q=hello",
+    "urls": [
+      "http://127.0.0.1/?action=fixture-noop&q=ssprobe2de6f265601467851f79"
+    ],
+    "requests": 1
+  },
+  {
+    "module": "scanner.sqli_scanner",
+    "original": "http://127.0.0.1/?action=fixture-noop&q=hello",
+    "urls": [
+      "http://127.0.0.1/?action=fixture-noop&q=hello%27"
+    ],
+    "requests": 1
+  }
+]

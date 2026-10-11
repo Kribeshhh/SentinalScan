@@ -476,3 +476,142 @@ and conditional security limitations recorded. Supervised local demo conditional
 academic presentation ready with disclosures; production not ready.
 Report: docs/POST_FIX_VERIFICATION.md; reproducible helpers/results in
  docs/audit/PHASE_17_VERIFICATION.json and adjacent PHASE_17 evidence. Phase17 stopped.
+
+## Phase 18 — Live Ollama verification (2026-10-10)
+
+Verification only; local qwen2.5-coder:3b inventory/inference and actual launcher
+configuration confirmed at 127.0.0.1:11434. Three temporary repository scans exercised
+the automatic callback; an existing header rule used a controlled response and the
+same completion hook. Four primary cases: SQL timeout; XSS/header inconsistent
+example type; secret unexpected source field. Separate SQL repeat returned HTTP200
+but inconsistent example type. Total5chat attempts,4HTTP200,1timeout,0accepted live
+reviews; all retain deterministic recommendations. No claim of useful live AI fix.
+Six failure scenarios pass (missing model real inventory, remaining failure mocks).
+Complete requested unittest command:310passed,0failed/errors/skipped,21.697s,exit0.
+SQLite/finding/scan template responses pass; browser behavior not tested. Synthetic
+credential absent before transport/UI. No user data, production code, models or
+validators changed. Report: docs/PHASE_18_LIVE_OLLAMA_VERIFICATION.md; adjacent
+PHASE_18 evidence records requests, validation, fallback and repeat separately.
+Phase18 complete, overallPARTIAL; fixes await approval.
+
+## Phase 19 — Ollama reliability fixes (2026-10-10)
+
+Completed bounded fixes in existing generation/queue paths. Native schemas couple
+example type/code/original; missing pinned originals and secrets use guidance only.
+Independent structure/grounding/static validation and composer unchanged. Specific
+supported statements precede generic prompt choices without forcing assessment.
+Individual rejected answers continue to the next candidate; provider/transport/
+storage failures stop. Existing20candidate/60second-between-review bounds preserved.
+Cold/warm pairs:16.235/6.178s and18.350/6.372s; keep_alive60s replaces0, with explicit
+memory-residency trade-off. Timeout20s/token cap3000 unchanged; no inference retries.
+
+Final real qwen2.5-coder:3b run:SQL/XSS/secret/header,7native HTTP200calls,4grounded
+reviews saved,0contract errors. Header AI refinement selected;3Needs Review repository
+assessments retain deterministic output. No claim of validated generated source fixes.
+Queue reproduction1call/0saved before→2calls/1saved after. Full suite319passed,
+0failures/errors/skips,21.265s,exit0;9new tests, existing tests unchanged. Intermediate
+order-equality failure corrected in production prompt preparation, not weakened tests.
+Only3existing Python files changed relative to Phase18; detectors/UI/database/history
+untouched. Report:docs/fixes/PHASE_19_OLLAMA_RELIABILITY.md and adjacent evidence.
+Phase19 stopped; no further phase started.
+
+## Phase 20 — website query replay safety (2026-10-10)
+
+Completed requested P8 S2 correction. Before: both XSS and SQL probes preserved
+`action=fixture-noop` while mutating q (one request each). After: unreviewed full
+query URLs are blocked before HTTP; both probes and CORS are Skipped with zero
+requests. Baseline/redirect paths share the guard. Reviewed inert local fixtures
+retain XSS/SQL indicators, safe negatives, encoding and existing transport limits.
+Production changes limited to `scanner/http_scanner.py`, `scanner/xss_scanner.py`
+and `scanner/sqli_scanner.py`; no user data/schema/UI/AI/repository changes this phase.
+Full suite: 328 passed, 0 failed, 0 errors, 0 skipped, 21.732s (22.227s process wall).
+Independent replay suite: 9 passed, 0 failed/errors/skipped, 0.604s.
+Existing fixture tests explicitly authorize only their inert query URLs; assertions
+were retained. One new asynchronous mock-lifetime failure was corrected in test
+setup; the complete suite was rerun successfully. Queryless GET side effects and
+incorrect operator review remain limitations, not proven-safe behavior.
+Report: `docs/fixes/PHASE_20_WEBSITE_REPLAY_SAFETY.md`; logs and command metadata:
+`docs/audit/PHASE_20_{TESTS,FOCUSED}.{log,json}`. No Phase 21 started.
+
+## Phase 21 — repository accuracy improvement (2026-10-11)
+
+Completed scoped implementation and verification, **D08/D09 overall PARTIAL**.
+Reproduced the unchanged frozen 54-case baseline: built-in26/3/24/1 and combined
+Semgrep26/4/23/1 (TP/FP/TN/FN). After: both26/2/25/1. Precision89.66%→92.86% built-in,
+86.67%→92.86% combined; recall96.30% unchanged. `cmd_quoted` and combined
+`sql_allowlist` now TN. Original ambiguous Python/Java checksum observations remain
+FP; original custom constant without use context remains FN. No relabeling.
+
+Added bounded imported-API credential-use detection and explicit hashlib nonsecurity
+intent handling; tightened shlex identity and fixed documentary closing-delimiter
+reference false positive. No Java/correlation/AI/DAST/Phase20/schema/UI changes.
+New10-method regression suite passes independently (2.129s). Complete338 tests pass,
+0 failures/errors/skips (22.865s; process23.190s); no existing tests weakened/edited.
+Real Semgrep1.179.0 and CodeQL2.27.2 run: CodeQL Python/JS/mixed complete, import1/1/2
+findings, temporary cleanup passes. Reports/database/source/AI payload redact the
+new synthetic credential. GitHub boundaries and unrelated AI use fixtures/mocks;
+no live provider, public scan, package installation or user-history changes.
+Initial Semgrep sanitizer caught-exception and suppressed-exception regressions failed and were corrected
+before the final successful suite. Report/evidence:
+`docs/fixes/PHASE_21_REPOSITORY_ACCURACY.md`, Phase21 BEFORE/AFTER benchmark files,
+focused/full logs, `docs/audit/PHASE_21_CODEQL.json`. Phase22 not started.
+
+## Phase 22 — final readiness audit (2026-10-11)
+
+Completed verification/reporting only. Full existing suite: **338 passed, 0 failed,
+0 errors, 0 skipped**, 23.044s unittest / 23.477s process, exit0. Focused repeat:
+63 passed in8.208s. Protected163 application/template/test/evaluation file hashes
+unchanged from pre-audit baseline; no detection, AI, UI, schema or user-history edits.
+
+Original54 benchmark unchanged: both built-in and +Semgrep TP26/FP2/TN25/FN1,
+precision92.86%, recall96.30%, F1 94.55%. Separately frozen holdout28 scored
+(14positive/14negative)+3ambiguous: built-in12/0/14/2 (100%,85.71%,92.31%);
++Semgrep12/1/13/2 (92.31%,85.71%,88.89%). Missing insertAdjacentHTML and HMAC-MD5
+policy coverage; external Semgrep local execute method false positive. No tuning,
+relabeling or universal-accuracy claim. D08/D09 remain partial. Known12-case DAST
+indicator replay5/0/7/0, not independent accuracy. Phase20 replay regressions pass.
+
+Real Semgrep Python/JS and actual-launcher CodeQL Python/JS/mixed complete and
+import1/1/2 CodeQL candidates with cleanup. Local Ollama qwen2.5-coder:3b:
+7 real chat requests,5 accepted/saved reviews,3 AI contributions selected,
+2 deterministic recommendations retained; all five UI pages have one recommendation.
+Six failure/fallback checks pass (mostly mocks; missing-model inventory real).
+34 HTTP/template route checks,8 navigation URLs,27 database/report checks pass;
+real local website and mocked-GitHub end-to-end/restart workflows pass. Browser
+rendering/JS/accessibility, live GitHub/private access and CodeQL holdout accuracy
+NOT TESTED. Current no-auth/shared-storage deployment limits, Nmap isolation gap,
+query-form prerequisite wording and generic no-code advice remain documented.
+
+Verdict: **conditionally ready for supervised local academic demo; not ready for
+shared private or public production deployment**. Read all conditions and ranked
+issues A22-01–09 in `docs/audit/PHASE_22_FINAL_READINESS_AUDIT.md`. Non-sensitive
+logs, JSON and reproduction helpers are under docs/audit. No fixes implemented;
+Phase22 ends here pending approval. Earlier dated audit states remain historical.
+
+## Phase 23 — focused quality improvements (2026-10-11, completed)
+
+Implemented insertAdjacentHTML flow checks and existing correlation operation;
+Semgrep DOM sink plus narrow print-only SQL receiver exclusion/reassignment guard;
+Nmap shared bounded runner/private XML; queryless website instructions; no-code
+recommendation normalization;0600 creation of new SQLite files only. Existing
+permissions/data, replay policy, Ollama settings and frozen labels untouched.
+
+Final full suite **349 passed,0 failures/errors/skips**,29.863s unittest/30.328s
+process,exit0. New11 tests pass independently in3.080s. First full run had an old
+Nmap mock-boundary error, corrected without removing assertions; initial log retained.
+Real Semgrep SQL/DOM/allowlist tests pass. Real actual-launcher CodeQL Python/JS/mixed
+Completed, imports1/1/2, cleanup passes. AI validation/fallback/single recommendation
+and Phase20 safety covered by full suite; AI mocked, no new live-model claim.
+
+Original54 unchanged: both engines26/2/25/1, P92.86/R96.30/F1 94.55%. Consumed
+Phase22holdout28: built-in12/0/14/2→13/0/14/1; combined12/1/13/2→13/0/14/1.
+After P100/R92.86/F1 96.30% for both. DOM missed case nowTP with one correlated
+finding; combined local display FP nowTN. Labels/scoring/3ambiguous cases unchanged.
+Original checksum FPs/context-free secret FN and holdout HMAC policy FN remain.
+No universal accuracy claim. Holdout is development/regression data, not independent.
+
+Report: `docs/fixes/PHASE_23_QUALITY_IMPROVEMENTS.md`; results/logs/hashes and helpers
+under docs/fixes. Suitable for supervised local academic demonstration with stated
+limits. Unknown receiver/transformations remain qualified; existing storage permissions
+require operator review. No source execution, public scans, package installs,
+hosting/auth features, user-history edits or commit/push. Phase23 stops here.

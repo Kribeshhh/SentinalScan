@@ -1,0 +1,10 @@
+{
+  "scanner/sast/python_scanner.py": "227bd9181ae7d50585e374a362f2e8a9956f77514192707ffcca78af72417619",
+  "scanner/sast/secret_scanner.py": "dd6df482ffd1e2b64ce493db535eda75246193d812ffb3590f61a148bab177ec",
+  "scanner/engines/semgrep_rules.yml": "7871111f9d49786333ee0a72f780d62e58b3a595c2e4614b51d545a0848e742c",
+  "tests/test_phase21_accuracy.py": "5129f8f445196cb98676a75ba96cf2c68a3734076bb3f03965ed563abf42dd61",
+  "evaluation/fixtures.json": "73c72c4db254ac9f52071915f5e8a56d111c7d0933ebc1e6ad363c4e25b3a2d1",
+  "scanner/http_scanner.py": "1b200e35ee3833992b3b2bf02579dc6e432ec7936fd6c2e57f6d27836419026b",
+  "scanner/xss_scanner.py": "966cd563de388ecaba9235ba3b19408a5c82b9474de36a080cebd79fc2169def",
+  "scanner/sqli_scanner.py": "bf9e1a073be099935d32bf1c287fff62049594d795b32a63540b5dd8d0ae6b39"
+}

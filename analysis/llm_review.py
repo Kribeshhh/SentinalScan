@@ -183,14 +183,14 @@ def process(finding,payload,response,original=None,known=()):
     return data
 
 
-def refine_finding(db, finding, config, known=()):
+def refine_finding(db, finding, config, known=(), *, outcome=None):
     """Refine one persisted candidate; failure never changes scanner records."""
     if not config.get('LLM_ENABLED') or finding['status'] == 'False Positive':
         return False
     from analysis.remediation_workflow import finding_solution
     from analysis.recommendation_composer import record_attempt
     from analysis.evidence_review import prepare_evidence, run_review
-    from integrations.llm import review
+    from integrations.llm import review, ProviderUnavailable
     import os
     known = tuple(value for value in (*known, os.environ.get('SENTINELSCAN_GITHUB_TOKEN')) if value)
     try:
@@ -200,20 +200,26 @@ def refine_finding(db, finding, config, known=()):
         original = draft['original'] if draft else None  # Local validation only; never provider input.
         payload = prepare_evidence(finding, solution, known) if finding['source'] == 'Repository' else None
         if payload is not None:
+            payload["source_replacement_available"] = original is not None
             result = run_review(finding, payload, config, original, known)
         else:
             payload = prepare(finding, context, known, solution=solution)
+            payload["source_replacement_available"] = original is not None
             result = process(finding, payload, config.get('LLM_REVIEW_PROVIDER', review)(payload, config), original, known)
         result['model'] = clean(config.get('OLLAMA_MODEL', 'Configured local model'), known)
         with db:
             db.execute("INSERT INTO ai_reviews(finding_id,data_json) VALUES (?,?) ON CONFLICT(finding_id) DO UPDATE SET data_json=excluded.data_json,created_at=strftime('%Y-%m-%dT%H:%M:%fZ','now')",
                        (finding['id'], json.dumps(result)))
         record_attempt(db, finding, False)
+        if outcome is not None:
+            outcome["status"] = "accepted"
         return True
-    except Exception:
+    except Exception as exc:
         # No provider bodies, source, credentials or exceptions enter logs/UI.
         db.rollback()
         record_attempt(db, finding, True)
+        if outcome is not None:
+            outcome["status"] = "rejected" if isinstance(exc, ValueError) and not isinstance(exc, ProviderUnavailable) else "unavailable"
         return False
 
 
@@ -237,7 +243,11 @@ def refine_scan(app, scan_id, known=()):
             deadline = time.monotonic() + 60
             findings = db.execute("SELECT f.* FROM findings f LEFT JOIN ai_reviews a ON a.finding_id=f.id WHERE f.scan_id=? AND f.status!='False Positive' AND a.finding_id IS NULL ORDER BY CASE f.severity WHEN 'Critical' THEN 0 WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 WHEN 'Low' THEN 3 ELSE 4 END,f.id LIMIT 20", (scan_id,)).fetchall()
             for finding in findings:
-                if time.monotonic() >= deadline or not refine_finding(db, finding, app.config, known):
+                if time.monotonic() >= deadline:
+                    break
+                outcome = {}
+                accepted = refine_finding(db, finding, app.config, known, outcome=outcome)
+                if not accepted and outcome.get("status") != "rejected":
                     break
     except Exception:
         # Optional post-processing cannot fail a completed scan or its queue.

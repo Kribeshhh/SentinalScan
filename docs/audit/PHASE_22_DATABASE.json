@@ -1,0 +1,207 @@
+[
+  {
+    "case": "schema",
+    "expected": "14 tables, version4, foreign keys ON, WAL",
+    "actual": [
+      14,
+      4,
+      1,
+      "wal"
+    ],
+    "status": "PASS"
+  },
+  {
+    "case": "connection reuse",
+    "expected": "same object in app context",
+    "actual": true,
+    "status": "PASS"
+  },
+  {
+    "case": "rollback",
+    "expected": "zero uncommitted rows",
+    "actual": 0,
+    "status": "PASS"
+  },
+  {
+    "case": "severity distribution",
+    "expected": "one each, count5, risk31",
+    "actual": {
+      "counts": {
+        "Critical": 1,
+        "High": 1,
+        "Medium": 1,
+        "Low": 1,
+        "Informational": 1
+      },
+      "count": 5,
+      "risk": 31
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "empty Completed HTML",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "empty Completed JSON",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "empty Completed CSV",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "empty Failed HTML",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "empty Failed JSON",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "empty Failed CSV",
+    "expected": "200 nonempty report",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "populated HTML",
+    "expected": "5 saved findings, masked secret, format-safe output",
+    "actual": {
+      "status": 200,
+      "redacted": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "populated JSON",
+    "expected": "5 saved findings, masked secret, format-safe output",
+    "actual": {
+      "status": 200,
+      "redacted": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "populated CSV",
+    "expected": "5 saved findings, masked secret, format-safe output",
+    "actual": {
+      "status": 200,
+      "redacted": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "WAL snapshot",
+    "expected": "reader stable until commit then sees writer",
+    "actual": [
+      3,
+      3,
+      4
+    ],
+    "status": "PASS"
+  },
+  {
+    "case": "writer contention",
+    "expected": "second writer bounded lock failure",
+    "actual": {
+      "locked": true,
+      "seconds": 0.058
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "report metadata failure cleanup",
+    "expected": "exception and no orphan new file",
+    "actual": {
+      "failed": true,
+      "no_new_file": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "malformed module report",
+    "expected": "controlled rejection, no output file",
+    "actual": {
+      "http": 400,
+      "no_new_file": true
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "malformed module scan display",
+    "expected": "graceful record-level display",
+    "actual": 200,
+    "status": "PASS"
+  },
+  {
+    "case": "absent findings comparison",
+    "expected": "5 resolved groups with no-proof warning",
+    "actual": {
+      "resolved": 5,
+      "warning": "RESOLVED means absent from the later scan, not proof of remediation. All triage statuses participate in detection matching."
+    },
+    "status": "PASS"
+  },
+  {
+    "case": "malformed solution comparison",
+    "expected": "controlled validation response (400)",
+    "actual": 400,
+    "status": "PASS"
+  },
+  {
+    "case": "integrity",
+    "expected": "ok, no foreign key violations",
+    "actual": [
+      "ok",
+      0
+    ],
+    "status": "PASS"
+  },
+  {
+    "case": "connection teardown",
+    "expected": "connection closed",
+    "actual": true,
+    "status": "PASS"
+  },
+  {
+    "case": "risk empty",
+    "expected": 0,
+    "actual": 0,
+    "status": "PASS"
+  },
+  {
+    "case": "risk all severities",
+    "expected": 31,
+    "actual": 31,
+    "status": "PASS"
+  },
+  {
+    "case": "risk ignored",
+    "expected": 0,
+    "actual": 0,
+    "status": "PASS"
+  },
+  {
+    "case": "risk rounding tie",
+    "expected": 38,
+    "actual": 38,
+    "status": "PASS"
+  },
+  {
+    "case": "risk large",
+    "expected": 100,
+    "actual": 100,
+    "status": "PASS"
+  }
+]

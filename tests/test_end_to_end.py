@@ -43,7 +43,7 @@ class EndToEndTests(unittest.TestCase):
                     probe.bind(('127.0.0.1', 0)); port = probe.getsockname()[1]
                 base = f'http://127.0.0.1:{port}'
                 opener = build_opener(HTTPCookieProcessor(CookieJar()))
-                config = {'REPORTS_DIR': str(root/'reports'), 'SCANNER_CLIENT_OPTIONS': {'interval': 0, 'timeout': 1}}
+                config = {'REPORTS_DIR': str(root/'reports'), 'SCANNER_CLIENT_OPTIONS': {'interval': 0, 'timeout': 1, 'reviewed_queries': {f'http://127.0.0.1:{lab.server_port}/?q=hello': [0]}}}
                 script = (f"import sys; sys.path.insert(0, {str(ROOT/'tests')!r}); "
                           "from test_source_scanner import FixtureGitHub; from app import create_app, PrivateRequestHandler; "
                           "from unittest.mock import patch; patch('scanner.port_scanner.shutil.which', return_value=None).start(); "

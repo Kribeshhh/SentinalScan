@@ -1,0 +1,358 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/website-scan",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/repository-scan",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/findings",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/reports",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/comparisons",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/risk-trends",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/static/js/app.js",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/static/css/style.css",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/99999",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/99999/status",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/findings/99999",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/comparisons/99999",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/reports/99999/download",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/missing",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/findings/1/edit",
+      "expected": 404,
+      "actual": 404,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans?page=bad",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/findings?severity=Wrong",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/reports?scan_id=bad",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/risk-trends?scan_id=bad",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "path": "/website-scan",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "path": "/repository-scan",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "path": "/comparisons",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "path": "/reports/generate",
+      "expected": 400,
+      "actual": 400,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/1",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/1/status",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/2",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/2/status",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/3",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/3/status",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/4",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/scans/4/status",
+      "expected": 200,
+      "actual": 200,
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "expected": 500,
+      "actual": 500,
+      "passed": true
+    }
+  ],
+  "states": [
+    {
+      "status": "Queued",
+      "api": {
+        "modules": [
+          {
+            "error": "Fixture coverage incomplete",
+            "name": "Fixture module",
+            "status": "Partial"
+          }
+        ],
+        "progress": 0,
+        "status": "Queued"
+      },
+      "polling_markup": true,
+      "progress_element": true,
+      "coverage_warning": true,
+      "failed_warning": false
+    },
+    {
+      "status": "Running",
+      "api": {
+        "modules": [
+          {
+            "error": "Fixture coverage incomplete",
+            "name": "Fixture module",
+            "status": "Partial"
+          }
+        ],
+        "progress": 42,
+        "status": "Running"
+      },
+      "polling_markup": true,
+      "progress_element": true,
+      "coverage_warning": true,
+      "failed_warning": false
+    },
+    {
+      "status": "Completed",
+      "api": {
+        "modules": [
+          {
+            "error": "Fixture coverage incomplete",
+            "name": "Fixture module",
+            "status": "Partial"
+          }
+        ],
+        "progress": 100,
+        "status": "Completed"
+      },
+      "polling_markup": false,
+      "progress_element": true,
+      "coverage_warning": true,
+      "failed_warning": false
+    },
+    {
+      "status": "Failed",
+      "api": {
+        "modules": [
+          {
+            "error": "Fixture coverage incomplete",
+            "name": "Fixture module",
+            "status": "Partial"
+          }
+        ],
+        "progress": 100,
+        "status": "Failed"
+      },
+      "polling_markup": false,
+      "progress_element": false,
+      "coverage_warning": true,
+      "failed_warning": true
+    }
+  ],
+  "navigation": [
+    {
+      "path": "/",
+      "status": 200
+    },
+    {
+      "path": "/website-scan",
+      "status": 200
+    },
+    {
+      "path": "/repository-scan",
+      "status": 200
+    },
+    {
+      "path": "/findings",
+      "status": 200
+    },
+    {
+      "path": "/scans",
+      "status": 200
+    },
+    {
+      "path": "/comparisons",
+      "status": 200
+    },
+    {
+      "path": "/risk-trends",
+      "status": 200
+    },
+    {
+      "path": "/reports",
+      "status": 200
+    }
+  ],
+  "empty_state": true,
+  "dashboard_rows": 4,
+  "dashboard_metrics": [
+    "Total scans \u25eb 4 All recorded assessments",
+    "Website scans \u25ce 0 Web application assessments",
+    "Repository scans \u2318 4 Source code assessments",
+    "Unresolved findings \u25c7 0 Findings with Open status"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "command": ".venv/bin/python -B /tmp/phase22_focused.py",
+  "modules": [
+    "test_replay_safety",
+    "test_website_scanner",
+    "test_source_scanner",
+    "test_ollama_reliability",
+    "test_phase21_accuracy",
+    "test_hardening",
+    "test_end_to_end"
+  ],
+  "tests": 63,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 8.207866499898955,
+  "exit": 0
+}

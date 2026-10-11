@@ -1,0 +1,78 @@
+[
+  {
+    "label": "cold1",
+    "keep_alive": "60s",
+    "bytes": 8410,
+    "prompt_chars": 6126,
+    "timeout": 20,
+    "num_predict": 3000,
+    "http": 200,
+    "seconds": 16.235,
+    "metrics": {
+      "load_duration": 7222670083,
+      "prompt_eval_count": 1248,
+      "prompt_eval_duration": 3020623000,
+      "eval_count": 217,
+      "eval_duration": 5923921000,
+      "total_duration": 16210790333,
+      "done_reason": "stop"
+    }
+  },
+  {
+    "label": "warm1",
+    "keep_alive": 0,
+    "bytes": 8406,
+    "prompt_chars": 6126,
+    "timeout": 20,
+    "num_predict": 3000,
+    "http": 200,
+    "seconds": 6.178,
+    "metrics": {
+      "load_duration": 9346458,
+      "prompt_eval_count": 1248,
+      "prompt_eval_duration": 48653000,
+      "eval_count": 217,
+      "eval_duration": 6088628000,
+      "total_duration": 6173553333,
+      "done_reason": "stop"
+    }
+  },
+  {
+    "label": "cold2",
+    "keep_alive": "60s",
+    "bytes": 8410,
+    "prompt_chars": 6126,
+    "timeout": 20,
+    "num_predict": 3000,
+    "http": 200,
+    "seconds": 18.35,
+    "metrics": {
+      "load_duration": 9205654292,
+      "prompt_eval_count": 1248,
+      "prompt_eval_duration": 3029705000,
+      "eval_count": 217,
+      "eval_duration": 6079069000,
+      "total_duration": 18342486000,
+      "done_reason": "stop"
+    }
+  },
+  {
+    "label": "warm2",
+    "keep_alive": 0,
+    "bytes": 8406,
+    "prompt_chars": 6126,
+    "timeout": 20,
+    "num_predict": 3000,
+    "http": 200,
+    "seconds": 6.372,
+    "metrics": {
+      "load_duration": 3204250,
+      "prompt_eval_count": 1248,
+      "prompt_eval_duration": 56399000,
+      "eval_count": 217,
+      "eval_duration": 6284886000,
+      "total_duration": 6368647542,
+      "done_reason": "stop"
+    }
+  }
+]

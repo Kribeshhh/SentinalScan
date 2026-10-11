@@ -107,6 +107,11 @@ def recommendation_for(finding, solution):
         note='DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan.'
         if note not in s['notes']:s['notes'].append(note)
         s['fix_reason']='The backend implementation is unknown. Configuration examples require adaptation and application testing.'
+    if not s['examples'] and s.get('action') in (
+            'Change the affected configuration or deployment setting; merge the example into your existing configuration.',
+            'Replace the vulnerable operation, adapting the example to the surrounding code.'):
+        s['action']=('Minimize server and framework version banners in the response-producing configuration; keep the software patched and verify the deployed headers.'
+            if 'version disclosed' in title else f.get('recommendation') or s.get('summary') or 'Review the affected operation and its recorded evidence before changing the implementation.')
     if f.get('status')=='False Positive':
         s.update(examples=[],before=None,exact=False,action='No fix is recommended for a finding marked False Positive.',notes=[],verification=[],why='Review the detection before making an unrelated code change.')
     s['source_matched']=source_matched

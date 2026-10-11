@@ -1,5 +1,6 @@
 """SQLite lifecycle and schema. Each request owns its connection."""
 import sqlite3
+import os
 from flask import current_app, g
 
 SCHEMA = """
@@ -116,7 +117,16 @@ CREATE TABLE IF NOT EXISTS remediation_drafts (
 
 def get_db():
     if "db" not in g:
-        g.db = sqlite3.connect(current_app.config["DATABASE"], timeout=10)
+        path=current_app.config["DATABASE"]
+        if str(path) != ':memory:':
+            # Restrict only a file we create. Existing files/permissions stay intact.
+            try:
+                fd=os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            except FileExistsError:
+                pass
+            else:
+                os.close(fd)
+        g.db = sqlite3.connect(path, timeout=10)
         g.db.row_factory = sqlite3.Row
         g.db.execute("PRAGMA foreign_keys = ON")
         g.db.execute("PRAGMA journal_mode = WAL")

@@ -1,0 +1,6 @@
+{
+  "protected_count": 163,
+  "changed": [],
+  "holdout_hash_unchanged": true,
+  "user_data_policy": "All audit application instances used temporary SQLite/data directories; user history not opened/reset by audit helpers. No pre/post user database byte hash was collected, so byte identity is not asserted."
+}

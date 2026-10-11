@@ -1,6 +1,8 @@
 """Bounded TCP inventory. No open port is automatically a vulnerability."""
 import shutil
-import subprocess
+from pathlib import Path
+import tempfile
+from scanner.engines.process import run_tool, ToolFailure
 import time
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -21,8 +23,11 @@ def run(ctx):
             args.append('-6')
         args.append(address)
         try:
-            output = subprocess.run(args, capture_output=True, timeout=min(18, ctx['client'].end - time.monotonic()), check=True)
-            root = ET.fromstring(output.stdout)
+            with tempfile.TemporaryDirectory(prefix='sentinelscan-nmap-') as work:
+                result_path=Path(work)/'inventory.xml'
+                args[args.index('-oX')+1]=str(result_path)
+                output=run_tool(args,work,min(18, ctx['client'].end-time.monotonic()),output=result_path)
+            root = ET.fromstring(output)
             result = []
             for port in root.findall('.//port'):
                 if port.find('state').get('state') == 'open':
@@ -32,7 +37,7 @@ def run(ctx):
                 warning = 'Nmap returned no host inventory; using TCP fallback.'
             else:
                 return {'method':'Nmap TCP connect/version-light', 'address':address, 'tested_ports':ports, 'open_ports':result}
-        except (OSError, subprocess.SubprocessError, ET.ParseError, DefusedXmlException, AttributeError, ValueError):
+        except (OSError, ToolFailure, ET.ParseError, DefusedXmlException, AttributeError, ValueError):
             warning = 'Nmap failed or timed out; using TCP fallback.'
     else:
         warning = 'Nmap is not installed. Bounded TCP connect inventory used; versions are unavailable.'

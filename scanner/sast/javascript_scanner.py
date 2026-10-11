@@ -41,6 +41,14 @@ def analyze(ctx,path,source,offset=0):
                 if not value.static:
                     add(ctx,path,line,'Dynamic JavaScript code execution','Code Security',evidence(value,callee),
                         'Use explicit functions and structured data instead of dynamically compiling code.','High' if value.sources else 'Medium',confidence(value),semantic=semantic(node,replace(value,html_safe=any(arg.html_safe for arg in args)),callee,'JavaScript',offset=offset))
+            function=node.child_by_field_name('function')
+            prop=function.child_by_field_name('property') if function and function.type=='member_expression' else None
+            if text(prop)=='insertAdjacentHTML' and len(args)==2:
+                value=args[1]  # Position is not the HTML argument.
+                if not value.static and not value.html_safe:
+                    add(ctx,path,line,'Potential unsafe DOM HTML insertion','Injection',evidence(value,'insertAdjacentHTML'),
+                        'Use textContent for text, or a maintained HTML sanitizer before inserting HTML.','Medium',confidence(value),
+                        semantic=semantic(node,value,'insertAdjacentHTML','JavaScript',offset=offset))
             if callee=='document.write' and args:
                 value=combine(args,preserve_html=True)
                 if not value.static and not value.html_safe:

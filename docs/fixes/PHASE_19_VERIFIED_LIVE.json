@@ -1,0 +1,2244 @@
+{
+  "model": "qwen2.5-coder:3b",
+  "endpoint": "http://127.0.0.1:11434",
+  "cases": [
+    {
+      "case": "sql",
+      "requests": [
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.004
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.008
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "c220d26f76ed6689fee37ac85207f46869eddf38f7fc7f2cd16efdc8c6775d90",
+          "bytes": 9501,
+          "context": {
+            "review_protocol": "evidence-v1",
+            "source_type": "Repository",
+            "category": "Injection",
+            "title": "Potential SQL injection in constructed query",
+            "severity": "High",
+            "detection_confidence": "High",
+            "language": "Python",
+            "evidence_package": {
+              "function": "search",
+              "framework": null,
+              "sink": "SQL execute",
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "available": true,
+              "source": [
+                "flask.request.args"
+              ],
+              "data_flow": [],
+              "sanitizers": [],
+              "validators": [],
+              "related_functions": [],
+              "related_files": [
+                "app.py"
+              ],
+              "detected_by": [
+                {
+                  "engine": "python-ast",
+                  "rule_id": "python.sql.constructed",
+                  "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                  "confidence": "High"
+                }
+              ],
+              "snippets": [
+                {
+                  "file": "app.py",
+                  "role": "affected operation",
+                  "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+                  "start_line": 3
+                }
+              ]
+            },
+            "base_recommendation": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "snippet": "def search():\n db=sqlite3.connect(\":memory:\")\n return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "start_line": 3,
+            "repository_context": {
+              "file": "app.py",
+              "function": "search",
+              "framework": null,
+              "database": null,
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "protection": "No protection recognized by this rule; not proof that none exists."
+            },
+            "scope": "One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential issue; exploitability has not been verified."
+              ],
+              "why": [
+                "When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure.",
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context."
+              ],
+              "what_to_change": [
+                "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "source_replacement_available": false
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:21.182764Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"medium\",\n  \"evidence_supported\": true,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 7728162875,
+            "load_duration": 25127125,
+            "prompt_eval_count": 1428,
+            "prompt_eval_cached_count": 585,
+            "prompt_eval_duration": 2342103000,
+            "eval_count": 182,
+            "eval_duration": 5260276000
+          },
+          "seconds": 7.738
+        },
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.004
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.003
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "5c97a79af5e8a5fbdf663b61f85a012814bac969a65493ae0c948f22462cf3a3",
+          "bytes": 9988,
+          "context": {
+            "review_protocol": "evidence-v1",
+            "source_type": "Repository",
+            "category": "Injection",
+            "title": "Potential SQL injection in constructed query",
+            "severity": "High",
+            "detection_confidence": "High",
+            "language": "Python",
+            "evidence_package": {
+              "function": "search",
+              "framework": null,
+              "sink": "SQL execute",
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "available": true,
+              "source": [
+                "flask.request.args"
+              ],
+              "data_flow": [],
+              "sanitizers": [],
+              "validators": [],
+              "related_functions": [],
+              "related_files": [
+                "app.py"
+              ],
+              "detected_by": [
+                {
+                  "engine": "python-ast",
+                  "rule_id": "python.sql.constructed",
+                  "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                  "confidence": "High"
+                }
+              ],
+              "snippets": [
+                {
+                  "file": "app.py",
+                  "role": "affected operation",
+                  "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+                  "start_line": 3
+                }
+              ]
+            },
+            "base_recommendation": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "snippet": "def search():\n db=sqlite3.connect(\":memory:\")\n return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "start_line": 3,
+            "repository_context": {
+              "file": "app.py",
+              "function": "search",
+              "framework": null,
+              "database": null,
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "protection": "No protection recognized by this rule; not proof that none exists."
+            },
+            "scope": "One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential issue; exploitability has not been verified."
+              ],
+              "why": [
+                "When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure.",
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context."
+              ],
+              "what_to_change": [
+                "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "source_replacement_available": false,
+            "untrusted_analyst_review": {
+              "assessment": "needs_review",
+              "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+              "evidence_supported": true,
+              "false_positive_indicators": []
+            }
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:28.198823Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"low\",\n  \"evidence_supported\": true,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 6986624708,
+            "load_duration": 4661291,
+            "prompt_eval_count": 1521,
+            "prompt_eval_cached_count": 825,
+            "prompt_eval_duration": 1849732000,
+            "eval_count": 180,
+            "eval_duration": 5050785000
+          },
+          "seconds": 7.0
+        }
+      ],
+      "validation_errors": [],
+      "scan": {
+        "id": 1,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "id": 1,
+          "title": "Potential SQL injection in constructed query",
+          "severity": "High",
+          "confidence": "High",
+          "location": "audit/sql/app.py:5",
+          "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+          "base": {
+            "version": 4,
+            "matched": true,
+            "summary": "Keep SQL structure constant and bind untrusted values.",
+            "examples": [],
+            "notes": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   2   import sqlite3\n   3   def search():\n   4    db=sqlite3.connect(\":memory:\")\n   5 >  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "exact": false,
+            "metadata": {
+              "file": "app.py",
+              "line": 5,
+              "function": "search"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "app.py",
+              "line": 5,
+              "function": "search",
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "simple_flow": [],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "2: import sqlite3\n3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+              "scanner_evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential SQL injection in constructed query",
+                "category": "Injection",
+                "cwe": "CWE-89",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "High",
+                "confidence": "High",
+                "repository": "audit/sql",
+                "file": "app.py",
+                "start_line": 5,
+                "end_line": 5,
+                "start_column": 8,
+                "language": "Python",
+                "function": "search",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": true,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": "search",
+                  "snippets": [
+                    {
+                      "file": "app.py",
+                      "role": "affected operation",
+                      "start_line": 3,
+                      "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "flask.request.args"
+                  ],
+                  "sink": "SQL execute",
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "python-ast",
+                    "rule_id": "python.sql.constructed",
+                    "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "flask.request.args"
+                    ],
+                    "sink": "SQL execute",
+                    "data_flow": []
+                  }
+                ],
+                "logical_fingerprint": "1674ec52989f5f3f157739a1b1f8616507e2e20548e6c361383188533db45b44",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Binding values prevents those values from being interpreted as SQL syntax. The database driver and placeholder syntax could not be established reliably.",
+            "source_matched": false,
+            "kind": "Remediation guidance",
+            "fix_confidence": "Low",
+            "fix_reason": "Insufficient source or framework context to safely generate replacement code.",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "suggested_code_or_config": [],
+            "example_type": "none",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "_ai_review_failed": false
+          },
+          "ai_saved": true,
+          "ai_review": {
+            "assessment": "needs_review",
+            "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+            "original_code": "",
+            "fix_confidence": "low",
+            "recommendation": {
+              "what_to_change": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+              "suggested_code_or_config": "",
+              "example_type": "none",
+              "why": "When untrusted values become SQL syntax, query behavior may change. Bound parameters keep values separate from SQL structure.",
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "remediation": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "suggested_code": "",
+            "validation": {
+              "status": "Not Available"
+            },
+            "diff": "",
+            "note": "AI output may be wrong. Review it alongside scanner evidence. No code was applied.",
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": true,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "evidence_supported": true,
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "evidence_supported": true,
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "Advisory review of static evidence, flow, protections and analyzer provenance. Agreement does not establish exploitability; scanner confidence and severity are unchanged."
+            },
+            "model": "qwen2.5-coder:3b"
+          },
+          "final": {
+            "version": 4,
+            "matched": true,
+            "summary": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "examples": [
+              {
+                "language": "Pseudocode \u00b7 database API unknown",
+                "code": "query(\"SELECT id FROM example_table WHERE id = <value-placeholder>\",\n      parameters=[user_input])",
+                "kind": "Example Secure Pattern",
+                "note": "Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver\u2019s binding API; allowlist dynamic identifiers separately."
+              }
+            ],
+            "notes": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html",
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   2   import sqlite3\n   3   def search():\n   4    db=sqlite3.connect(\":memory:\")\n   5 >  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+            "exact": false,
+            "metadata": {
+              "file": "app.py",
+              "line": 5,
+              "function": "search"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "app.py",
+              "line": 5,
+              "function": "search",
+              "input_source": "flask.request.args",
+              "sink": "SQL execute",
+              "simple_flow": [],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "2: import sqlite3\n3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))",
+              "scanner_evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential SQL injection in constructed query",
+                "category": "Injection",
+                "cwe": "CWE-89",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "High",
+                "confidence": "High",
+                "repository": "audit/sql",
+                "file": "app.py",
+                "start_line": 5,
+                "end_line": 5,
+                "start_column": 8,
+                "language": "Python",
+                "function": "search",
+                "source": [
+                  "flask.request.args"
+                ],
+                "sink": "SQL execute",
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "python-ast",
+                "rule_id": "python.sql.constructed",
+                "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential SQL injection in constructed query was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use database-bound parameters instead of concatenation or interpolation.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": true,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": "search",
+                  "snippets": [
+                    {
+                      "file": "app.py",
+                      "role": "affected operation",
+                      "start_line": 3,
+                      "text": "3: def search():\n4:  db=sqlite3.connect(\":memory:\")\n5:  return db.execute(\"SELECT * FROM users WHERE name=\"+request.args.get(\"q\"))"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "flask.request.args"
+                  ],
+                  "sink": "SQL execute",
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "python-ast",
+                    "rule_id": "python.sql.constructed",
+                    "evidence": "Recognized input flask.request.args \u2192 SQL execute. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "flask.request.args"
+                    ],
+                    "sink": "SQL execute",
+                    "data_flow": []
+                  }
+                ],
+                "logical_fingerprint": "1674ec52989f5f3f157739a1b1f8616507e2e20548e6c361383188533db45b44",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Binding values prevents those values from being interpreted as SQL syntax. The database driver and placeholder syntax could not be established reliably.",
+            "source_matched": false,
+            "kind": "Illustrative Secure Example",
+            "fix_confidence": "Low",
+            "fix_reason": "Insufficient source or framework context to safely generate replacement code.",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Use the parameterized-query API provided by the database library used by this application. Keep SQL structure separate from values; use an allowlist for dynamic identifiers.",
+            "suggested_code_or_config": [
+              {
+                "language": "Pseudocode \u00b7 database API unknown",
+                "code": "query(\"SELECT id FROM example_table WHERE id = <value-placeholder>\",\n      parameters=[user_input])",
+                "kind": "Example Secure Pattern",
+                "note": "Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver\u2019s binding API; allowlist dynamic identifiers separately."
+              }
+            ],
+            "example_type": "illustrative",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "Placeholder syntax depends on the database driver. Dynamic column/table names need a fixed allowlist; value placeholders cannot bind identifiers.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "ai_assisted": false,
+            "recommendation_source": "Deterministic",
+            "ai_review_details": {
+              "assessment": "needs_review",
+              "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+              "note": "AI-assisted selection of deterministic guidance. Review and test before implementation."
+            },
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": true,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "The scanner reported a potential SQL injection indicator. Query construction and input handling require review; exploitation was not verified.",
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "AI assessments are advisory. Scanner severity, confidence and risk remain unchanged. Human review is required."
+            },
+            "source_type": "Repository",
+            "solution_heading": "Illustrative Secure Example",
+            "validation_message": "Not Available",
+            "code_pair": null
+          },
+          "ui_status": 200,
+          "single_recommendation": 1,
+          "ai_indicator": false,
+          "secret_absent_ui": true
+        }
+      ],
+      "scan_ui_status": 200,
+      "integrity": "ok",
+      "seconds": 14.982
+    },
+    {
+      "case": "xss",
+      "requests": [
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.005
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.005
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "cfa37e014102020013aafdbad6c07bbc95231322c2dc3d4c61e4691c808e59e7",
+          "bytes": 9609,
+          "context": {
+            "review_protocol": "evidence-v1",
+            "source_type": "Repository",
+            "category": "Injection",
+            "title": "Potential unsafe DOM HTML assignment",
+            "severity": "Medium",
+            "detection_confidence": "High",
+            "language": "JavaScript",
+            "evidence_package": {
+              "function": null,
+              "framework": null,
+              "sink": "innerHTML",
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "available": true,
+              "source": [
+                "Browser/HTTP input"
+              ],
+              "data_flow": [
+                "input"
+              ],
+              "sanitizers": [],
+              "validators": [],
+              "related_functions": [],
+              "related_files": [
+                "app.js"
+              ],
+              "detected_by": [
+                {
+                  "engine": "tree-sitter",
+                  "rule_id": "javascript.dom.html",
+                  "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                  "confidence": "High"
+                }
+              ],
+              "snippets": [
+                {
+                  "file": "app.js",
+                  "role": "affected operation",
+                  "text": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;",
+                  "start_line": 1
+                }
+              ]
+            },
+            "base_recommendation": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "snippet": "const input = location.hash;\ndocument.getElementById(\"out\").innerHTML = input;",
+            "start_line": 1,
+            "repository_context": {
+              "file": "app.js",
+              "function": null,
+              "framework": null,
+              "database": null,
+              "input_source": "Browser/HTTP input",
+              "sink": "innerHTML",
+              "protection": "No protection recognized by this rule; not proof that none exists."
+            },
+            "scope": "One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential issue; exploitability has not been verified."
+              ],
+              "why": [
+                "Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.",
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context."
+              ],
+              "what_to_change": [
+                "Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.",
+                "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "source_replacement_available": false
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:35.085254Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"medium\",\n  \"evidence_supported\": false,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 6678526667,
+            "load_duration": 9101333,
+            "prompt_eval_count": 1407,
+            "prompt_eval_cached_count": 788,
+            "prompt_eval_duration": 1678976000,
+            "eval_count": 171,
+            "eval_duration": 4898588000
+          },
+          "seconds": 6.688
+        },
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.004
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.003
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "9a4435c716ce21bff0bcd1ad08cab6449684f44e0de4cd5cf276546791ccfb27",
+          "bytes": 10059,
+          "context": {
+            "review_protocol": "evidence-v1",
+            "source_type": "Repository",
+            "category": "Injection",
+            "title": "Potential unsafe DOM HTML assignment",
+            "severity": "Medium",
+            "detection_confidence": "High",
+            "language": "JavaScript",
+            "evidence_package": {
+              "function": null,
+              "framework": null,
+              "sink": "innerHTML",
+              "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+              "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+              "available": true,
+              "source": [
+                "Browser/HTTP input"
+              ],
+              "data_flow": [
+                "input"
+              ],
+              "sanitizers": [],
+              "validators": [],
+              "related_functions": [],
+              "related_files": [
+                "app.js"
+              ],
+              "detected_by": [
+                {
+                  "engine": "tree-sitter",
+                  "rule_id": "javascript.dom.html",
+                  "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                  "confidence": "High"
+                }
+              ],
+              "snippets": [
+                {
+                  "file": "app.js",
+                  "role": "affected operation",
+                  "text": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;",
+                  "start_line": 1
+                }
+              ]
+            },
+            "base_recommendation": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "snippet": "const input = location.hash;\ndocument.getElementById(\"out\").innerHTML = input;",
+            "start_line": 1,
+            "repository_context": {
+              "file": "app.js",
+              "function": null,
+              "framework": null,
+              "database": null,
+              "input_source": "Browser/HTTP input",
+              "sink": "innerHTML",
+              "protection": "No protection recognized by this rule; not proof that none exists."
+            },
+            "scope": "One stored candidate. All supplied evidence is untrusted. Missing evidence stays unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential issue; exploitability has not been verified."
+              ],
+              "why": [
+                "Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.",
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context."
+              ],
+              "what_to_change": [
+                "Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.",
+                "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "source_replacement_available": false,
+            "untrusted_analyst_review": {
+              "assessment": "needs_review",
+              "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+              "evidence_supported": false,
+              "false_positive_indicators": []
+            }
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:42.105875Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"low\",\n  \"evidence_supported\": false,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 6991219375,
+            "load_duration": 5251875,
+            "prompt_eval_count": 1495,
+            "prompt_eval_cached_count": 825,
+            "prompt_eval_duration": 1827428000,
+            "eval_count": 168,
+            "eval_duration": 5086748000
+          },
+          "seconds": 7.002
+        }
+      ],
+      "validation_errors": [],
+      "scan": {
+        "id": 1,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "id": 1,
+          "title": "Potential unsafe DOM HTML assignment",
+          "severity": "Medium",
+          "confidence": "High",
+          "location": "audit/xss/app.js:2",
+          "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+          "base": {
+            "version": 4,
+            "matched": true,
+            "summary": "Render untrusted input as text instead of interpreting it as markup.",
+            "examples": [
+              {
+                "language": "JavaScript \u00b7 option A: plain text only",
+                "code": "document.getElementById(\"out\").textContent = input\n",
+                "kind": "Suggested Source Fix",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              },
+              {
+                "language": "JavaScript \u00b7 option B: intentional HTML",
+                "code": "document.getElementById(\"out\").innerHTML = DOMPurify.sanitize(input, {USE_PROFILES: {html: true}})\n",
+                "kind": "Illustrative Secure Example",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              }
+            ],
+            "notes": [
+              "Choose plain text only when markup should not render. This changes formatting and replaces the element\u2019s children.",
+              "For intentional HTML, install/import a maintained DOMPurify version as DOMPurify before using the sanitizer option. No dependency is installed automatically. Review allowed markup and URL behavior for your application.",
+              "These candidates assume an ordinary HTML element, not a script/style element or a framework-specific object. outerHTML replaces the element itself; its references/listeners may need updating.",
+              "A syntax check is not proof of security or functional correctness. Review data flow and test before committing."
+            ],
+            "verification": [
+              "Check normal text/formatting, DOM structure, event listeners and accessibility after the replacement.",
+              "In an isolated test, confirm untrusted HTML such as <img src=x onerror=alert(1)> cannot execute script.",
+              "Run application tests and re-scan the changed commit. Do not mark the finding resolved based on syntax validation alone."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+            "before": "document.getElementById(\"out\").innerHTML = input",
+            "before_label": "Actual assignment to replace \u00b7 lines 2\u20132",
+            "action": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "source_status": "Matched the recorded assignment in scanned source. Both the original and candidate full files parse successfully; runtime behavior has not been verified.",
+            "context": "   1   const input = location.hash;\n   2 > document.getElementById(\"out\").innerHTML = input;",
+            "exact": true,
+            "metadata": {
+              "file": "app.js",
+              "line": 2,
+              "function": "Could not be determined statically"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "JavaScript",
+              "file": "app.js",
+              "line": 2,
+              "function": null,
+              "input_source": "Browser/HTTP input",
+              "sink": "innerHTML",
+              "simple_flow": [
+                "input"
+              ],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;",
+              "scanner_evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential unsafe DOM HTML assignment",
+                "category": "Injection",
+                "cwe": "CWE-79",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "Medium",
+                "confidence": "High",
+                "repository": "audit/xss",
+                "file": "app.js",
+                "start_line": 2,
+                "end_line": 2,
+                "start_column": 0,
+                "language": "JavaScript",
+                "function": null,
+                "source": [
+                  "Browser/HTTP input"
+                ],
+                "sink": "innerHTML",
+                "data_flow": [
+                  "input"
+                ],
+                "sanitizers": [],
+                "engine": "tree-sitter",
+                "rule_id": "javascript.dom.html",
+                "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential unsafe DOM HTML assignment was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use textContent for text, or a maintained HTML sanitizer before assigning HTML.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": false,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": null,
+                  "snippets": [
+                    {
+                      "file": "app.js",
+                      "role": "affected operation",
+                      "start_line": 1,
+                      "text": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.js"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "Browser/HTTP input"
+                  ],
+                  "sink": "innerHTML",
+                  "data_flow": [
+                    "input"
+                  ],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "tree-sitter",
+                    "rule_id": "javascript.dom.html",
+                    "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "Browser/HTTP input"
+                    ],
+                    "sink": "innerHTML",
+                    "data_flow": [
+                      "input"
+                    ]
+                  }
+                ],
+                "logical_fingerprint": "091913d025d052291a2a82bd4cc169b8bbcee8cd7e554449b6814de02c824717",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.",
+            "source_matched": true,
+            "kind": "Suggested Source Fix",
+            "fix_confidence": "Medium",
+            "fix_reason": "The candidate matches scanned source but runtime behavior and dependencies need review.",
+            "unavailable": null,
+            "dismissed": false,
+            "what_to_change": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "suggested_code_or_config": [
+              {
+                "language": "JavaScript \u00b7 option A: plain text only",
+                "code": "document.getElementById(\"out\").textContent = input\n",
+                "kind": "Suggested Source Fix",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              },
+              {
+                "language": "JavaScript \u00b7 option B: intentional HTML",
+                "code": "document.getElementById(\"out\").innerHTML = DOMPurify.sanitize(input, {USE_PROFILES: {html: true}})\n",
+                "kind": "Illustrative Secure Example",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              }
+            ],
+            "example_type": "source_specific",
+            "validation_status": "Passed",
+            "additional_actions": [
+              "Choose plain text only when markup should not render. This changes formatting and replaces the element\u2019s children.",
+              "For intentional HTML, install/import a maintained DOMPurify version as DOMPurify before using the sanitizer option. No dependency is installed automatically. Review allowed markup and URL behavior for your application.",
+              "These candidates assume an ordinary HTML element, not a script/style element or a framework-specific object. outerHTML replaces the element itself; its references/listeners may need updating.",
+              "A syntax check is not proof of security or functional correctness. Review data flow and test before committing.",
+              "Check normal text/formatting, DOM structure, event listeners and accessibility after the replacement.",
+              "In an isolated test, confirm untrusted HTML such as <img src=x onerror=alert(1)> cannot execute script.",
+              "Run application tests and re-scan the changed commit. Do not mark the finding resolved based on syntax validation alone."
+            ],
+            "_ai_review_failed": false
+          },
+          "ai_saved": true,
+          "ai_review": {
+            "assessment": "needs_review",
+            "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+            "original_code": "",
+            "fix_confidence": "low",
+            "recommendation": {
+              "what_to_change": "Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.",
+              "suggested_code_or_config": "",
+              "example_type": "none",
+              "why": "Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.",
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "remediation": "Use text rendering when markup is not required; otherwise review an appropriate HTML sanitizer for the actual application.",
+            "suggested_code": "",
+            "validation": {
+              "status": "Not Available"
+            },
+            "diff": "",
+            "note": "AI output may be wrong. Review it alongside scanner evidence. No code was applied.",
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": false,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "evidence_supported": false,
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "evidence_supported": false,
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "Advisory review of static evidence, flow, protections and analyzer provenance. Agreement does not establish exploitability; scanner confidence and severity are unchanged."
+            },
+            "model": "qwen2.5-coder:3b"
+          },
+          "final": {
+            "version": 4,
+            "matched": true,
+            "summary": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "examples": [
+              {
+                "language": "JavaScript \u00b7 option A: plain text only",
+                "code": "document.getElementById(\"out\").textContent = input\n",
+                "kind": "Suggested Source Fix",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              },
+              {
+                "language": "JavaScript \u00b7 option B: intentional HTML",
+                "code": "document.getElementById(\"out\").innerHTML = DOMPurify.sanitize(input, {USE_PROFILES: {html: true}})\n",
+                "kind": "Illustrative Secure Example",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              }
+            ],
+            "notes": [
+              "Choose plain text only when markup should not render. This changes formatting and replaces the element\u2019s children.",
+              "For intentional HTML, install/import a maintained DOMPurify version as DOMPurify before using the sanitizer option. No dependency is installed automatically. Review allowed markup and URL behavior for your application.",
+              "These candidates assume an ordinary HTML element, not a script/style element or a framework-specific object. outerHTML replaces the element itself; its references/listeners may need updating.",
+              "A syntax check is not proof of security or functional correctness. Review data flow and test before committing."
+            ],
+            "verification": [
+              "Check normal text/formatting, DOM structure, event listeners and accessibility after the replacement.",
+              "In an isolated test, confirm untrusted HTML such as <img src=x onerror=alert(1)> cannot execute script.",
+              "Run application tests and re-scan the changed commit. Do not mark the finding resolved based on syntax validation alone."
+            ],
+            "reference": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+            "before": "document.getElementById(\"out\").innerHTML = input",
+            "before_label": "Actual assignment to replace \u00b7 lines 2\u20132",
+            "action": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "source_status": "Matched the recorded assignment in scanned source. Both the original and candidate full files parse successfully; runtime behavior has not been verified.",
+            "context": "   1   const input = location.hash;\n   2 > document.getElementById(\"out\").innerHTML = input;",
+            "exact": true,
+            "metadata": {
+              "file": "app.js",
+              "line": 2,
+              "function": "Could not be determined statically"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "JavaScript",
+              "file": "app.js",
+              "line": 2,
+              "function": null,
+              "input_source": "Browser/HTTP input",
+              "sink": "innerHTML",
+              "simple_flow": [
+                "input"
+              ],
+              "protection": "No protection recognized by this rule; not proof that none exists.",
+              "framework": null,
+              "database": null,
+              "snippet": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;",
+              "scanner_evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Potential unsafe DOM HTML assignment",
+                "category": "Injection",
+                "cwe": "CWE-79",
+                "owasp": [
+                  "A03:2021"
+                ],
+                "severity": "Medium",
+                "confidence": "High",
+                "repository": "audit/xss",
+                "file": "app.js",
+                "start_line": 2,
+                "end_line": 2,
+                "start_column": 0,
+                "language": "JavaScript",
+                "function": null,
+                "source": [
+                  "Browser/HTTP input"
+                ],
+                "sink": "innerHTML",
+                "data_flow": [
+                  "input"
+                ],
+                "sanitizers": [],
+                "engine": "tree-sitter",
+                "rule_id": "javascript.dom.html",
+                "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                "description": "Potential unsafe DOM HTML assignment was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If reachable with untrusted or sensitive data, this pattern can compromise confidentiality or integrity. Static analysis does not establish runtime reachability.",
+                "recommendation": "Use textContent for text, or a maintained HTML sanitizer before assigning HTML.",
+                "suggested_code": null,
+                "verification_status": "Strongly Supported",
+                "evidence_kind": "semantic candidate",
+                "constructed": false,
+                "calls": [],
+                "reachability": "Static source-to-sink evidence; runtime reachability not proven",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": null,
+                  "snippets": [
+                    {
+                      "file": "app.js",
+                      "role": "affected operation",
+                      "start_line": 1,
+                      "text": "1: const input = location.hash;\n2: document.getElementById(\"out\").innerHTML = input;"
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "app.js"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [
+                    "Browser/HTTP input"
+                  ],
+                  "sink": "innerHTML",
+                  "data_flow": [
+                    "input"
+                  ],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Static source-to-sink evidence; runtime reachability not proven"
+                },
+                "detected_by": [
+                  {
+                    "engine": "tree-sitter",
+                    "rule_id": "javascript.dom.html",
+                    "evidence": "Recognized input Browser/HTTP input \u2192 input \u2192 innerHTML. No protection recognized for this operation; static analysis does not prove exploitability.",
+                    "confidence": "High",
+                    "source": [
+                      "Browser/HTTP input"
+                    ],
+                    "sink": "innerHTML",
+                    "data_flow": [
+                      "input"
+                    ]
+                  }
+                ],
+                "logical_fingerprint": "091913d025d052291a2a82bd4cc169b8bbcee8cd7e554449b6814de02c824717",
+                "correlation_basis": "Same parsed operation, file, enclosing scope and CWE; no merge based on CWE alone."
+              }
+            },
+            "why": "Text insertion does not interpret markup. Sanitization removes disallowed markup when HTML rendering is required; the two choices have different behavior.",
+            "source_matched": true,
+            "kind": "Suggested Source Fix",
+            "fix_confidence": "Medium",
+            "fix_reason": "The candidate matches scanned source but runtime behavior and dependencies need review.",
+            "unavailable": null,
+            "dismissed": false,
+            "what_to_change": "First determine whether plain text or rendered HTML is intended. Use textContent for plain text; use a maintained sanitizer with an explicit policy for intentional HTML.",
+            "suggested_code_or_config": [
+              {
+                "language": "JavaScript \u00b7 option A: plain text only",
+                "code": "document.getElementById(\"out\").textContent = input\n",
+                "kind": "Suggested Source Fix",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              },
+              {
+                "language": "JavaScript \u00b7 option B: intentional HTML",
+                "code": "document.getElementById(\"out\").innerHTML = DOMPurify.sanitize(input, {USE_PROFILES: {html: true}})\n",
+                "kind": "Illustrative Secure Example",
+                "validation": {
+                  "status": "Passed",
+                  "syntax": "Passed",
+                  "rule": "Target pattern removed",
+                  "regressions": "No new findings in checked modules",
+                  "behavior": "Not tested"
+                }
+              }
+            ],
+            "example_type": "source_specific",
+            "validation_status": "Passed",
+            "additional_actions": [
+              "Choose plain text only when markup should not render. This changes formatting and replaces the element\u2019s children.",
+              "For intentional HTML, install/import a maintained DOMPurify version as DOMPurify before using the sanitizer option. No dependency is installed automatically. Review allowed markup and URL behavior for your application.",
+              "These candidates assume an ordinary HTML element, not a script/style element or a framework-specific object. outerHTML replaces the element itself; its references/listeners may need updating.",
+              "A syntax check is not proof of security or functional correctness. Review data flow and test before committing.",
+              "Check normal text/formatting, DOM structure, event listeners and accessibility after the replacement.",
+              "In an isolated test, confirm untrusted HTML such as <img src=x onerror=alert(1)> cannot execute script.",
+              "Run application tests and re-scan the changed commit. Do not mark the finding resolved based on syntax validation alone."
+            ],
+            "ai_assisted": false,
+            "recommendation_source": "Deterministic",
+            "ai_review_details": {
+              "assessment": "needs_review",
+              "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+              "note": "AI-assisted selection of deterministic guidance. Review and test before implementation."
+            },
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": false,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "The scanner identified a dynamic HTML assignment. Static evidence alone does not prove script execution.",
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "AI assessments are advisory. Scanner severity, confidence and risk remain unchanged. Human review is required."
+            },
+            "source_type": "Repository",
+            "solution_heading": "Suggested Code Solution",
+            "validation_message": "Passed",
+            "code_pair": {
+              "current": "document.getElementById(\"out\").innerHTML = input",
+              "recommended": "document.getElementById(\"out\").textContent = input\n"
+            }
+          },
+          "ui_status": 200,
+          "single_recommendation": 1,
+          "ai_indicator": false,
+          "secret_absent_ui": true
+        }
+      ],
+      "scan_ui_status": 200,
+      "integrity": "ok",
+      "seconds": 13.877
+    },
+    {
+      "case": "secret",
+      "requests": [
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.005
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.005
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "d29dbea0a5c3847741a616da15193a5a2c3ebc688fe2f880d51e0f42dc824e73",
+          "bytes": 6787,
+          "context": {
+            "source_type": "Repository",
+            "category": "Secret Exposure",
+            "language": "Python",
+            "title": "Potential hardcoded credential",
+            "evidence": "Credential pattern detected. Value withheld; validity not tested.",
+            "snippet": "password = \"[REDACTED]\"",
+            "start_line": 0,
+            "severity": "High",
+            "detection_confidence": "Medium",
+            "base_recommendation": "Remove hardcoded credentials. Rotate/revoke real credentials and use protected runtime configuration.",
+            "supported_statements": {
+              "reason": [
+                "A credential pattern was detected; its validity was not tested."
+              ],
+              "why": [
+                "A real exposed credential could permit unauthorized access."
+              ],
+              "what_to_change": [
+                "Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "evidence_package": {
+              "available": false,
+              "note": "Secret values withheld; guidance only."
+            },
+            "review_protocol": "evidence-v1",
+            "source_replacement_available": false
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:47.351515Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"A credential pattern was detected; its validity was not tested.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"A real exposed credential could permit unauthorized access.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"medium\",\n  \"evidence_supported\": false,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 5065465208,
+            "load_duration": 7343500,
+            "prompt_eval_count": 985,
+            "prompt_eval_cached_count": 761,
+            "prompt_eval_duration": 638591000,
+            "eval_count": 142,
+            "eval_duration": 4291959000
+          },
+          "seconds": 5.078
+        },
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.004
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.002
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "06ce94da76d9c688529199f5003617ccf0128b4e0ab6add226a63ac5e4d3a64b",
+          "bytes": 7196,
+          "context": {
+            "source_type": "Repository",
+            "category": "Secret Exposure",
+            "language": "Python",
+            "title": "Potential hardcoded credential",
+            "evidence": "Credential pattern detected. Value withheld; validity not tested.",
+            "snippet": "password = \"[REDACTED]\"",
+            "start_line": 0,
+            "severity": "High",
+            "detection_confidence": "Medium",
+            "base_recommendation": "Remove hardcoded credentials. Rotate/revoke real credentials and use protected runtime configuration.",
+            "supported_statements": {
+              "reason": [
+                "A credential pattern was detected; its validity was not tested."
+              ],
+              "why": [
+                "A real exposed credential could permit unauthorized access."
+              ],
+              "what_to_change": [
+                "Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "evidence_package": {
+              "available": false,
+              "note": "Secret values withheld; guidance only."
+            },
+            "review_protocol": "evidence-v1",
+            "source_replacement_available": false,
+            "untrusted_analyst_review": {
+              "assessment": "needs_review",
+              "reason": "A credential pattern was detected; its validity was not tested.",
+              "evidence_supported": false,
+              "false_positive_indicators": []
+            }
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:53.227604Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"A credential pattern was detected; its validity was not tested.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration.\",\n    \"suggested_code_or_config\": \"\",\n    \"example_type\": \"none\",\n    \"why\": \"A real exposed credential could permit unauthorized access.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"medium\",\n  \"evidence_supported\": false,\n  \"false_positive_indicators\": []\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 5847553542,
+            "load_duration": 5260708,
+            "prompt_eval_count": 1068,
+            "prompt_eval_cached_count": 585,
+            "prompt_eval_duration": 1353831000,
+            "eval_count": 142,
+            "eval_duration": 4462579000
+          },
+          "seconds": 5.857
+        }
+      ],
+      "validation_errors": [],
+      "scan": {
+        "id": 1,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "id": 1,
+          "title": "Hardcoded credential",
+          "severity": "High",
+          "confidence": "Medium",
+          "location": "audit/secret/settings.py:1",
+          "evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+          "base": {
+            "version": 4,
+            "matched": true,
+            "summary": "Remove the hardcoded value and inject the replacement at runtime.",
+            "examples": [
+              {
+                "language": "Python \u00b7 runtime configuration example",
+                "kind": "Illustrative Secure Example",
+                "code": "import os\n\npassword = [REDACTED]\n"
+              }
+            ],
+            "notes": [
+              "If this was a real credential, rotate or revoke it.",
+              "Review and remove exposed credentials from repository history when appropriate.",
+              "Supply the replacement through a secret manager or protected runtime environment.",
+              "Do not commit the replacement secret or expose it to browser JavaScript.",
+              "The environment variable name in this example is proposed, not detected configuration. Set it securely before startup. Import placement and os name binding require review; this is not a validated full-file patch."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Remove the hardcoded value assigned to password and configure its replacement at runtime.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   1 > password = \"[REDACTED]\"",
+            "exact": false,
+            "assignment_name": "password",
+            "secret_example": {
+              "language": "Python \u00b7 runtime configuration example",
+              "kind": "Illustrative Secure Example",
+              "code": "import os\n\npassword = [REDACTED]\n"
+            },
+            "metadata": {
+              "file": "settings.py",
+              "line": 1,
+              "function": "Could not be determined statically"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "settings.py",
+              "line": 1,
+              "function": null,
+              "input_source": null,
+              "sink": null,
+              "simple_flow": [],
+              "protection": null,
+              "framework": null,
+              "database": null,
+              "snippet": "1: password = \"[REDACTED]\"",
+              "scanner_evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Hardcoded credential",
+                "category": "Secret Exposure",
+                "cwe": null,
+                "owasp": [],
+                "severity": "High",
+                "confidence": "Medium",
+                "repository": "audit/secret",
+                "file": "settings.py",
+                "start_line": 1,
+                "end_line": 1,
+                "start_column": null,
+                "language": "Python",
+                "function": null,
+                "source": [],
+                "sink": null,
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "secret-patterns",
+                "rule_id": null,
+                "evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+                "description": "Hardcoded credential was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If this is a valid credential, repository readers may be able to access the associated service or data.",
+                "recommendation": "Remove the credential from source and history, rotate it if real, and load it from a secret manager or environment.",
+                "suggested_code": null,
+                "verification_status": "Likely",
+                "evidence_kind": "static observation",
+                "constructed": null,
+                "calls": [],
+                "reachability": "Potential pattern",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": null,
+                  "snippets": [
+                    {
+                      "file": "settings.py",
+                      "role": "affected operation",
+                      "start_line": 1,
+                      "text": "1: password = \"[REDACTED]\""
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "settings.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [],
+                  "sink": null,
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Potential pattern"
+                },
+                "detected_by": [
+                  {
+                    "engine": "secret-patterns",
+                    "rule_id": null,
+                    "evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+                    "confidence": "Medium",
+                    "source": [],
+                    "sink": null,
+                    "data_flow": []
+                  }
+                ],
+                "correlation_basis": "No unambiguous semantic anchor; retained as a separate candidate."
+              }
+            },
+            "why": "Keeping credentials outside tracked source prevents repository readers from obtaining them directly. Runtime access still needs protection.",
+            "fix_reason": "The correct secret-loading mechanism depends on how this file is consumed. Environment substitution is not automatically supported by JSON, YAML or browser JavaScript.",
+            "source_matched": false,
+            "kind": "Illustrative Secure Example",
+            "fix_confidence": "Medium",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Remove the hardcoded value assigned to password and configure its replacement at runtime.",
+            "suggested_code_or_config": [
+              {
+                "language": "Python \u00b7 runtime configuration example",
+                "kind": "Illustrative Secure Example",
+                "code": "import os\n\npassword = [REDACTED]\n"
+              }
+            ],
+            "example_type": "illustrative",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "If this was a real credential, rotate or revoke it.",
+              "Review and remove exposed credentials from repository history when appropriate.",
+              "Supply the replacement through a secret manager or protected runtime environment.",
+              "Do not commit the replacement secret or expose it to browser JavaScript.",
+              "The environment variable name in this example is proposed, not detected configuration. Set it securely before startup. Import placement and os name binding require review; this is not a validated full-file patch.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "_ai_review_failed": false
+          },
+          "ai_saved": true,
+          "ai_review": {
+            "assessment": "needs_review",
+            "reason": "A credential pattern was detected; its validity was not tested.",
+            "original_code": "",
+            "fix_confidence": "low",
+            "recommendation": {
+              "what_to_change": "Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration.",
+              "suggested_code_or_config": "",
+              "example_type": "none",
+              "why": "A real exposed credential could permit unauthorized access.",
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "remediation": "Remove the embedded credential, rotate or revoke it if real, and use protected runtime configuration.",
+            "suggested_code": "",
+            "validation": {
+              "status": "Not Available"
+            },
+            "diff": "",
+            "note": "Secret values are withheld. Rotate/revoke real credentials and review runtime configuration manually.",
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": false,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "A credential pattern was detected; its validity was not tested.",
+                "evidence_supported": false,
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "A credential pattern was detected; its validity was not tested.",
+                "evidence_supported": false,
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "Advisory review of static evidence, flow, protections and analyzer provenance. Agreement does not establish exploitability; scanner confidence and severity are unchanged."
+            },
+            "model": "qwen2.5-coder:3b"
+          },
+          "final": {
+            "version": 4,
+            "matched": true,
+            "summary": "Remove the hardcoded value assigned to password and configure its replacement at runtime.",
+            "examples": [
+              {
+                "language": "Python \u00b7 runtime configuration example",
+                "kind": "Illustrative Secure Example",
+                "code": "import os\n\npassword = [REDACTED]\n"
+              }
+            ],
+            "notes": [
+              "If this was a real credential, rotate or revoke it.",
+              "Review and remove exposed credentials from repository history when appropriate.",
+              "Supply the replacement through a secret manager or protected runtime environment.",
+              "Do not commit the replacement secret or expose it to browser JavaScript.",
+              "The environment variable name in this example is proposed, not detected configuration. Set it securely before startup. Import placement and os name binding require review; this is not a validated full-file patch."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Remove the hardcoded value assigned to password and configure its replacement at runtime.",
+            "source_status": "Source captured automatically at scanned commit aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa. Potential secrets are masked.",
+            "context": "   1 > password = \"[REDACTED]\"",
+            "exact": false,
+            "assignment_name": "password",
+            "secret_example": {
+              "language": "Python \u00b7 runtime configuration example",
+              "kind": "Illustrative Secure Example",
+              "code": "import os\n\npassword = [REDACTED]\n"
+            },
+            "metadata": {
+              "file": "settings.py",
+              "line": 1,
+              "function": "Could not be determined statically"
+            },
+            "finding_context": {
+              "kind": "sast",
+              "language": "Python",
+              "file": "settings.py",
+              "line": 1,
+              "function": null,
+              "input_source": null,
+              "sink": null,
+              "simple_flow": [],
+              "protection": null,
+              "framework": null,
+              "database": null,
+              "snippet": "1: password = \"[REDACTED]\"",
+              "scanner_evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+              "analysis": {
+                "schema_version": 1,
+                "title": "Hardcoded credential",
+                "category": "Secret Exposure",
+                "cwe": null,
+                "owasp": [],
+                "severity": "High",
+                "confidence": "Medium",
+                "repository": "audit/secret",
+                "file": "settings.py",
+                "start_line": 1,
+                "end_line": 1,
+                "start_column": null,
+                "language": "Python",
+                "function": null,
+                "source": [],
+                "sink": null,
+                "data_flow": [],
+                "sanitizers": [],
+                "engine": "secret-patterns",
+                "rule_id": null,
+                "evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+                "description": "Hardcoded credential was identified by static analysis. Review the surrounding code and data flow before treating it as exploitable.",
+                "impact": "If this is a valid credential, repository readers may be able to access the associated service or data.",
+                "recommendation": "Remove the credential from source and history, rotate it if real, and load it from a secret manager or environment.",
+                "suggested_code": null,
+                "verification_status": "Likely",
+                "evidence_kind": "static observation",
+                "constructed": null,
+                "calls": [],
+                "reachability": "Potential pattern",
+                "flow_scope": "local; call targets and runtime reachability not proven",
+                "evidence_package": {
+                  "available": true,
+                  "function": null,
+                  "snippets": [
+                    {
+                      "file": "settings.py",
+                      "role": "affected operation",
+                      "start_line": 1,
+                      "text": "1: password = \"[REDACTED]\""
+                    }
+                  ],
+                  "related_functions": [],
+                  "related_files": [
+                    "settings.py"
+                  ],
+                  "limits": {
+                    "files": 1,
+                    "depth": 1,
+                    "characters": 3600
+                  },
+                  "note": "Redacted excerpts, not full functions; relationships are syntactic and may be unresolved. No unrelated configuration is inferred.",
+                  "source": [],
+                  "sink": null,
+                  "data_flow": [],
+                  "sanitizers": [],
+                  "validators": [],
+                  "framework": null,
+                  "reachability": "Potential pattern"
+                },
+                "detected_by": [
+                  {
+                    "engine": "secret-patterns",
+                    "rule_id": null,
+                    "evidence": "Hardcoded credential pattern detected. Value: [REDACTED]. No validity check or authentication attempt was made.",
+                    "confidence": "Medium",
+                    "source": [],
+                    "sink": null,
+                    "data_flow": []
+                  }
+                ],
+                "correlation_basis": "No unambiguous semantic anchor; retained as a separate candidate."
+              }
+            },
+            "why": "Keeping credentials outside tracked source prevents repository readers from obtaining them directly. Runtime access still needs protection.",
+            "fix_reason": "The correct secret-loading mechanism depends on how this file is consumed. Environment substitution is not automatically supported by JSON, YAML or browser JavaScript.",
+            "source_matched": false,
+            "kind": "Illustrative Secure Example",
+            "fix_confidence": "Medium",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Remove the hardcoded value assigned to password and configure its replacement at runtime.",
+            "suggested_code_or_config": [
+              {
+                "language": "Python \u00b7 runtime configuration example",
+                "kind": "Illustrative Secure Example",
+                "code": "import os\n\npassword = [REDACTED]\n"
+              }
+            ],
+            "example_type": "illustrative",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "If this was a real credential, rotate or revoke it.",
+              "Review and remove exposed credentials from repository history when appropriate.",
+              "Supply the replacement through a secret manager or protected runtime environment.",
+              "Do not commit the replacement secret or expose it to browser JavaScript.",
+              "The environment variable name in this example is proposed, not detected configuration. Set it securely before startup. Import placement and os name binding require review; this is not a validated full-file patch.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "ai_assisted": false,
+            "recommendation_source": "Deterministic",
+            "ai_review_details": {
+              "assessment": "needs_review",
+              "reason": "A credential pattern was detected; its validity was not tested.",
+              "note": "AI-assisted selection of deterministic guidance. Review and test before implementation."
+            },
+            "evidence_review": {
+              "protocol": "evidence-v1",
+              "assessment": "needs_review",
+              "disagreement": false,
+              "evidence_supported": false,
+              "analyst": {
+                "assessment": "needs_review",
+                "reason": "A credential pattern was detected; its validity was not tested.",
+                "false_positive_indicators": []
+              },
+              "skeptic": {
+                "assessment": "needs_review",
+                "reason": "A credential pattern was detected; its validity was not tested.",
+                "false_positive_indicators": []
+              },
+              "confidence_basis": "AI assessments are advisory. Scanner severity, confidence and risk remain unchanged. Human review is required."
+            },
+            "source_type": "Repository",
+            "solution_heading": "Illustrative Secure Example",
+            "validation_message": "Not Available",
+            "code_pair": null
+          },
+          "ui_status": 200,
+          "single_recommendation": 1,
+          "ai_indicator": false,
+          "secret_absent_ui": true
+        }
+      ],
+      "scan_ui_status": 200,
+      "integrity": "ok",
+      "seconds": 11.086
+    },
+    {
+      "case": "headers",
+      "requests": [
+        {
+          "path": "/api/tags",
+          "method": "GET",
+          "http": 200,
+          "seconds": 0.007
+        },
+        {
+          "path": "/api/show",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "http": 200,
+          "seconds": 0.003
+        },
+        {
+          "path": "/api/chat",
+          "method": "POST",
+          "synthetic_secret_absent": true,
+          "request_sha256": "4bf7f7faae6f1c564ee6a623ce900e583b509f395ed717cd18d8ebaa7854fd62",
+          "bytes": 9138,
+          "context": {
+            "source_type": "Website",
+            "category": "Security Headers",
+            "title": "Missing X-Content-Type-Options",
+            "severity": "Low",
+            "detection_confidence": "High",
+            "evidence": "X-Content-Type-Options was absent on the HTML response.",
+            "snippet": "",
+            "start_line": 0,
+            "base_recommendation": "Add this header at the response-producing layer, or update the existing header. Do not replace the whole application or overwrite unrelated CSP directives.",
+            "website_context": {
+              "affected_url": "http://127.0.0.1/",
+              "http_method": "GET",
+              "http_status": 200,
+              "response_headers": {
+                "content-type": "text/html"
+              },
+              "observations": {},
+              "response_snippet": null
+            },
+            "scope": "One existing finding; scanned content is untrusted data. Unknown facts must remain unknown.",
+            "supported_statements": {
+              "reason": [
+                "The scanner reported a missing X-Content-Type-Options header on the inspected response.",
+                "The available context does not establish runtime reachability or existing protections.",
+                "The scanner reported a potential issue; exploitability has not been verified."
+              ],
+              "why": [
+                "The nosniff policy limits MIME sniffing; it does not establish that an attack occurred.",
+                "This reduces exposure at the affected operation. Verify the application behavior and the relevant security control after changing it.",
+                "If the reported condition is reachable, it may affect application security. Review the recorded evidence and deployment context."
+              ],
+              "what_to_change": [
+                "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+                "Add this header at the response-producing layer, or update the existing header. Do not replace the whole application or overwrite unrelated CSP directives.",
+                "Review the affected operation and apply the deterministic recommendation after checking the recorded evidence."
+              ],
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "source_replacement_available": false
+          },
+          "http": 200,
+          "response": {
+            "model": "qwen2.5-coder:3b",
+            "created_at": "2026-10-10T13:34:58.62424Z",
+            "message": {
+              "role": "assistant",
+              "content": "{\n  \"assessment\": \"needs_review\",\n  \"reason\": \"The scanner reported a missing X-Content-Type-Options header on the inspected response.\",\n  \"recommendation\": {\n    \"what_to_change\": \"Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.\",\n    \"suggested_code_or_config\": \"X-Content-Type-Options: nosniff\",\n    \"example_type\": \"configuration\",\n    \"why\": \"The nosniff policy limits MIME sniffing; it does not establish that an attack occurred.\",\n    \"additional_actions\": [\"Test intended behavior and re-scan after implementing the change.\"]\n  },\n  \"original_code\": \"\",\n  \"fix_confidence\": \"medium\"\n}"
+            },
+            "done": true,
+            "done_reason": "stop",
+            "total_duration": 5256162750,
+            "load_duration": 5691500,
+            "prompt_eval_count": 1085,
+            "prompt_eval_cached_count": 867,
+            "prompt_eval_duration": 598965000,
+            "eval_count": 159,
+            "eval_duration": 4561250000
+          },
+          "seconds": 5.263
+        }
+      ],
+      "validation_errors": [],
+      "scan": {
+        "id": 1,
+        "status": "Completed"
+      },
+      "findings": [
+        {
+          "id": 1,
+          "title": "Missing X-Content-Type-Options",
+          "severity": "Low",
+          "confidence": "High",
+          "location": "http://127.0.0.1/",
+          "evidence": "X-Content-Type-Options was absent on the HTML response.",
+          "base": {
+            "version": 4,
+            "matched": true,
+            "summary": "Set the response header at the application or reverse proxy.",
+            "examples": [
+              {
+                "language": "HTTP configuration example",
+                "code": "X-Content-Type-Options: nosniff",
+                "kind": "Configuration example"
+              }
+            ],
+            "notes": [
+              "DAST cannot identify the exact source change. The framework labels below are examples, not detected technologies.",
+              "Merge CSP directives with your existing policy; test required scripts/resources and embedding. Enable HSTS only after HTTPS is working reliably. Verify headers on actual deployed responses, including errors.",
+              "DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Add this header at the response-producing layer, or update the existing header. Do not replace the whole application or overwrite unrelated CSP directives.",
+            "source_status": "Website scanning cannot retrieve backend source files; the pattern below is illustrative.",
+            "context": null,
+            "exact": false,
+            "metadata": {
+              "file": "127.0.0.1/",
+              "line": null,
+              "function": "Could not be determined statically"
+            },
+            "why": "This reduces exposure at the affected operation. Verify the application behavior and the relevant security control after changing it.",
+            "source_aware": false,
+            "fix_reason": "The backend implementation is unknown. Configuration examples require adaptation and application testing.",
+            "source_matched": false,
+            "kind": "Configuration example",
+            "fix_confidence": "Medium",
+            "unavailable": "Source-specific code solution unavailable \u2014 manual review required.",
+            "dismissed": false,
+            "what_to_change": "Add this header at the response-producing layer, or update the existing header. Do not replace the whole application or overwrite unrelated CSP directives.",
+            "suggested_code_or_config": [
+              {
+                "language": "HTTP configuration example",
+                "code": "X-Content-Type-Options: nosniff",
+                "kind": "Configuration example"
+              }
+            ],
+            "example_type": "configuration",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "DAST cannot identify the exact source change. The framework labels below are examples, not detected technologies.",
+              "Merge CSP directives with your existing policy; test required scripts/resources and embedding. Enable HSTS only after HTTPS is working reliably. Verify headers on actual deployed responses, including errors.",
+              "DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "finding_context": {
+              "kind": "dast",
+              "affected_url": "http://127.0.0.1/",
+              "http_method": "GET",
+              "http_status": 200,
+              "response_headers": {
+                "content-type": "text/html"
+              },
+              "observations": {},
+              "response_snippet": null,
+              "body_policy": "Response bodies and cookie values are not retained in finding context.",
+              "scanner_evidence": "X-Content-Type-Options was absent on the HTML response."
+            },
+            "_ai_review_failed": false
+          },
+          "ai_saved": true,
+          "ai_review": {
+            "assessment": "needs_review",
+            "reason": "The scanner reported a missing X-Content-Type-Options header on the inspected response.",
+            "original_code": "",
+            "fix_confidence": "medium",
+            "recommendation": {
+              "what_to_change": "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+              "suggested_code_or_config": "X-Content-Type-Options: nosniff",
+              "example_type": "configuration",
+              "why": "The nosniff policy limits MIME sniffing; it does not establish that an attack occurred.",
+              "additional_actions": [
+                "Test intended behavior and re-scan after implementing the change."
+              ]
+            },
+            "remediation": "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+            "suggested_code": "X-Content-Type-Options: nosniff",
+            "validation": {
+              "status": "Not Available"
+            },
+            "diff": "",
+            "note": "Configuration guidance only; backend source is unknown. Review and test in the actual deployment. Nothing was applied.",
+            "model": "qwen2.5-coder:3b"
+          },
+          "final": {
+            "version": 4,
+            "matched": true,
+            "summary": "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+            "examples": [
+              {
+                "language": "Configuration",
+                "code": "X-Content-Type-Options: nosniff"
+              }
+            ],
+            "notes": [
+              "DAST cannot identify the exact source change. The framework labels below are examples, not detected technologies.",
+              "Merge CSP directives with your existing policy; test required scripts/resources and embedding. Enable HSTS only after HTTPS is working reliably. Verify headers on actual deployed responses, including errors.",
+              "DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan.",
+              "Test intended behavior and re-scan after implementing the change."
+            ],
+            "verification": [
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "before": null,
+            "before_label": "Illustrative vulnerable pattern \u2014 not retrieved source",
+            "action": "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+            "source_status": "Website scanning cannot retrieve backend source files; the pattern below is illustrative.",
+            "context": null,
+            "exact": false,
+            "metadata": {
+              "file": "127.0.0.1/",
+              "line": null,
+              "function": "Could not be determined statically"
+            },
+            "why": "The nosniff policy limits MIME sniffing; it does not establish that an attack occurred.",
+            "source_aware": false,
+            "fix_reason": "AI confidence is advisory. Review the evidence and test intended behavior; this is not a guaranteed fix.",
+            "source_matched": false,
+            "kind": "Configuration Example",
+            "fix_confidence": "Medium",
+            "unavailable": null,
+            "dismissed": false,
+            "what_to_change": "Set X-Content-Type-Options to nosniff at the response-producing layer and verify the deployed response.",
+            "suggested_code_or_config": [
+              {
+                "language": "Configuration",
+                "code": "X-Content-Type-Options: nosniff"
+              }
+            ],
+            "example_type": "configuration",
+            "validation_status": "Not Available",
+            "additional_actions": [
+              "Merge CSP directives with your existing policy; test required scripts/resources and embedding. Enable HSTS only after HTTPS is working reliably. Verify headers on actual deployed responses, including errors.",
+              "DAST observes HTTP behavior, not backend source. Apply guidance in the actual application or server configuration; test compatibility and re-scan.",
+              "Test intended behavior and re-scan after implementing the change.",
+              "Test normal behavior and the previously vulnerable case, then re-scan. Saving or copying this example does not resolve the finding."
+            ],
+            "finding_context": {
+              "kind": "dast",
+              "affected_url": "http://127.0.0.1/",
+              "http_method": "GET",
+              "http_status": 200,
+              "response_headers": {
+                "content-type": "text/html"
+              },
+              "observations": {},
+              "response_snippet": null,
+              "body_policy": "Response bodies and cookie values are not retained in finding context.",
+              "scanner_evidence": "X-Content-Type-Options was absent on the HTML response."
+            },
+            "ai_assisted": true,
+            "recommendation_source": "AI-assisted",
+            "ai_review_details": {
+              "assessment": "needs_review",
+              "reason": "The scanner reported a missing X-Content-Type-Options header on the inspected response.",
+              "note": "AI-assisted selection of deterministic guidance. Review and test before implementation."
+            },
+            "source_type": "Website",
+            "solution_heading": "Configuration Example",
+            "validation_message": "Requires implementation and re-scan.",
+            "code_pair": null
+          },
+          "ui_status": 200,
+          "single_recommendation": 1,
+          "ai_indicator": true,
+          "secret_absent_ui": true
+        }
+      ],
+      "scan_ui_status": 200,
+      "integrity": "ok",
+      "seconds": 5.368
+    }
+  ],
+  "inventory": {
+    "status": 200,
+    "body": {
+      "models": [
+        {
+          "name": "qwen2.5-coder:3b",
+          "model": "qwen2.5-coder:3b",
+          "modified_at": "2026-10-09T07:42:23.679607461+05:45",
+          "size": 1929912626,
+          "digest": "f72c60cabf6237b07f6e632b2c48d533cef25eda2efbd34bed21c5e9c01e6225",
+          "details": {
+            "parent_model": "",
+            "format": "gguf",
+            "family": "qwen2",
+            "families": [
+              "qwen2"
+            ],
+            "parameter_size": "3.1B",
+            "quantization_level": "Q4_K_M",
+            "context_length": 32768,
+            "embedding_length": 2048,
+            "runner": "ggml"
+          },
+          "capabilities": [
+            "completion",
+            "tools",
+            "insert"
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -118,9 +118,9 @@ class HardeningTests(unittest.TestCase):
     def test_malformed_nmap_falls_back_without_shell(self):
         target = validate_target('http://127.0.0.1:5001/', True)
         with patch('scanner.port_scanner.shutil.which', return_value='/usr/local/bin/nmap'), \
-             patch('scanner.port_scanner.subprocess.run') as process, \
+             patch('scanner.port_scanner.run_tool') as process, \
              patch('scanner.port_scanner.connect_ip', side_effect=OSError):
-            process.return_value.stdout = b'<nmaprun><host><ports><port portid="80"/></ports></host></nmaprun>'
+            process.return_value = b'<nmaprun><host><ports><port portid="80"/></ports></host></nmaprun>'
             result = port_scan({'target': target, 'client': Client(target)})
         self.assertEqual(result['method'], 'TCP connect fallback')
         self.assertFalse(process.call_args.kwargs.get('shell', False))

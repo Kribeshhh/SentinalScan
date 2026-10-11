@@ -1,0 +1,317 @@
+{
+  "version": "phase22_holdout_v1",
+  "methodology": "Authored separately for this audit, frozen before predictions. Not a blinded external dataset; author knows scanner architecture. No tuning/relabeling permitted. Source is inert data only. P22_SYNTHETIC_MATERIAL is replaced by a deterministic nonfunctional test marker in the archive, never authenticated.",
+  "cases": [
+    {
+      "id": "sql_batch_bind",
+      "category": "SQL Injection",
+      "expected": false,
+      "files": {
+        "main.py": "import sqlite3\ndef save(rows):\n db=sqlite3.connect(\":memory:\")\n db.executemany(\"INSERT INTO items(name) VALUES (?)\", rows)"
+      },
+      "rationale": "Values supplied separately to executemany; fixed SQL structure.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "sql_explicit_cast",
+      "category": "SQL Injection",
+      "expected": false,
+      "files": {
+        "main.py": "import sqlite3\ndef lookup(value):\n db=sqlite3.connect(\":memory:\")\n number=int(value)\n return db.execute(f\"SELECT name FROM items WHERE id={number}\")"
+      },
+      "rationale": "Integer conversion constrains injected SQL syntax; not a general string sanitizer.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "sql_search_format",
+      "category": "SQL Injection",
+      "expected": true,
+      "files": {
+        "main.py": "import sqlite3\nfrom flask import request\ndef search():\n connection=sqlite3.connect(\":memory:\")\n pattern=request.form.get(\"filter\")\n statement=\"SELECT name FROM inventory WHERE label LIKE '{}'\".format(pattern)\n return connection.execute(statement)"
+      },
+      "rationale": "Request-controlled value interpolated into quoted SQL without binding.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "sql_crossfile_builder",
+      "category": "SQL Injection",
+      "expected": true,
+      "files": {
+        "main.py": "import sqlite3\nfrom flask import request\nfrom query_builder import build\ndb=sqlite3.connect(\":memory:\")\ndb.execute(build(request.args.get(\"name\")))",
+        "query_builder.py": "def build(value):\n return \"SELECT name FROM inventory WHERE name='\"+value+\"'\""
+      },
+      "rationale": "Cross-file helper directly interpolates untrusted name into SQL. This tests a supported-language boundary, not assumed whole-program support.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "command_subprocess_array",
+      "category": "Command Injection",
+      "expected": false,
+      "files": {
+        "main.py": "import subprocess\ndef search(value):\n return subprocess.run([\"/usr/bin/grep\", \"--\", value, \"fixture.txt\"],shell=False)"
+      },
+      "rationale": "Fixed executable and separate pattern argument; no shell interpretation.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "command_document",
+      "category": "Command Injection",
+      "expected": false,
+      "files": {
+        "guide.md": "# Shell review\nThe string `os.system(user_input)` illustrates an unsafe call; this Markdown contains no executable module."
+      },
+      "rationale": "Documentary text only, never executed.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "command_join",
+      "category": "Command Injection",
+      "expected": true,
+      "files": {
+        "main.py": "import subprocess\nfrom flask import request\nparts=[\"/bin/echo\",request.form.get(\"message\")]\nsubprocess.run(\" \".join(parts),shell=True)"
+      },
+      "rationale": "Joining untrusted data into a shell command retains shell metacharacters.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "command_quote_embedding",
+      "category": "Command Injection",
+      "expected": true,
+      "files": {
+        "main.py": "import os, shlex\nfrom flask import request\nvalue=shlex.quote(request.args.get(\"message\"))\nos.system('echo \"'+value+'\"')"
+      },
+      "rationale": "POSIX single-argument quoting nested inside double quotes is not general shell protection.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "dom_adjacent",
+      "category": "DOM XSS",
+      "expected": true,
+      "files": {
+        "main.js": "const fragment = decodeURIComponent(location.search.slice(1));\ndocument.querySelector(\"#result\").insertAdjacentHTML(\"beforeend\", fragment);"
+      },
+      "rationale": "Decoded URL data enters HTML parser; attacker HTML could contain event handlers.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "dom_write_decoded",
+      "category": "DOM XSS",
+      "expected": true,
+      "files": {
+        "main.js": "let fragment=decodeURIComponent(location.hash.substring(1));\ndocument.write(\"<section>\"+fragment+\"</section>\");"
+      },
+      "rationale": "Untrusted decoded browser fragment enters document HTML.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "dom_text_node",
+      "category": "DOM XSS",
+      "expected": false,
+      "files": {
+        "main.js": "const fragment=decodeURIComponent(location.hash.slice(1));\ndocument.querySelector(\"#result\").appendChild(document.createTextNode(fragment));"
+      },
+      "rationale": "Text node creation does not parse HTML.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "dom_sanitized_alias",
+      "category": "DOM XSS",
+      "expected": false,
+      "files": {
+        "main.js": "const fragment=location.search;\nconst safe=DOMPurify.sanitize(fragment);\nconst alias=safe;\ndocument.querySelector(\"#result\").innerHTML=alias;"
+      },
+      "rationale": "Standard DOMPurify default contract assumed; sanitized value not altered.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "credential_http_auth",
+      "category": "Secrets",
+      "expected": true,
+      "files": {
+        "main.py": "from requests.auth import HTTPBasicAuth as Credential\nopaque=\"P22_SYNTHETIC_MATERIAL\"\ncredential=Credential(\"lab-user\",opaque)"
+      },
+      "rationale": "Literal password supplied to recognized imported authentication constructor; synthetic/nonfunctional.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "credential_env_file",
+      "category": "Secrets",
+      "expected": true,
+      "files": {
+        "service.env": "SERVICE_PASSWORD=\"P22_SYNTHETIC_MATERIAL\""
+      },
+      "rationale": "Hardcoded literal assigned to credential configuration; synthetic/nonfunctional.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "credential_public_uuid",
+      "category": "Secrets",
+      "expected": false,
+      "files": {
+        "main.py": "connection_material=\"123e4567-e89b-12d3-a456-426614174005\"\nprint(connection_material)"
+      },
+      "rationale": "Public identifier printed, no authentication use or credential structure.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "credential_runtime",
+      "category": "Secrets",
+      "expected": false,
+      "files": {
+        "main.py": "import os, psycopg2\nmaterial=os.environ[\"DB_PASSWORD\"]\npsycopg2.connect(password=material)"
+      },
+      "rationale": "Password loaded at runtime; no hardcoded credential in source.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "crypto_password_alias",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "files": {
+        "main.py": "import hashlib as hashes\ndef digest(password):\n encoded=password.encode(\"utf-8\")\n return hashes.sha1(encoded).hexdigest()"
+      },
+      "rationale": "Fast SHA1 used to derive password digest; no slow salted password KDF.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "crypto_hmac_md5",
+      "category": "Weak Cryptography",
+      "expected": true,
+      "files": {
+        "main.py": "import hmac, hashlib\ndef sign(auth_secret, data):\n return hmac.new(auth_secret,data,hashlib.md5).hexdigest()"
+      },
+      "rationale": "MD5 explicitly selected for authentication MAC; weak-primitive policy label, not claim of demonstrated forgery.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "crypto_crc",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "files": {
+        "main.py": "import zlib\ndef checksum(public_bytes):\n return zlib.crc32(public_bytes)"
+      },
+      "rationale": "Non-cryptographic accidental-corruption checksum, no authentication usage.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "crypto_nonsecurity_api",
+      "category": "Weak Cryptography",
+      "expected": false,
+      "files": {
+        "main.py": "from hashlib import new as digest\ndef bucket(public_bytes):\n return digest(\"md5\",public_bytes,usedforsecurity=False).hexdigest()[:8]"
+      },
+      "rationale": "Explicit nonsecurity hashing for bucket identification; no security decision.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "java_weak_cipher",
+      "category": "Java Security",
+      "expected": true,
+      "files": {
+        "Main.java": "import javax.crypto.Cipher;\nclass Main { void process() throws Exception { Cipher cipher=Cipher.getInstance(\"DES/ECB/PKCS5Padding\"); } }"
+      },
+      "rationale": "Explicit weak cipher selection, not a checksum.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "java_sql_format",
+      "category": "Java Security",
+      "expected": true,
+      "files": {
+        "Main.java": "class Main { void search(java.sql.Connection connection, javax.servlet.http.HttpServletRequest request) throws Exception { String query=String.format(\"SELECT * FROM records WHERE key='%s'\",request.getParameter(\"key\")); connection.prepareStatement(query).executeQuery(); } }"
+      },
+      "rationale": "prepareStatement cannot repair SQL already interpolated with servlet input.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "java_bound_query",
+      "category": "Java Security",
+      "expected": false,
+      "files": {
+        "Main.java": "class Main { void search(java.sql.Connection connection, String input) throws Exception { java.sql.PreparedStatement statement=connection.prepareStatement(\"SELECT * FROM records WHERE key=?\"); statement.setString(1,input); statement.executeQuery(); } }"
+      },
+      "rationale": "Fixed query with bound string value.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "java_crc",
+      "category": "Java Security",
+      "expected": false,
+      "files": {
+        "Main.java": "class Main { long checksum(byte[] publicBytes) { java.util.zip.CRC32 crc=new java.util.zip.CRC32(); crc.update(publicBytes); return crc.getValue(); } }"
+      },
+      "rationale": "CRC computes non-security checksum of public bytes.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "secret_fixture_placeholder",
+      "category": "Secrets",
+      "expected": false,
+      "files": {
+        "fixtures/config.py": "password=\"replace-me\"\n# Placeholder for isolated fixtures; not a credential."
+      },
+      "rationale": "Explicit placeholder, no real secret-like format.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "secret_custom_direct",
+      "category": "Secrets",
+      "expected": true,
+      "files": {
+        "main.py": "import pymysql as db\ndef start():\n return db.connect(password=\"P22_SYNTHETIC_MATERIAL\")"
+      },
+      "rationale": "Direct literal at identified credential API; no variable-name dependency.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "sql_local_display",
+      "category": "SQL Injection",
+      "expected": false,
+      "files": {
+        "main.py": "class Printer:\n def execute(self, text):\n  print(text)\nfrom flask import request\nPrinter().execute(\"SELECT \"+request.args.get(\"x\"))"
+      },
+      "rationale": "Local display method prints a string; does not execute SQL.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "sql_numeric_lookalike",
+      "category": "SQL Injection",
+      "expected": true,
+      "files": {
+        "main.py": "import sqlite3\nfrom flask import request\ndef int(value):\n return value\ndb=sqlite3.connect(\":memory:\")\ndb.execute(\"SELECT * FROM records WHERE id=\"+int(request.args.get(\"id\")))"
+      },
+      "rationale": "Local int is identity function, not numeric sanitizer; request reaches SQL.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "opaque_unknown",
+      "category": "Secrets",
+      "expected": null,
+      "files": {
+        "main.py": "connection_material=\"OpaquePublicOrPrivate83640\""
+      },
+      "rationale": "No use/type evidence; credential purpose cannot be labeled from source.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "checksum_unknown",
+      "category": "Weak Cryptography",
+      "expected": null,
+      "files": {
+        "main.py": "import hashlib\ndef transform(data):\n return hashlib.md5(data).digest()"
+      },
+      "rationale": "Purpose unspecified; may be nonsecurity checksum or a security digest.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    },
+    {
+      "id": "java_digest_unknown",
+      "category": "Java Security",
+      "expected": null,
+      "files": {
+        "Main.java": "class Main { Object transform() throws Exception { return java.security.MessageDigest.getInstance(\"MD5\"); } }"
+      },
+      "rationale": "Digest returned to unknown caller; security role unspecified.",
+      "origin": "New Phase 22 authored synthetic semantic case; labels frozen before any scanner run."
+    }
+  ]
+}

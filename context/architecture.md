@@ -68,7 +68,7 @@ finding/new reports. Failure, missing context or invalid code retains the base.
 No page GET sends context. Older records are not bulk processed on startup; rescan
 to collect/refine new context. Existing saved reviews retain read compatibility.
 The automatic pass is bounded to 20 candidates and a 60-second between-review budget,
-with first-failure stop. Detection completes before refinement; refreshing later can
+continuing after individual validation rejection but stopping on provider/storage failure. Detection completes before refinement; refreshing later can
 show the persisted enhancement. Runtime validation and human review remain required.
 
 Website checks are intentionally retained: dnspython + system resolver; validated
@@ -162,3 +162,70 @@ Website indicators distinguish inert script data, explicitly labeled explanatory
 prose and unrestricted framing, and retain distinct directory-index signatures
 against length-only soft-404s. These remain bounded heuristics. D08 is partial and
 D09 arbitrary credential detection remains unresolved; see the Phase16 fix report.
+
+## Phase 19 — bounded Ollama reliability
+
+Native generation schemas now couple example type, code and original source:
+guidance has empty code/source; website configuration has empty original source;
+source replacements require an available pinned original and an exact snippet.
+This only constrains generation. Existing grounding, static validation and final
+composition remain independent and unchanged. Specific supported statements precede
+generic choices; no assessment is forced. Secret reviews remain guidance-only.
+
+The same completion callback distinguishes rejected responses from provider failure.
+An invalid individual answer retains fallback and permits the next candidate; native
+HTTP/model inventory failures and transport/storage errors stop the pass. No retry.
+The 20-candidate and 60-second between-review limits remain. Native requests keep the
+20-second deadline and 3000-token cap; keep_alive is bounded to 60 seconds, supported
+by cold/warm measurements. Model memory can remain resident during that interval.
+
+## Phase 20 — website query replay boundary
+
+The existing HTTP Client rejects unreviewed query-bearing URLs before opening a
+socket, including baseline/CORS requests and same-origin redirect destinations.
+The existing XSS/SQL helper requires a trusted exact full-URL review and explicit
+zero-based query-component positions before constructing probes. The review covers
+repetition of the whole request and mutation of those positions, not just their
+names. Private-lab permission and the authorization checkbox do not establish this.
+Trusted application configuration may supply `SCANNER_CLIENT_OPTIONS` with
+`reviewed_queries={normalized_full_url: [positions]}` for reviewed inert endpoints.
+There is no new user route or UI approval mechanism. Default configuration blocks
+query requests; it does not silently strip parameters. Unrelated encoded components
+remain byte-for-byte unchanged in approved probes. Existing origin/IP pinning,
+GET-only transport and resource limits remain mandatory. Queryless GETs are not
+proven side-effect-free; operate only against authorized, reviewed targets.
+See `docs/fixes/PHASE_20_WEBSITE_REPLAY_SAFETY.md` for evidence and limitations.
+
+## Phase 21 — repository accuracy refinement (2026-10-11)
+
+The existing Python analyzer recognizes imported POSIX shlex quoting only as a
+complete argument after its narrow fixed command prefixes (now including `echo`).
+Explicit hashlib `usedforsecurity=False` can withhold an unknown-purpose weak-hash
+observation; sensitive context still produces a finding. Checksum names alone do
+not justify suppression, and the original Python/Java checksum benchmark cases
+remain Informational/Low observations. The Java analyzer is unchanged.
+
+The dedicated secret scanner additionally tracks bounded straight-line Python
+literal aliases to imported database password APIs and HTTPBasicAuth. Unknown
+control flow/identity is not invented; original lines, existing deduplication and
+known-secret redaction are retained. An opaque custom constant without credential
+format/use remains unknown. The bundled Semgrep SQL rule supports a terminating
+two-literal-identifier allowlist outside matched try/except and context-manager regions, with existing
+provenance/import/correlation unchanged. See `docs/fixes/PHASE_21_REPOSITORY_ACCURACY.md`.
+D08/D09 remain partial; frozen benchmark precision improved, not universal accuracy.
+
+## Phase 23 — focused quality corrections
+
+JavaScript's existing local flow now checks the HTML argument of insertAdjacentHTML,
+including decoded/aliased input; constants and recognized DOMPurify output remain
+negative. Its parsed operation participates in the existing CWE-79 correlation map.
+Bundled Semgrep supports the same sink. Its SQL rule excludes a narrowly recognized
+direct construction of a local print-only execute method; reassignment invalidates
+that exclusion. Unknown receivers remain qualified candidates; no whole-program
+receiver identity is claimed.
+
+Nmap uses the existing run_tool environment/output/deadline/process-group safeguards,
+with XML in a temporary private workspace. Its ports, service flags and TCP fallback
+are unchanged. New SQLite files are atomically created0600 before connection;
+existing databases/directories are not chmodded or chowned. New data directories
+continue to use existing0700 behavior. No schema or historical data changes.

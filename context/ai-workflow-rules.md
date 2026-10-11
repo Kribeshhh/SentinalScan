@@ -71,3 +71,44 @@ never remediation instructions. Unsupported facts require deterministic fallback
 Model code requires the shared static validator and supported replacement policy;
 website configuration is an illustrative safe subset, never deployment validation.
 Normal tests mock Ollama; no live inference or model installation is implied.
+
+## Phase 19 reliability constraints
+
+Preserve conditional native output schemas and the independent validator; never
+repair unsupported model source to make it pass. Guidance-only responses have no
+code/original; pinned source is a prerequisite for requesting a source replacement.
+Keep model assessment uncertainty and the composer's deterministic fallback.
+Continue after individual response rejection within the existing 20-candidate/
+60-second between-review bounds; stop on provider outage/configuration or unexpected
+storage/runtime failure. No inference retries. Retain the 20-second request limit,
+3000-token cap and bounded 60-second model residency; do not silently extend budgets.
+
+## Phase 20 website request safety maintenance
+
+Never infer replay safety from a query parameter name, GET method, localhost or
+scan authorization checkbox. Retain the shared Client query guard for baseline,
+comparison and redirect requests, and the explicit full-URL/position review for
+XSS/SQL mutations. Unknown safety means Skipped, not dropping parameters or a clean
+security verdict. Tests requiring queries must explicitly review their authored
+inert fixture URL in trusted `SCANNER_CLIENT_OPTIONS`; never blanket-enable arbitrary
+user targets. Keep safety tests local, isolate data, and retain original positive
+and negative detection assertions. Queryless endpoints still require operator review.
+
+## Phase 21 detection evidence boundary
+
+Do not use benchmark labels as source evidence: checksum purpose and credential
+identity can remain unknown in the code. Preserve informational candidates and
+unresolved FN/FP counts in unchanged benchmarks. New contextual credential values
+must enter the existing redaction set before retained source, exports or AI context;
+never authenticate them. Follow the bounded API/identity checks, preserve real
+unsafe positives and document unsupported control flow. AI remains unrelated to
+candidate detection and is mocked for these accuracy regressions.
+
+## Phase 23 — regression dataset and recommendation wording
+
+The Phase22 holdout is now consumed development/regression data, not independent
+validation of Phase23 tuning. Preserve its labels/scoring and ambiguous cases.
+Text-only recommendation corrections belong in the shared deterministic policy,
+including historical snapshot normalization. The existing grounded Ollama contract
+uses that policy; do not relax validators or invent examples to improve appearance.
+Use mocks for AI regression tests in this phase; model/transport settings unchanged.

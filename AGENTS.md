@@ -31,7 +31,7 @@ whitelists, two-pass review and static validator; do not add a parallel workflow
 The existing scan queue invokes the completion hook after durable scan results.
 Bound each scan to 20 candidate reviews, prioritized by severity, and a 60-second
 between-review budget; an in-flight bounded review can finish after that budget.
-Stop on first provider failure. All remaining findings keep deterministic guidance.
+Stop on first provider failure; individual invalid responses retain fallback and may proceed to the next candidate within the same limits. All remaining findings keep deterministic guidance.
 Use mocked AI in normal tests; explicitly authorized synthetic local Ollama checks
 may use an already-installed local model. Never install/download models implicitly. Optional local processing permission
 comes from the operator's enabled configuration; preserve pre-request redaction,
@@ -338,3 +338,52 @@ local validation. Website values and affected-header checks, source matching and
 supported static replacements are mandatory. Revalidate saved AI at composition;
 never rewrite history to remove a rejected contribution. No confidence or two-pass
 agreement can substitute for evidence. No new detector, route, database or UI feature.
+
+## Phase 19 — native response reliability
+
+Use the existing request-specific conditional schema. Guidance-only mode requires
+empty code and original_code; no pinned original means no requested source patch.
+The shared independent response/grounding/static validators remain authoritative,
+even if a provider ignores its schema. Do not repair unsafe or unsupported code.
+Keep assessments independent; accepted review storage is not necessarily an accepted
+UI contribution. The existing composer may withhold uncertain/disputed reviews.
+ProviderUnavailable distinguishes model/configuration/HTTP outages from an individual
+ValueError response rejection. Unexpected transport/storage errors stop the callback.
+No retries, new queue, providers or detector changes. Request timeout/token bounds
+remain20s/3000; model keep_alive60s trades short-lived memory for measured warm latency.
+See docs/fixes/PHASE_19_OLLAMA_RELIABILITY.md.
+
+## Phase 20 — website query replay safety
+
+Preserve the shared HTTP Client guard and exact full-URL/position review in the
+existing probe helper. No parameter-name, HTTP-method or private-lab assumption may
+approve replay. Unknown queries are skipped before HTTP; do not strip parameters
+and scan a semantically different request. Explicit trusted review configuration
+is for endpoints whose baseline repetition and selected mutations are known inert.
+Keep SSRF/origin/budget checks independent. Read
+`docs/fixes/PHASE_20_WEBSITE_REPLAY_SAFETY.md` before changing this policy.
+
+## Phase 21 — repository accuracy constraints
+
+Read `docs/fixes/PHASE_21_REPOSITORY_ACCURACY.md` before changing these rules.
+POSIX quoting requires imported shlex identity and a complete argument at the
+existing narrow command shape; it is not protection inside an interpreter program.
+Checksum names do not establish non-security use. Credential names/entropy alone
+must not invent custom-secret identity: use supported API context, keep uncertainty
+and redact values before persistence. Preserve the frozen 54-case dataset and all
+confidence levels in scoring. Semgrep allowlist protection must not survive caught or suppressed
+exceptions, nonterminating/conditional guards or reassignment. D08/D09 are partial,
+not fully fixed; do not rewrite historical findings or claim universal accuracy.
+
+## Phase 23 — scoped quality maintenance
+
+Use the existing DOM flow and parsed correlation operations for insertAdjacentHTML;
+inspect its HTML argument, not position. Constants and recognized sanitization are
+not findings; unknown transformations are not automatically sanitizers. Semgrep's
+local print-only constructor exclusion is narrow, not universal receiver resolution.
+Keep unknown SQL receivers qualified and preserve Phase21 allowlist regressions.
+Nmap now uses run_tool; maintain sanitized environment, bounded output, private XML,
+process-group cleanup and unchanged ports/fallback. New DB files use0600; never
+silently change permissions/ownership of existing user storage. Keep no-code wording
+in the shared recommendation policy and preserve one final recommendation.
+Phase22 holdout is consumed; report unchanged-label metrics without generalization.

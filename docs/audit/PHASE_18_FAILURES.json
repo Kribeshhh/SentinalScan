@@ -1,0 +1,91 @@
+[
+  {
+    "case": "unavailable",
+    "mode": "mock failure",
+    "request_calls": 1,
+    "native_calls": [],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  },
+  {
+    "case": "missing_model",
+    "mode": "real inventory with absent model",
+    "request_calls": 1,
+    "native_calls": [
+      {
+        "path": "/api/tags",
+        "http": 200
+      }
+    ],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  },
+  {
+    "case": "timeout",
+    "mode": "mock failure",
+    "request_calls": 1,
+    "native_calls": [],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  },
+  {
+    "case": "invalid_output",
+    "mode": "mock failure",
+    "request_calls": 3,
+    "native_calls": [],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  },
+  {
+    "case": "unsafe",
+    "mode": "mock failure",
+    "request_calls": 3,
+    "native_calls": [],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  },
+  {
+    "case": "unsupported",
+    "mode": "mock failure",
+    "request_calls": 3,
+    "native_calls": [],
+    "accepted": false,
+    "ai_assisted": false,
+    "ai_rows": 0,
+    "scan_status": "Completed",
+    "finding_unchanged": true,
+    "http": 200,
+    "single_recommendation": 1,
+    "base_saved": true
+  }
+]

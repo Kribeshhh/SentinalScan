@@ -11,6 +11,7 @@ RULES = {
     'Unsafe subprocess shell invocation': ('python.subprocess.shell', 'CWE-78', 'A03:2021'),
     'Dynamic Python code execution': ('python.code.dynamic', 'CWE-95', 'A03:2021'),
     'Dynamic JavaScript code execution': ('javascript.code.dynamic', 'CWE-95', 'A03:2021'),
+    'Potential unsafe DOM HTML insertion': ('javascript.dom.insertion', 'CWE-79', 'A03:2021'),
     'Potential unsafe DOM HTML assignment': ('javascript.dom.html', 'CWE-79', 'A03:2021'),
     'Potential unsafe document.write': ('javascript.document.write', 'CWE-79', 'A03:2021'),
     'Dynamic Java process execution': ('java.process.dynamic', 'CWE-78', 'A03:2021'),

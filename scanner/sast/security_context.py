@@ -10,7 +10,7 @@ from scanner.sast.registry import analyzer_for
 OPERATIONS={
     'CWE-89':{'execute','executemany','executescript','raw','executeQuery','executeUpdate','prepareStatement'},
     'CWE-78':{'system','popen','run','call','Popen','check_call','check_output','exec','ProcessBuilder'},
-    'CWE-79':{'innerHTML','outerHTML','write'},
+    'CWE-79':{'innerHTML','outerHTML','write','insertAdjacentHTML'},
     'CWE-95':{'eval','exec','Function'},
     'CWE-502':{'load','loads','readObject'},
 }

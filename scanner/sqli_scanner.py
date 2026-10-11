@@ -1,7 +1,6 @@
 import re
 from bs4 import BeautifulSoup
 from scanner.common import baseline, issue
-from scanner.xss_scanner import parameter_urls
 from scanner.target import safe_url
 
 PATTERNS = {'MySQL syntax error':r'you have an error in your sql syntax', 'PostgreSQL query error':r'(?:psycopg\w*\.(?:errors|ProgrammingError)|unterminated quoted string|syntax error at or near)', 'SQLite query error':r'(?:sqlite3?\.(?:OperationalError|DatabaseError)|SQLiteException|unrecognized token:)', 'SQL Server query error':r'(?:unclosed quotation mark after the character string|Microsoft.*SQL Server.*Driver)', 'Oracle query error':r'ORA-0(?:1756|0933|0907)'}
@@ -38,7 +37,7 @@ def run(ctx):
     response = baseline(ctx)
     original = matches(response.text)
     observations = []
-    for name,url,_ in parameter_urls(response.url, lambda value:value + "'"):
+    for name,url,_ in ctx['client'].parameter_urls(response.url, lambda value:value + "'"):
         probe = ctx['client'].get(url)
         new = matches(probe.text) - original
         row = {'parameter':name,'baseline_status':response.status,'probe_status':probe.status,'length_delta':len(probe.body)-len(response.body),'new_database_error_signatures':sorted(new)}

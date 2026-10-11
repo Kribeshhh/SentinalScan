@@ -1,0 +1,72 @@
+ M AGENTS.md
+ M analysis/ai_grounding.py
+ M analysis/llm_review.py
+ M context/ai-workflow-rules.md
+ M context/architecture.md
+ M context/progress-tracker.md
+ M integrations/llm.py
+ M scanner/engines/semgrep_rules.yml
+ M scanner/http_scanner.py
+ M scanner/sast/python_scanner.py
+ M scanner/sast/secret_scanner.py
+ M scanner/sqli_scanner.py
+ M scanner/xss_scanner.py
+ M tests/test_end_to_end.py
+ M tests/test_final_validation.py
+ M tests/test_finding_context.py
+ M tests/test_phase16_accuracy.py
+ M tests/test_website_scanner.py
+?? docs/PHASE_18_LIVE_OLLAMA_VERIFICATION.md
+?? docs/audit/PHASE_18_CONFIG.json
+?? docs/audit/PHASE_18_FAILURES.json
+?? docs/audit/PHASE_18_LIVE.json
+?? docs/audit/PHASE_18_SQL_REPEAT.json
+?? docs/audit/PHASE_18_TESTS.json
+?? docs/audit/PHASE_18_VERIFICATION.json
+?? docs/audit/PHASE_19_TESTS.json
+?? docs/audit/PHASE_20_FOCUSED.json
+?? docs/audit/PHASE_20_TESTS.json
+?? docs/audit/PHASE_21_CODEQL.json
+?? docs/audit/PHASE_22_BASELINE.json
+?? docs/audit/PHASE_22_CODEQL.json
+?? docs/audit/PHASE_22_DATABASE.json
+?? docs/audit/PHASE_22_FAILURES.json
+?? docs/audit/PHASE_22_FINAL_READINESS_AUDIT.md
+?? docs/audit/PHASE_22_FOCUSED.json
+?? docs/audit/PHASE_22_FROZEN_BENCHMARK.json
+?? docs/audit/PHASE_22_HOLDOUT.json
+?? docs/audit/PHASE_22_HOLDOUT_FREEZE.json
+?? docs/audit/PHASE_22_HOLDOUT_RESULTS.json
+?? docs/audit/PHASE_22_HTTP.json
+?? docs/audit/PHASE_22_LIVE.json
+?? docs/audit/PHASE_22_NMAP.json
+?? docs/audit/PHASE_22_PRESERVATION.json
+?? docs/audit/PHASE_22_SECURITY.json
+?? docs/audit/PHASE_22_SEMGREP.json
+?? docs/audit/PHASE_22_TESTS.json
+?? docs/audit/PHASE_22_UI.json
+?? docs/audit/PHASE_22_WEBSITE.json
+?? docs/audit/phase22_evidence/
+?? docs/fixes/PHASE_19_EVIDENCE.json
+?? docs/fixes/PHASE_19_FINAL_LIVE.json
+?? docs/fixes/PHASE_19_LATENCY_BEFORE.json
+?? docs/fixes/PHASE_19_LIVE.json
+?? docs/fixes/PHASE_19_OLLAMA_RELIABILITY.md
+?? docs/fixes/PHASE_19_QUEUE.json
+?? docs/fixes/PHASE_19_RELEASE_LIVE.json
+?? docs/fixes/PHASE_19_VERIFIED_LIVE.json
+?? docs/fixes/PHASE_20_AFTER.json
+?? docs/fixes/PHASE_20_BEFORE.json
+?? docs/fixes/PHASE_20_WEBSITE_REPLAY_SAFETY.md
+?? docs/fixes/PHASE_21_AFTER.json
+?? docs/fixes/PHASE_21_AFTER_EVIDENCE.json
+?? docs/fixes/PHASE_21_BEFORE.json
+?? docs/fixes/PHASE_21_BEFORE_EVIDENCE.json
+?? docs/fixes/PHASE_21_FOCUSED.json
+?? docs/fixes/PHASE_21_HASHES.json
+?? docs/fixes/PHASE_21_REPOSITORY_ACCURACY.md
+?? docs/fixes/PHASE_21_TESTS.json
+?? docs/fixes/evidence/
+?? tests/test_ollama_reliability.py
+?? tests/test_phase21_accuracy.py
+?? tests/test_replay_safety.py

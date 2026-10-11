@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_phase21_accuracy.py",
+    "-v"
+  ],
+  "exit": 0,
+  "seconds": 2.385010999860242
+}

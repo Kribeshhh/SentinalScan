@@ -1,0 +1,29 @@
+[
+  {
+    "module": "scanner.xss_scanner",
+    "original": "http://127.0.0.1/?action=fixture-noop&q=hello",
+    "status": "Skipped",
+    "reason": "Query replay safety: this full URL has not been reviewed as inert; active requests skipped.",
+    "requests": 0,
+    "socket_calls": 0,
+    "generated_probe_urls": []
+  },
+  {
+    "module": "scanner.sqli_scanner",
+    "original": "http://127.0.0.1/?action=fixture-noop&q=hello",
+    "status": "Skipped",
+    "reason": "Query replay safety: this full URL has not been reviewed as inert; active requests skipped.",
+    "requests": 0,
+    "socket_calls": 0,
+    "generated_probe_urls": []
+  },
+  {
+    "module": "scanner.cors_scanner",
+    "original": "http://127.0.0.1/?action=fixture-noop&q=hello",
+    "status": "Skipped",
+    "reason": "Query replay safety: unreviewed query URL blocked before HTTP request.",
+    "requests": 0,
+    "socket_calls": 0,
+    "generated_probe_urls": []
+  }
+]

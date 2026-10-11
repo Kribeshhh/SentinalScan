@@ -95,6 +95,9 @@ class WebsiteAccuracyCorrections(unittest.TestCase):
         from unittest.mock import Mock
         from scanner.target import validate_target
         client=Mock()
+        from scanner.xss_scanner import parameter_urls
+        # Synthetic response fixture; explicitly reviewed query mutation.
+        client.parameter_urls.side_effect=lambda url, fn: parameter_urls(url, fn, {base.url:[0]})
         if callable(reply): client.get.side_effect=reply
         else: client.get.return_value=reply
         ctx=dict(target=validate_target('https://localhost/?q=fixture',True),response=base,client=client,findings=[],paths=paths or [])

@@ -14,9 +14,52 @@ rules:
     pattern-sanitizers:
       - pattern: int(...)
       - pattern: float(...)
+      # A terminating guard permits only two literal SQL identifiers. This is
+      # a side-effect sanitizer of the checked variable, not of arbitrary input.
+      - patterns:
+          - pattern: |
+              if $VALUE not in ($A, $B):
+                  raise $ERROR
+          - metavariable-regex:
+              metavariable: $A
+              regex: ^["'][A-Za-z_][A-Za-z0-9_]*["']$
+          - metavariable-regex:
+              metavariable: $B
+              regex: ^["'][A-Za-z_][A-Za-z0-9_]*["']$
+          # A caught exception can resume without satisfying the allowlist.
+          - pattern-not-inside: |
+              try:
+                  ...
+              except ...:
+                  ...
+          # Context managers may suppress a raised exception as well.
+          - pattern-not-inside: |
+              with ...:
+                  ...
+          - pattern-not-inside: |
+              async with ...:
+                  ...
+          - focus-metavariable: $VALUE
+        by-side-effect: true
     pattern-sinks:
       - patterns:
           - pattern: $DB.execute($QUERY, ...)
+          - pattern-not-inside: |
+              class $CLASS:
+                  ...
+                  def execute(self, $ARG):
+                      print($ARG)
+                  ...
+              ...
+              $CLASS(...).execute($QUERY, ...)
+          - focus-metavariable: $QUERY
+      # Reassignment invalidates the local print-only constructor exclusion.
+      - patterns:
+          - pattern-inside: |
+              $CLASS = $OTHER
+              ...
+              $CLASS(...).execute($QUERY, ...)
+          - pattern: $CLASS(...).execute($QUERY, ...)
           - focus-metavariable: $QUERY
   - id: sentinelscan.python.flask-shell-flow
     languages: [python]
@@ -48,5 +91,7 @@ rules:
       - pattern: DOMPurify.sanitize(...)
     pattern-sinks:
       - patterns:
-          - pattern: $NODE.innerHTML = $HTML
+          - pattern-either:
+              - pattern: $NODE.innerHTML = $HTML
+              - pattern: $NODE.insertAdjacentHTML($POSITION, $HTML)
           - focus-metavariable: $HTML

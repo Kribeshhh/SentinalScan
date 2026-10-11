@@ -141,7 +141,7 @@ class Analyzer:
             if fn in ('int','float') and args:
                 # Numeric conversion constrains SQL/shell metacharacters, but is not a generic sanitizer.
                 return replace(first,static=False,constructed=False,protections=("sql-value",))
-            if fn=='shlex.quote' and len(args)==1 and not keywords:
+            if fn=='shlex.quote' and self.expr(node.func).identity==fn and len(args)==1 and not keywords:
                 return replace(first,static=False,literal=None,protections=('posix-quoted-argument',))
             if isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join'):
                 result=combine([receiver,*args,*keywords.values()],constructed=True)
@@ -172,7 +172,9 @@ class Analyzer:
             if weak or factory:
                 data=first if weak else (args[1] if len(args)>1 else UNKNOWN)
                 sensitive=data.sensitive or sensitive_name(self.target)
-                self.report(node,'Weak hash algorithm usage' if weak else 'Weak hash algorithm selection','Cryptography',data,fn,
+                # Explicit hashlib non-security intent, not a checksum variable name.
+                nonsecurity = (self.expr(node.func).identity == fn and keywords.get('usedforsecurity', UNKNOWN).literal is False and not sensitive)
+                if not nonsecurity:self.report(node,'Weak hash algorithm usage' if weak else 'Weak hash algorithm selection','Cryptography',data,fn,
                     'High' if sensitive else 'Informational','Use dedicated password hashing for credentials; checksum-only use may be acceptable. Review the purpose before changing algorithms.',
                     ('High' if data.sources else 'Medium') if sensitive else 'Low')
             if not source and fn not in ('str','bytes') and not (isinstance(node.func,ast.Attribute) and node.func.attr in ('format','join')):
@@ -192,7 +194,7 @@ class Analyzer:
                 # POSIX quoting only protects a complete argument after a fixed
                 # executable, not interpolation inside quotes or executable choice.
                 prefix=left.literal
-                safe=left.static and isinstance(prefix,str) and prefix.split(' ',1)[0] in ('/bin/echo','/usr/bin/echo','/usr/bin/printf') and re.fullmatch(r'[A-Za-z0-9_./-]+(?: +[A-Za-z0-9_./-]+)* +',prefix)
+                safe=left.static and isinstance(prefix,str) and prefix.split(' ',1)[0] in ('echo','/bin/echo','/usr/bin/echo','/usr/bin/printf') and re.fullmatch(r'[A-Za-z0-9_./-]+(?: +[A-Za-z0-9_./-]+)* +',prefix)
                 protections=set(result.protections)-{'posix-quoted-argument','fixed-posix-command'}
                 if safe and 'posix-quoted-argument' in right.protections:protections.add('fixed-posix-command')
                 result=replace(result,protections=tuple(sorted(protections)))

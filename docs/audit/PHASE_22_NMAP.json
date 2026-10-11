@@ -1,0 +1,42 @@
+{
+  "method": "Mock subprocess; no Nmap execution or external target",
+  "calls": [
+    {
+      "args": [
+        "/trusted/fixture/nmap",
+        "-sT",
+        "-sV",
+        "--version-light",
+        "-Pn",
+        "-n",
+        "--max-retries",
+        "1",
+        "--host-timeout",
+        "15s",
+        "-p",
+        "80,443,8000,8080,8443",
+        "-oX",
+        "-",
+        "127.0.0.1"
+      ],
+      "capture_output": true,
+      "timeout": 18,
+      "check": true
+    }
+  ],
+  "result": {
+    "method": "Nmap TCP connect/version-light",
+    "address": "127.0.0.1",
+    "tested_ports": [
+      80,
+      443,
+      8000,
+      8080,
+      8443
+    ],
+    "open_ports": []
+  },
+  "inherits_environment": true,
+  "capture_without_byte_limit": true,
+  "shell_enabled": false
+}

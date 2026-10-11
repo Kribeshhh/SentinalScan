@@ -56,6 +56,9 @@ class FindingContextTests(unittest.TestCase):
     def test_sql_probe_status_not_baseline_and_no_body(self):
         r=self.response();probe=self.response(500,body=b'sqlite3.OperationalError password=NotForStorage987')
         ctx={'response':r,'target':SimpleNamespace(url=r.url),'findings':[],'client':Mock()};ctx['client'].get.return_value=probe
+        from scanner.xss_scanner import parameter_urls
+        # No network: explicitly reviewed authored response fixture.
+        ctx['client'].parameter_urls.side_effect=lambda url, fn: parameter_urls(url, fn, {r.url:[0]})
         sqli_scanner.run(ctx);c=json.loads(ctx['findings'][0].context_json)
         self.assertEqual(c['http_status'],500);self.assertEqual(c['observations']['baseline_status'],200)
         self.assertNotIn('NotForStorage987',json.dumps(c));self.assertIsNone(c['response_snippet'])

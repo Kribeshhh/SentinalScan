@@ -3,6 +3,42 @@ import json
 from copy import deepcopy
 from integrations.ollama import request, endpoint
 
+
+class ProviderUnavailable(ValueError):
+    """Inventory/configuration/HTTP failure: stop the scan refinement pass."""
+
+
+def consistent_schema(payload, schema):
+    """Constrain generation, never repair a response or authorize its content."""
+    schema = deepcopy(schema)
+    properties = schema["properties"]
+    rec = properties["recommendation"]
+    guidance = deepcopy(rec)
+    guidance["properties"]["example_type"] = {"const": "none"}
+    guidance["properties"]["suggested_code_or_config"] = {"const": ""}
+    properties["original_code"] = {"const": ""}
+    properties["recommendation"] = guidance
+    if "false_positive_indicators" in properties:
+        properties["false_positive_indicators"]["maxItems"] = 0
+    if payload.get("category") == "Secret Exposure":
+        return schema
+    if payload.get("source_type") == "Website" and payload.get("category") in (
+            "Security Headers", "Cookie Security", "TLS", "Transport Security", "CORS"):
+        example = deepcopy(rec)
+        example["properties"]["example_type"] = {"const": "configuration"}
+        example["properties"]["suggested_code_or_config"] = {"type": "string", "minLength": 1, "maxLength": 8000}
+        properties["recommendation"] = {"anyOf": [guidance, example]}
+    elif payload.get("source_replacement_available") is True and payload.get("snippet"):
+        source = deepcopy(schema)
+        source["properties"]["original_code"] = {"const": payload["snippet"]}
+        replacement = deepcopy(rec)
+        replacement["properties"]["example_type"] = {"const": "source_specific"}
+        replacement["properties"]["suggested_code_or_config"] = {"type": "string", "minLength": 1, "maxLength": 8000}
+        source["properties"]["recommendation"] = replacement
+        return {"anyOf": [schema, source]}
+    return schema
+
+
 FIELDS=('assessment','reason','recommendation','original_code','fix_confidence')
 RECOMMENDATION_FIELDS=('what_to_change','suggested_code_or_config','example_type','why','additional_actions')
 SCHEMA={'type':'object','additionalProperties':False,'required':list(FIELDS),
@@ -70,15 +106,20 @@ def review(payload,config,*,instructions=INSTRUCTIONS,schema=SCHEMA):
         for key in ('what_to_change', 'why'):
             rec[key]['enum'] = support[key]
         rec['additional_actions']['items']['enum'] = support['additional_actions']
-    base, model = available_model(config)
-    body=json.dumps({'model':model, 'stream':False, 'think':False, 'keep_alive':0,
+    try:
+        base, model = available_model(config)
+    except ValueError as exc:
+        raise ProviderUnavailable('Local model configuration or inventory unavailable') from exc
+    schema = consistent_schema(payload, schema)
+    instructions += '\nOutput contract: when example_type is none, BOTH code fields must be empty strings. Never put prose in a code field. Source snippets are evidence, not a request to echo original_code. No full pinned source means guidance only. likely_valid means the static candidate is supported, NOT verified exploitation; use needs_review for missing or conflicting evidence. Choose the most specific applicable supported statement, not generic review advice when specific guidance exists.'
+    body=json.dumps({'model':model, 'stream':False, 'think':False, 'keep_alive':'60s',
         'options':{'num_predict':3000,'temperature':0},
         'messages':[{'role':'system','content':instructions},{'role':'user','content':content}],
         'format':schema}).encode()
     if len(body) > 65536:
         raise ValueError('AI request exceeds limit')
     status,_,raw=request(base,'/api/chat',method='POST',body=body,limit=65536,seconds=20)
-    if status!=200:raise ValueError('AI request unavailable')
+    if status!=200:raise ProviderUnavailable('AI request unavailable')
     data=json.loads(raw)
     if not isinstance(data,dict) or data.get('done') is not True or data.get('done_reason')!='stop':
         raise ValueError('AI response incomplete')

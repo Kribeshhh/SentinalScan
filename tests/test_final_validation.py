@@ -90,6 +90,9 @@ class FinalValidationTests(unittest.TestCase):
             value=parse_qs(urlsplit(url).query)['q'][0]
             return Response(url,200,r.headers,('<script>const value='+json.dumps(value)+';</script>').encode(),False,[])
         ctx={'response':r,'findings':[],'client':Mock()};ctx['client'].get.side_effect=get
+        from scanner.xss_scanner import parameter_urls
+        # No network: explicitly reviewed authored response fixture.
+        ctx['client'].parameter_urls.side_effect=lambda url, fn: parameter_urls(url, fn, {r.url:[0]})
         xss_scanner.run(ctx)
         self.assertEqual([(f.title,f.confidence) for f in ctx['findings']],[('Potential Reflected XSS','Low')])
 

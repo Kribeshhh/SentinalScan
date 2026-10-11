@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "launcher_defaults": {
+    "LLM_ENABLED": true,
+    "OLLAMA_MODEL": "qwen2.5-coder:3b",
+    "OLLAMA_BASE_URL": "http://127.0.0.1:11434"
+  },
+  "method": "actual launcher with temporary serving hook, isolated data, no inference"
+}

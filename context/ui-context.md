@@ -77,3 +77,12 @@ findings expose location/confidence/scan in scrollable tables. Current/Recommend
 Code uses two framed panels on desktop and stacks below 850px, with separate Copy
 buttons. There is no editor or publication action. Native disclosures, keyboard
 focus, table regions and reduced-motion handling remain. Reports are light for print.
+
+## Phase 23 — instructions and text-only guidance
+
+Website form examples are queryless. Concise help explains that query URLs require
+trusted inert-endpoint review, unsafe replay is blocked, and skipped checks do not
+prove security. No controls/routes or replay policy changed. The shared recommendation
+policy removes obsolete references to nonexistent examples in text-only actions;
+banner findings advise minimizing version headers while keeping software patched.
+Existing examples, one final recommendation and AI indicators remain unchanged.
