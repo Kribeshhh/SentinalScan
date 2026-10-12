@@ -84,7 +84,11 @@ class SimplifiedFindingTests(unittest.TestCase):
         soup=self.page();visible=self.primary(soup)
         self.assertIn('rotate',visible.get_text());self.assertIn('history',visible.get_text())
         self.assertNotIn('SyntheticSensitive987',str(soup))
-        self.assertFalse(visible.select('pre code'))
+        self.assertEqual(len(visible.select('pre code')),2)
+        self.assertIn('[REDACTED]',visible.get_text())
+        self.assertIn('not a verified replacement for YAML',visible.get_text())
+        self.assertNotIn('Current Code',visible.get_text())
+        self.assertIn('Static Validation: Not Available',visible.get_text())
         self.assertNotIn('unavailable',visible.select_one('.fix-summary').get_text().lower())
         self.assertIn('manual review required',soup.select_one('#technical-details').get_text())
 

@@ -1,0 +1,86 @@
+{
+  "scan_id": 38,
+  "commit": "86bc7dc4840cd35dfb6cd43ae139ebc5d844dbcd",
+  "retrieval": "Pinned raw.githubusercontent.com files; no branch assumptions, no credentials, bounded 512KiB reads",
+  "files": [
+    {
+      "path": "test/files/decrypt.py",
+      "sha256": "4e4054aff01090f9dff68ed3374df74cd291d36fc49cb2b6e427f51c0270999e",
+      "bytes": 884,
+      "error_type": "SyntaxError",
+      "line": 9,
+      "column": 2,
+      "category": "legacy print statement",
+      "matches_saved_scan_38_hash": true,
+      "after": {
+        "flow_limited_files": [],
+        "parsed_files": 0,
+        "unparsed_files": [
+          "test/files/decrypt.py"
+        ],
+        "parse_errors": [
+          {
+            "path": "test/files/decrypt.py",
+            "category": "SyntaxError",
+            "line": 9,
+            "column": 2,
+            "status": "Not parsed",
+            "reason": "Legacy Python print syntax is unsupported by the Python 3 AST parser; no automatic conversion was attempted.",
+            "other_engine_assessment": "Not established per file; consult separate engine coverage. Enabled or zero findings does not prove assessment."
+          }
+        ],
+        "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+      },
+      "after_finding_count": 0
+    },
+    {
+      "path": "test/files/decrypt_bruteforce.py",
+      "sha256": "592a95bb315ebdf4622f6b33b9a7cf00237ca462404e011e06572ee6c323b08b",
+      "bytes": 722,
+      "error_type": "SyntaxError",
+      "line": 15,
+      "column": 2,
+      "category": "legacy print statement",
+      "matches_saved_scan_38_hash": true,
+      "after": {
+        "flow_limited_files": [],
+        "parsed_files": 0,
+        "unparsed_files": [
+          "test/files/decrypt_bruteforce.py"
+        ],
+        "parse_errors": [
+          {
+            "path": "test/files/decrypt_bruteforce.py",
+            "category": "SyntaxError",
+            "line": 15,
+            "column": 2,
+            "status": "Not parsed",
+            "reason": "Legacy Python print syntax is unsupported by the Python 3 AST parser; no automatic conversion was attempted.",
+            "other_engine_assessment": "Not established per file; consult separate engine coverage. Enabled or zero findings does not prove assessment."
+          }
+        ],
+        "note": "Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof."
+      },
+      "after_finding_count": 0
+    },
+    {
+      "path": "frontend/tsconfig.json",
+      "sha256": "deaff805f91476da0bdd9cffd8ed608103082a60e0479ee95a16bf444945bfb9",
+      "bytes": 436,
+      "error_type": "JSONDecodeError",
+      "line": 1,
+      "column": 1,
+      "category": "syntax error",
+      "matches_saved_scan_38_hash": true,
+      "after": {
+        "configuration_files": 1,
+        "parsed_files": 1,
+        "parse_errors": [],
+        "unparsed_files": [],
+        "note": "Literal configuration inspection only; environment overrides and runtime behavior are not evaluated. JSON/YAML locations are file-level line 1."
+      },
+      "after_finding_count": 0
+    }
+  ],
+  "full_repository_rescan": false
+}

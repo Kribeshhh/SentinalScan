@@ -86,3 +86,13 @@ prove security. No controls/routes or replay policy changed. The shared recommen
 policy removes obsolete references to nonexistent examples in text-only actions;
 banner findings advise minimizing version headers while keeping software patched.
 Existing examples, one final recommendation and AI indicators remain unchanged.
+
+## Phase 24 — example labels
+
+Inside the one Recommended Fix card, supported illustrative examples may show
+Vulnerable Example followed by Safer Example / Example Secure Pattern. They never
+use Current Code or Recommended Code labels reserved for supported actual pairs.
+Show example type, conservative fix confidence and existing validation status.
+YAML credential examples use [REDACTED]; Python runtime loading is explicitly
+cross-language illustration, not YAML interpolation or a verified replacement.
+Reuse escaped code blocks and existing copy controls; Technical Details is retained.

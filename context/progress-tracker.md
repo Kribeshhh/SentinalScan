@@ -615,3 +615,28 @@ under docs/fixes. Suitable for supervised local academic demonstration with stat
 limits. Unknown receiver/transformations remain qualified; existing storage permissions
 require operator review. No source execution, public scans, package installs,
 hosting/auth features, user-history edits or commit/push. Phase23 stops here.
+
+## Phase 24 — in progress
+
+Verified the three reported files against scan38's stored SHA-256 hashes at commit
+86bc7dc4840cd35dfb6cd43ae139ebc5d844dbcd using read-only metadata. Python errors are
+legacy print syntax (lines9/15); tsconfig has a leading JSONC comment. Added safe
+structural parser diagnostics, scoped JSONC parsing, and illustrative masked YAML
+credential/current-safer supporting examples in the existing recommendation.
+Verification pending; no completed-test or accuracy claim yet. User records unchanged.
+
+## Phase 24 — verified completion (2026-10-11)
+
+Exact saved-snapshot hashes confirm Python2 print failures at9:2/15:2 and valid
+JSONC leading comment in frontend/tsconfig.json. Python coverage stays Partial;
+scoped config parsing now accepts that file. Safe structural diagnostics preserve
+unparsed output. Existing single recommendation shows masked illustrative
+vulnerable/safer pairs; YAML runtime example explicitly cross-language/unvalidated.
+No source execution, historical writes, new schema, AI pipeline or safety relaxation.
+
+Final361 tests passed,0 failures/errors/skips (25.694s), including12 Phase24
+methods; real Semgrep rules and CodeQL Python/JS/mixed completed/imported/cleaned.
+Original54 TP26/FP2/TN25/FN1 and consumed holdout28 TP13/FP0/TN14/FN1 unchanged
+for built-in/+Semgrep; no relabeling. AI mocked; browser/live Ollama not retested.
+Read docs/fixes/PHASE_24_COVERAGE_AND_CODE_EXAMPLES.md for exact evidence, tests
+and limits. Local demo suitable with qualifications; no Phase25 started.

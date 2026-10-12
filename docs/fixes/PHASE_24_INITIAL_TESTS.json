@@ -1,0 +1,1 @@
+{"command": [".venv/bin/python", "-B", "-m", "unittest", "discover", "-s", "tests", "-v"], "exit": 1, "seconds": 26.92111195786856}

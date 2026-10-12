@@ -44,3 +44,27 @@ def files(ctx,suffixes):
         check_budget(ctx)
         if any(path.lower().endswith(suffix) for suffix in suffixes):
             yield path,(ctx['root']/path).read_text(encoding='utf-8-sig')
+
+
+def parse_diagnostic(path, error):
+    """Safe structural diagnostics only: exception text may contain credentials."""
+    category = type(error).__name__
+    reason = 'Unsupported or malformed syntax; this file was not assessed by this parser.'
+    if isinstance(error, SyntaxError) and "Missing parentheses in call to 'print'" in error.msg:
+        reason = 'Legacy Python print syntax is unsupported by the Python 3 AST parser; no automatic conversion was attempted.'
+    elif isinstance(error, UnicodeError):
+        category = 'EncodingError'
+        reason = 'File is not supported UTF-8 text.'
+    elif isinstance(error, OSError):
+        category = 'ReadError'
+        reason = 'File could not be read safely.'
+    elif isinstance(error, RecursionError):
+        reason = 'Parser nesting limit reached.'
+    mark = getattr(error, 'problem_mark', None)
+    line = getattr(error, 'lineno', None)
+    column = getattr(error, 'offset', getattr(error, 'colno', None))
+    if mark is not None:
+        line, column = mark.line + 1, mark.column + 1
+    return {'path': path, 'category': category, 'line': line, 'column': column,
+            'status': 'Not parsed', 'reason': reason,
+            'other_engine_assessment': 'Not established per file; consult separate engine coverage. Enabled or zero findings does not prove assessment.'}

@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-v"
+  ],
+  "exit": 0,
+  "seconds": 26.02500845794566,
+  "discovered": 361,
+  "passed": 361,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0
+}

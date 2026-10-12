@@ -387,3 +387,17 @@ process-group cleanup and unchanged ports/fallback. New DB files use0600; never
 silently change permissions/ownership of existing user storage. Keep no-code wording
 in the shared recommendation policy and preserve one final recommendation.
 Phase22 holdout is consumed; report unchanged-label metrics without generalization.
+
+## Phase 24 — honest parser coverage and code examples
+
+Preserve unparsed_files and bounded sanitized parse_errors; never expose exception
+messages containing source or secrets. Python2 print syntax stays unsupported and
+Partial; no conversion/execution. Config JSONC preprocessing is scoped to tsconfig/
+jsconfig project filenames and must preserve quoted strings and diagnostic positions.
+Malformed JSONC remains Partial. Do not claim another engine assessed a file merely
+because it was enabled or reported zero findings.
+Use existing example_secure_pattern/composer for masked illustrative vulnerable and
+safer examples; source pairs still require the existing evidence/validation policy.
+YAML does not imply interpolation support or a Python backend. Label cross-language
+runtime illustrations, retain secret rotation and one recommendation, and apply the
+same examples/escaping to new reports. No historical rewrites or inference on GET.

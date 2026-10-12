@@ -1,0 +1,21 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_phase24_coverage.py",
+    "-v"
+  ],
+  "exit": 0,
+  "seconds": 0.6983393330592662,
+  "discovered": 12,
+  "passed": 12,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0
+}

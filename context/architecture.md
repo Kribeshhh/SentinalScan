@@ -229,3 +229,19 @@ with XML in a temporary private workspace. Its ports, service flags and TCP fall
 are unchanged. New SQLite files are atomically created0600 before connection;
 existing databases/directories are not chmodded or chowned. New data directories
 continue to use existing0700 behavior. No schema or historical data changes.
+
+## Phase 24 — parser coverage and supporting examples
+
+Python AST and configuration modules preserve unparsed_files and add bounded
+parse_errors (category, line/column, disposition and fixed explanation), never raw
+exception/source text. Read/encoding failures remain incomplete coverage. Other
+engine assessment is explicitly unknown unless independently evidenced; enabled
+engines or zero findings do not establish per-file success. No Python2 conversion.
+The existing config parser accepts comments/trailing commas only for tsconfig and
+jsconfig project JSON names (including dotted variants); ordinary JSON stays strict.
+Source limits and YAML safe loading remain unchanged.
+
+The existing example_secure_pattern policy supplies optional vulnerable_code and
+vulnerable_language alongside its safer code/note. These are deterministic teaching
+patterns, not retained source or validated patches. Existing composer/JSON snapshots,
+UI and exports carry them without schema changes or historical writes.

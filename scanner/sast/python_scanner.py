@@ -2,7 +2,7 @@
 import ast
 import re
 from dataclasses import replace
-from scanner.sast.common import add,files,check_budget
+from scanner.sast.common import add,check_budget,parse_diagnostic
 from scanner.sast.evidence import semantic
 from scanner.sast.flow import Value,UNKNOWN,combine,merge_environments,confidence,evidence,sensitive_name
 
@@ -314,12 +314,16 @@ class Analyzer:
 
 
 def run(ctx):
-    count=0;errors=[];limited=[];start=len(ctx['findings'])
-    for path,source in files(ctx,('.py',)):
+    count=0;errors=[];diagnostics=[];limited=[];start=len(ctx['findings'])
+    for path in ctx['paths']:
+        check_budget(ctx)
+        if not path.lower().endswith('.py'):continue
         try:
+            source=(ctx['root']/path).read_text(encoding='utf-8-sig')
             tree=ast.parse(source);analyzer=Analyzer(ctx,path);analyzer.prepare(tree);analyzer.block(tree.body)
             if analyzer.limited:limited.append(path)
-        except (SyntaxError,ValueError,RecursionError):errors.append(path);continue
+        except (SyntaxError,ValueError,RecursionError,OSError) as error:
+            errors.append(path);diagnostics.append(parse_diagnostic(path,error));continue
         count+=1
     # Keep the strongest supported path per existing fingerprint, not duplicate call-site findings.
     unique={}
@@ -328,4 +332,4 @@ def run(ctx):
         prior=unique.get(finding.fingerprint)
         if prior is None or rank[finding.confidence]>rank[prior.confidence]:unique[finding.fingerprint]=finding
     ctx['findings'][start:]=list(unique.values())
-    return {'flow_limited_files':limited,'parsed_files':count,'unparsed_files':errors[:100],'note':'Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof.'}
+    return {'flow_limited_files':limited,'parsed_files':count,'unparsed_files':errors[:100],'parse_errors':diagnostics[:100],'note':'Statement-order local flow, aliases and Flask input sources. Branches merge conservatively; bounded plain same-file function calls (depth 4, 100 expansions/file); no execution or runtime reachability proof.'}

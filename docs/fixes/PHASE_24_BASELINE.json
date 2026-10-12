@@ -1,0 +1,16 @@
+{
+  "git_head": "e6386d1449ec9bc4e6c9aafd28c885992eaf8cff",
+  "git_status": "?? docs/fixes/PHASE_24_ORIGINAL_PARSING.json\n",
+  "prior_test_count": 349,
+  "protected_hashes": {
+    "scanner/http_scanner.py": "1b200e35ee3833992b3b2bf02579dc6e432ec7936fd6c2e57f6d27836419026b",
+    "scanner/xss_scanner.py": "966cd563de388ecaba9235ba3b19408a5c82b9474de36a080cebd79fc2169def",
+    "scanner/sqli_scanner.py": "bf9e1a073be099935d32bf1c287fff62049594d795b32a63540b5dd8d0ae6b39",
+    "integrations/llm.py": "5f7e08a46615db9f4480315e1045a4b9dd902cebf7a61ad8dbc9b5548d6f4c42",
+    "analysis/llm_review.py": "9b3ff8bf1b6dc4fd01a1c1ef4af3260220cd7022cddd47bdd8df973af10a4f05",
+    "analysis/ai_grounding.py": "814237433d68f1a67d3408d15e447ff594de1c2253ab5862e4b9b6ef9a71b884",
+    "evaluation/fixtures.json": "73c72c4db254ac9f52071915f5e8a56d111c7d0933ebc1e6ad363c4e25b3a2d1",
+    "docs/audit/PHASE_22_HOLDOUT.json": "ef1634f59e6a1d697453298ba26600c73ec013d17abd878c261588b6891d72eb",
+    "database.py": "c1a1ebe6dbb067786e980c2cf96da6e25e55d4e954edc39284bffaa70dae4f95"
+  }
+}

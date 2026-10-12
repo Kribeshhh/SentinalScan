@@ -211,6 +211,7 @@ def example_secure_pattern(finding, solution):
     title=f['title'].lower();repo=f['source']=='Repository'
     suffix=PurePosixPath(re.sub(r':\d+$','',f['location'])).suffix.lower()
     language=code=note=None
+    vulnerable=None;vulnerable_language=None
     if repo and f['category']=='Dependency':
         from analysis.dependency_solution import dependency_solution
         prepared={}
@@ -219,6 +220,8 @@ def example_secure_pattern(finding, solution):
         return prepared.get('dependency_example')
     if 'sql injection' in title:
         language='Pseudocode · database API unknown'
+        vulnerable='query("SELECT id FROM example_table WHERE id = " + user_input)'
+        vulnerable_language='Pseudocode · illustrative'
         code='query("SELECT id FROM example_table WHERE id = <value-placeholder>",\n      parameters=[user_input])'
         note='Illustrative only: example_table, query and placeholder syntax are not detected application code. Use the actual driver’s binding API; allowlist dynamic identifiers separately.'
     elif repo and suffix=='.py' and ('shell' in title or 'command injection' in title):
@@ -227,10 +230,18 @@ def example_secure_pattern(finding, solution):
         note='Illustrative only: choose a fixed executable and validate its arguments. Separate arguments prevent shell interpretation, but do not prevent command-specific option injection.'
     elif repo and f['category']=='Secret Exposure' and suffix=='.py':
         language='Python · illustrative'
+        vulnerable='credential = "[REDACTED]"';vulnerable_language='Python · illustrative'
         code='import os\n\ncredential = os.environ["SERVICE_CREDENTIAL"]'
         note='Illustrative only: these names are examples, not detected source. Provision a protected runtime environment or secret manager; never commit the value.'
+    elif repo and f['category']=='Secret Exposure' and suffix in ('.yml','.yaml'):
+        language='Python · cross-language runtime illustration'
+        vulnerable='database:\n  password: "[REDACTED]"'
+        vulnerable_language='YAML · illustrative, not retained source'
+        code='import os\n\n# In the application loader, not inside the YAML file:\npassword = os.environ["DB_PASSWORD"]'
+        note='Illustrative example — adapt to your application’s configuration and verify before use. The Python snippet only demonstrates runtime loading; it is not a verified replacement for YAML. YAML does not automatically interpolate environment variables. Use the actual application loader or secret-manager integration, provision the value securely, and rotate/revoke the exposed credential if real.'
     elif ('dom html' in title or 'document.write' in title) and repo and suffix in ('.js','.jsx','.mjs','.cjs'):
         language='JavaScript · plain-text example'
+        vulnerable='element.innerHTML = userInput;';vulnerable_language='JavaScript · illustrative'
         code='// Only when the intended output is plain text:\nelement.textContent = userInput;'
         note='Illustrative only: element and userInput are example names. Intentional HTML needs a maintained sanitizer and an explicit policy instead.'
     elif not repo and f['category']=='CORS':
@@ -242,7 +253,8 @@ def example_secure_pattern(finding, solution):
         code='response.write(encode_for_output_context(user_input))'
         note='Illustrative only: select the encoder for the actual HTML/attribute/URL context. Avoid inserting untrusted input into scripts or event handlers; no backend language is inferred.'
     if code:
-        return dict(language=language,code=code,kind='Example Secure Pattern',note=note)
+        return dict(language=language,code=code,kind='Example Secure Pattern',note=note,
+                    vulnerable_code=vulnerable,vulnerable_language=vulnerable_language)
     return None
 
 

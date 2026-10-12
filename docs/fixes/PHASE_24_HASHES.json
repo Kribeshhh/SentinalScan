@@ -1,0 +1,45 @@
+{
+  "protected_unchanged": {
+    "scanner/http_scanner.py": true,
+    "scanner/xss_scanner.py": true,
+    "scanner/sqli_scanner.py": true,
+    "integrations/llm.py": true,
+    "analysis/llm_review.py": true,
+    "analysis/ai_grounding.py": true,
+    "evaluation/fixtures.json": true,
+    "docs/audit/PHASE_22_HOLDOUT.json": true,
+    "database.py": true
+  },
+  "changed_files": [
+    "AGENTS.md",
+    "analysis/recommendation.py",
+    "context/ai-workflow-rules.md",
+    "context/architecture.md",
+    "context/progress-tracker.md",
+    "context/ui-context.md",
+    "scanner/sast/common.py",
+    "scanner/sast/config_scanner.py",
+    "scanner/sast/python_scanner.py",
+    "templates/_solution.html",
+    "templates/report_document.html",
+    "tests/test_finding_simplification.py",
+    "tests/test_unified_recommendation.py"
+  ],
+  "sha256": {
+    "AGENTS.md": "f213d6ac2be6b51629f2ff2d29b77ed19596040e1aebbb7536a1e4fa27386d05",
+    "analysis/recommendation.py": "54688be5a5e68b6526608a05aceaee13243e48ea9e292d0375989fa9efcf7ab7",
+    "context/ai-workflow-rules.md": "751073179307a90d97efa8f17df86b3b14a30a6672c54b9f49a5226fed1aeecc",
+    "context/architecture.md": "b2df86a5cd7f893db02a0b508acf199a4ffe13bc39f2a41027045ada151c240b",
+    "context/progress-tracker.md": "f86e7ea6d084adeb429a848efcb9351a41c7a96eaeaaacc6df0cf25941653c89",
+    "context/ui-context.md": "55cc048ba0c8dd423d1d7ea80817f6b5cfb2507ab3d9a386778939229475c369",
+    "scanner/sast/common.py": "c7bfdba5f4fd6b29e49d2416a51555fd3d9f8c229a84bab5be46e111f12eb794",
+    "scanner/sast/config_scanner.py": "cd45c654eea204e63c4a619f91031052866a70a02350ddbe4355f31fb1da4627",
+    "scanner/sast/python_scanner.py": "8857a2b51497853909469b41ef05e1465f4faa2723befb461e7b273a8ed6e023",
+    "templates/_solution.html": "be8e6e94a0cccc5cca3a915ef222060823a9231cf86eefc0539a57dd08577637",
+    "templates/report_document.html": "eb49ab43d49213a693cc9c3c66240b0e5f2ff82e97138febaf55724701056d7e",
+    "tests/test_finding_simplification.py": "37aaeafb83976a5605c303878e23ebcfa7744952c94c33007e3e68fbcb924e26",
+    "tests/test_unified_recommendation.py": "8bc60105a1361e3f224a659b06940e935195e7b8218b1393aef315e514d70f0a",
+    "tests/test_phase24_coverage.py": "87a7153d0b23ca2f786efe44fa01756b6ee6905e90e9671c4559118baffa7f31"
+  },
+  "git_diff_check_exit": 0
+}
